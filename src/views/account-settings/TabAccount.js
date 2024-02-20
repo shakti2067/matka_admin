@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -49,6 +49,11 @@ const TabAccount = () => {
   // ** State
   const [openAlert, setOpenAlert] = useState(true)
   const [imgSrc, setImgSrc] = useState('/images/avatars/1.png')
+  const [userData, setUserData] = useState({
+    name: '',
+    email: '',
+    role: ''
+  })
 
   const onChange = file => {
     const reader = new FileReader()
@@ -59,6 +64,21 @@ const TabAccount = () => {
     }
   }
 
+  useEffect(() => {
+    let data = window?.localStorage.getItem('user')
+    if (data == null || data == '') {
+      router.replace('/pages/login')
+    } else {
+      let user = JSON.parse(window.localStorage.getItem('user'))
+
+      setUserData({
+        name: user.name,
+        email: user.email,
+        role: user.role
+      })
+    }
+  }, [])
+
   return (
     <CardContent>
       <form>
@@ -66,7 +86,7 @@ const TabAccount = () => {
           <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <ImgStyled src={imgSrc} alt='Profile Pic' />
-              <Box>
+              {/* <Box>
                 <ButtonStyled component='label' variant='contained' htmlFor='account-settings-upload-image'>
                   Upload New Photo
                   <input
@@ -83,16 +103,16 @@ const TabAccount = () => {
                 <Typography variant='body2' sx={{ marginTop: 5 }}>
                   Allowed PNG or JPEG. Max size of 800K.
                 </Typography>
-              </Box>
+              </Box> */}
             </Box>
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='Username' placeholder='johnDoe' defaultValue='johnDoe' />
+            <TextField fullWidth label='Username' placeholder='johnDoe' defaultValue='johnDoe' value={userData.name} />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          {/* <Grid item xs={12} sm={6}>
             <TextField fullWidth label='Name' placeholder='John Doe' defaultValue='John Doe' />
-          </Grid>
+          </Grid> */}
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -100,6 +120,7 @@ const TabAccount = () => {
               label='Email'
               placeholder='johnDoe@example.com'
               defaultValue='johnDoe@example.com'
+              value={userData.email}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -124,11 +145,11 @@ const TabAccount = () => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          {/* <Grid item xs={12} sm={6}>
             <TextField fullWidth label='Company' placeholder='ABC Pvt. Ltd.' defaultValue='ABC Pvt. Ltd.' />
-          </Grid>
+          </Grid> */}
 
-          {openAlert ? (
+          {/* {openAlert ? (
             <Grid item xs={12} sx={{ mb: 3 }}>
               <Alert
                 severity='warning'
@@ -145,7 +166,7 @@ const TabAccount = () => {
                 </Link>
               </Alert>
             </Grid>
-          ) : null}
+          ) : null} */}
 
           <Grid item xs={12}>
             <Button variant='contained' sx={{ marginRight: 3.5 }}>

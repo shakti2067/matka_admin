@@ -11,6 +11,7 @@ import AlertCircleOutline from 'mdi-material-ui/AlertCircleOutline'
 import GoogleCirclesExtended from 'mdi-material-ui/GoogleCirclesExtended'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
+import { Account, AccountArrowLeft, AccountCheckOutline } from 'mdi-material-ui'
 
 const navigation = () => {
   const router = useRouter()
@@ -28,10 +29,30 @@ const navigation = () => {
       path: '/'
     },
     {
+      title: 'Users',
+      icon: Account,
+      path: '/users'
+    },
+    {
+      title: 'Bids',
+      icon: AccountArrowLeft,
+      path: '/bids'
+    },
+    {
+      title: 'Winners',
+      icon: AccountCheckOutline,
+      path: '/winners'
+    },
+    // {
+    //   title: 'Settings',
+    //   icon: AccountCogOutline,
+    //   path: '/'
+    // },
+    {
       title: 'Account Settings',
       icon: AccountCogOutline,
       path: '/account-settings'
-    },
+    }
     // {
     //   sectionTitle: 'Pages'
     // },
@@ -53,34 +74,34 @@ const navigation = () => {
     //   path: '/pages/error',
     //   openInNewTab: true
     // },
-    {
-      sectionTitle: 'User Interface'
-    },
-    {
-      title: 'Typography',
-      icon: FormatLetterCase,
-      path: '/typography'
-    },
-    {
-      title: 'Icons',
-      path: '/icons',
-      icon: GoogleCirclesExtended
-    },
-    {
-      title: 'Cards',
-      icon: CreditCardOutline,
-      path: '/cards'
-    },
-    {
-      title: 'Tables',
-      icon: Table,
-      path: '/tables'
-    },
-    {
-      icon: CubeOutline,
-      title: 'Form Layouts',
-      path: '/form-layouts'
-    }
+    // {
+    //   sectionTitle: 'User Interface'
+    // },
+    // {
+    //   title: 'Typography',
+    //   icon: FormatLetterCase,
+    //   path: '/typography'
+    // },
+    // {
+    //   title: 'Icons',
+    //   path: '/icons',
+    //   icon: GoogleCirclesExtended
+    // }
+    // {
+    //   title: 'Cards',
+    //   icon: CreditCardOutline,
+    //   path: '/cards'
+    // },
+    // {
+    //   title: 'Tables',
+    //   icon: Table,
+    //   path: '/tables'
+    // },
+    // {
+    //   icon: CubeOutline,
+    //   title: 'Form Layouts',
+    //   path: '/form-layouts'
+    // }
   ]
 }
 

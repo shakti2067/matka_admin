@@ -16,8 +16,8 @@ const data = [
   {
     sales: '894k',
     trendDir: 'up',
-    subtitle: 'USA',
-    title: '$8,656k',
+    subtitle: 'UP',
+    title: '₹8,656k',
     avatarText: 'US',
     trendNumber: '25.8%',
     avatarColor: 'success',
@@ -25,9 +25,9 @@ const data = [
   },
   {
     sales: '645k',
-    subtitle: 'UK',
+    subtitle: 'GJ',
     trendDir: 'down',
-    title: '$2,415k',
+    title: '₹2,415k',
     avatarText: 'UK',
     trendNumber: '6.2%',
     avatarColor: 'error',
@@ -35,9 +35,9 @@ const data = [
   },
   {
     sales: '148k',
-    title: '$865k',
+    title: '₹865k',
     trendDir: 'up',
-    avatarText: 'IN',
+    avatarText: 'RJ',
     subtitle: 'India',
     trendNumber: '12.4%',
     avatarColor: 'warning',
@@ -45,7 +45,7 @@ const data = [
   },
   {
     sales: '86k',
-    title: '$745k',
+    title: '₹745k',
     trendDir: 'down',
     avatarText: 'JA',
     subtitle: 'Japan',
@@ -55,9 +55,9 @@ const data = [
   },
   {
     sales: '42k',
-    title: '$45k',
+    title: '₹45k',
     trendDir: 'up',
-    avatarText: 'KO',
+    avatarText: 'JK',
     subtitle: 'Korea',
     trendNumber: '16.2%',
     avatarColor: 'error',
@@ -69,7 +69,7 @@ const SalesByCountries = () => {
   return (
     <Card>
       <CardHeader
-        title='Sales by Countries'
+        title='Sales by States'
         titleTypographyProps={{ sx: { lineHeight: '1.2 !important', letterSpacing: '0.31px !important' } }}
         action={
           <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>

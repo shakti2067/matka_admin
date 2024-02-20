@@ -36,3 +36,48 @@ export function adminLogout() {
       return error
     })
 }
+
+export let getUser = () => {
+  return apis
+    .get(`/master/getAllUsers?page=1&limit=20`)
+    .then(res => {
+      console.log(res)
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+export let getBetCategory = () => {
+  return apis
+    .get(`game/getBatCategory`)
+    .then(res => {
+      console.log(res)
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let createBids = data => {
+  return apis
+    .post('game/createBatCategory', data)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let getAllWinner = data => {
+  return apis
+    .get('game/getAllWinnerUser', data)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
