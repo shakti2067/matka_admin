@@ -3,19 +3,36 @@ import { useRouter } from 'next/router'
 
 import React, { useEffect, useState } from 'react'
 import { getBetCategory } from 'src/helpers'
+import GameTable from 'src/views/tables/GameTable'
 import TableStickyHeader from 'src/views/tables/TableStickyHeader'
 
 const columns = [
-  { id: 'name', label: 'Name', minWidth: 170 },
-  { id: 'uniqueNumber', label: 'ID', minWidth: 100 },
+  { id: 'no', label: '#', minWidth: 70 },
+  { id: 'name', label: 'Game name', minWidth: 170 },
   {
     id: 'startTime',
-    label: 'Start Time',
+    label: 'Today open',
     minWidth: 170
   },
   {
     id: 'endTime',
-    label: 'End Time',
+    label: 'Today close ',
+    minWidth: 170
+  },
+
+  {
+    id: 'isActive',
+    label: 'Active ',
+    minWidth: 170
+  },
+  {
+    id: 'markerStatus',
+    label: 'Market Status',
+    minWidth: 170
+  },
+  {
+    id: 'action',
+    label: 'Action',
     minWidth: 170
   }
 ]
@@ -39,7 +56,7 @@ export default function BidsPage() {
   return (
     <Grid container spacing={6}>
       <Grid item xs={12} md={10}>
-        <Typography variant='h5'>Bids</Typography>
+        <Typography variant='h5'>Game Name List</Typography>
       </Grid>
       <Grid item xs={12} md={2}>
         <Button
@@ -50,12 +67,12 @@ export default function BidsPage() {
           variant='contained'
           size='large'
         >
-          Create Bid
+          add game
         </Button>
       </Grid>
       <Grid item xs={12}>
         <Card>
-          <TableStickyHeader columns={columns} rows={rows} />
+          <GameTable columns={columns} rows={rows} />
         </Card>
       </Grid>
     </Grid>

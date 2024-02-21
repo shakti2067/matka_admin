@@ -13,7 +13,7 @@ import {
   Typography
 } from '@mui/material'
 import { useRouter } from 'next/router'
-import React, { useState } from 'react'
+import React, { useDebugValue, useEffect, useState } from 'react'
 import { createBids } from 'src/helpers'
 
 let generateTimeSlots = () => {
@@ -47,11 +47,22 @@ export default function CreateBidPage() {
     endTimeErr: ''
   })
 
+  let [edit, setEdit] = useState(false)
+
+  // let data = JSON.parse(router.query.gameData)
+  // console.log('data', data)
+
+  // useEffect(() => {
+  //   if (data) {
+  //     setEdit(true)
+  //   }
+  // }, [])
+
   let validation = () => {
     let { name, id, startTime, endTime } = form
 
     if (name.length === 0) {
-      setError({ ...error, nameErr: 'Please enter Bid name' })
+      setError({ ...error, nameErr: 'Please enter game name' })
       return false
     }
     if (id.length === 0) {
@@ -59,11 +70,11 @@ export default function CreateBidPage() {
       return false
     }
     if (startTime.length === 0) {
-      setError({ ...error, startTimeErr: 'Please select start time' })
+      setError({ ...error, startTimeErr: 'Please select open time' })
       return false
     }
     if (endTime.length === 0) {
-      setError({ ...error, endTimeErr: 'Please select end time' })
+      setError({ ...error, endTimeErr: 'Please select close time' })
       return false
     }
     return true
@@ -89,10 +100,20 @@ export default function CreateBidPage() {
         })
     }
   }
+  let resetBid = () => {
+    console.log('reset call')
+    setForm({
+      name: '',
+      id: '',
+      startTime: '',
+      endTime: ''
+    })
+  }
+
   return (
     <Grid container spacing={6}>
       <Grid item xs={12} md={10}>
-        <Typography variant='h5'>Create Bid</Typography>
+        {!edit ? <Typography variant='h5'>Add Game</Typography> : <Typography variant='h5'>Edit Game</Typography>}
       </Grid>
       <Grid item xs={12} md={6}>
         <Card>
@@ -102,13 +123,14 @@ export default function CreateBidPage() {
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
-                    label='Name'
+                    label='Game Name'
                     placeholder='Please enter bid name'
                     onChange={e => {
                       let value = e.target.value
                       setForm({ ...form, name: value })
                       setError({ ...error, nameErr: '' })
                     }}
+                    value={edit ? data.name : form.name}
                   />
                   {error.nameErr && <p style={{ color: 'red' }}>{error.nameErr}</p>}
                 </Grid>
@@ -122,12 +144,13 @@ export default function CreateBidPage() {
                       setForm({ ...form, id: value })
                       setError({ ...error, idErr: '' })
                     }}
+                    value={form.id}
                   />
                   {error.idErr && <p style={{ color: 'red' }}>{error.idErr}</p>}
                 </Grid>
                 <Grid item xs={12} sm={12}>
                   <FormControl fullWidth>
-                    <InputLabel id='form-layouts-separator-multiple-select-label'>Start Time</InputLabel>
+                    <InputLabel id='form-layouts-separator-multiple-select-label'>Open Time</InputLabel>
                     <Select
                       value={form.startTime}
                       onChange={e => {
@@ -152,7 +175,7 @@ export default function CreateBidPage() {
                 </Grid>
                 <Grid item xs={12}>
                   <FormControl fullWidth>
-                    <InputLabel id='form-layouts-separator-multiple-select-label'>End Time</InputLabel>
+                    <InputLabel id='form-layouts-separator-multiple-select-label'>Close Time</InputLabel>
                     <Select
                       value={form.endTime}
                       onChange={e => {
@@ -183,12 +206,15 @@ export default function CreateBidPage() {
                       gap: 5,
                       display: 'flex',
                       flexWrap: 'wrap',
-                      alignItems: 'center',
-                      justifyContent: 'space-between'
+                      alignItems: 'center'
+                      // justifyContent: 'space-between'
                     }}
                   >
                     <Button type='submit' variant='contained' size='large' onClick={createBid}>
                       Create
+                    </Button>
+                    <Button type='submit' variant='contained' color='error' size='large' onClick={resetBid}>
+                      Reset
                     </Button>
                   </Box>
                 </Grid>

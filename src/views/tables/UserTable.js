@@ -11,13 +11,15 @@ import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TablePagination from '@mui/material/TablePagination'
 import Switch from '@mui/material/Switch'
-import { FormControlLabel, FormGroup } from '@mui/material'
+import { FormControlLabel, FormGroup, Typography } from '@mui/material'
 import moment from 'moment'
+import { useRouter } from 'next/router'
 
-const TableStickyHeader = ({ columns = [], rows = [] }) => {
+const UserTable = ({ columns = [], rows = [] }) => {
   // ** States
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
+  const router = useRouter()
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
@@ -43,16 +45,30 @@ const TableStickyHeader = ({ columns = [], rows = [] }) => {
           </TableHead>
           <TableBody>
             {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, rowIndex) => {
-              console.log('row', row)
+              // console.log('row', row)
               return (
                 <TableRow hover role='checkbox' tabIndex={-1} key={rowIndex}>
                   {columns.map((column, index) => {
                     const value = row[column.id]
 
                     return (
-                      <TableCell key={index} align={column.align} onClick={() => {}}>
+                      <TableCell key={index} align={column.align}>
                         {column.id === 'isActive' ? (
                           <Switch checked={value} />
+                        ) : column.id === 'name' ? (
+                          <Typography
+                            style={{ color: 'blue', cursor: 'pointer' }}
+                            onClick={() => {
+                              // router.push('/users/userdetails')
+                              router.push({
+                                pathname: '/users/userdetails',
+                                // query: { user: JSON.stringify(row) }
+                                query: { user: '' }
+                              })
+                            }}
+                          >
+                            {value}
+                          </Typography>
                         ) : column.id === 'no' ? (
                           <span>{rowIndex + 1}</span>
                         ) : column.id === 'isBetting' ? (
@@ -64,7 +80,7 @@ const TableStickyHeader = ({ columns = [], rows = [] }) => {
                         ) : column.format && typeof value === 'number' ? (
                           column.format(value)
                         ) : (
-                          value
+                          <span>{value}</span>
                         )}
                       </TableCell>
                     )
@@ -88,4 +104,4 @@ const TableStickyHeader = ({ columns = [], rows = [] }) => {
   )
 }
 
-export default TableStickyHeader
+export default UserTable

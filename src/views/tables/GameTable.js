@@ -11,13 +11,16 @@ import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TablePagination from '@mui/material/TablePagination'
 import Switch from '@mui/material/Switch'
-import { FormControlLabel, FormGroup } from '@mui/material'
+import { Button, FormControlLabel, FormGroup } from '@mui/material'
 import moment from 'moment'
+import { useRouter } from 'next/router'
 
-const TableStickyHeader = ({ columns = [], rows = [] }) => {
+const GameTable = ({ columns = [], rows = [] }) => {
   // ** States
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
+
+  const router = useRouter()
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
@@ -55,8 +58,25 @@ const TableStickyHeader = ({ columns = [], rows = [] }) => {
                           <Switch checked={value} />
                         ) : column.id === 'no' ? (
                           <span>{rowIndex + 1}</span>
-                        ) : column.id === 'isBetting' ? (
-                          <Switch checked={value} />
+                        ) : column.id === 'action' ? (
+                          <div>
+                            <Button
+                              variant='contained'
+                              style={{ marginRight: 5 }}
+                              //   onClick={() => {
+                              //     router.push('/bids/create')
+                              //   }}
+                              onClick={() => {
+                                router.push({
+                                  pathname: '/bids/create',
+                                  query: { gameData: JSON.stringify(row), edit: true }
+                                })
+                              }}
+                            >
+                              Edit
+                            </Button>
+                            <Button variant='contained'>market off day</Button>
+                          </div>
                         ) : column.id === 'isTransfer' ? (
                           <Switch checked={value} />
                         ) : column.id === 'createdAt' ? (
@@ -88,4 +108,4 @@ const TableStickyHeader = ({ columns = [], rows = [] }) => {
   )
 }
 
-export default TableStickyHeader
+export default GameTable

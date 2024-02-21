@@ -34,7 +34,7 @@ const navigation = () => {
       path: '/users'
     },
     {
-      title: 'Bids',
+      title: 'Game',
       icon: AccountArrowLeft,
       path: '/bids'
     },
