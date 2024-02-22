@@ -34,6 +34,14 @@ const navigation = () => {
       path: '/users'
     },
     {
+      title: 'Winners',
+      icon: AccountCheckOutline,
+      path: '/winners'
+    },
+    {
+      sectionTitle: 'Games managment'
+    },
+    {
       title: 'Game',
       icon: AccountArrowLeft,
       path: '/bids'
@@ -52,15 +60,28 @@ const navigation = () => {
       path: '/bids/rate'
     },
     {
-      title: 'Winners',
-      icon: AccountCheckOutline,
-      path: '/winners'
+      sectionTitle: 'Settings'
     },
-    // {
-    //   title: 'Settings',
-    //   icon: AccountCogOutline,
-    //   path: '/'
-    // },
+    {
+      title: 'Main setings',
+      icon: AccountCogOutline,
+      path: '/settings/main'
+    },
+    {
+      title: 'Contact Settings',
+      icon: AccountCogOutline,
+      path: '/settings/contact'
+    },
+    {
+      title: 'Slider images',
+      icon: AccountCogOutline,
+      path: '/settings/slider'
+    },
+    {
+      title: 'How to Play',
+      icon: AccountCogOutline,
+      path: '/settings/howtoplay'
+    },
     {
       title: 'Account Settings',
       icon: AccountCogOutline,

@@ -20,6 +20,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { TimePicker } from '@mui/x-date-pickers/TimePicker'
 import dayjs from 'dayjs'
+import moment from 'moment'
 
 let generateTimeSlots = () => {
   var x = 5 //minutes interval
@@ -41,15 +42,17 @@ export default function CreateBidPage() {
   const router = useRouter()
   let [form, setForm] = useState({
     name: '',
-    startTime: dayjs(Date.now()),
-    endTime: dayjs(Date.now())
+    // startTime: dayjs(Date.now()),
+    startTime: '',
+    endTime: ''
   })
   let [error, setError] = useState({
     nameErr: '',
     startTimeErr: '',
     endTimeErr: ''
   })
-  // const [todayOpenTime, setTodayOpenTime] = useState(dayjs(Date.now()))
+  console.log('form', form)
+
   const data = router.query.gameData ? JSON.parse(router.query.gameData) : null
 
   const setDefaultValue = () => {
@@ -74,10 +77,7 @@ export default function CreateBidPage() {
       setError({ ...error, nameErr: 'Please enter game name' })
       return false
     }
-    // if (id.length === 0) {
-    //   setError({ ...error, idErr: 'Please enter bid id' })
-    //   return false
-    // }
+
     if (startTime.length === 0) {
       setError({ ...error, startTimeErr: 'Please select open time' })
       return false
@@ -90,29 +90,32 @@ export default function CreateBidPage() {
   }
 
   let createBid = () => {
-    let { name, startTime, endTime } = form
+    if (data != null) {
+      console.log('edit api')
+    } else {
+      let { name, startTime, endTime } = form
 
-    if (validation()) {
-      let bidData = {
-        name,
-        // uniqueNumber: id,
-        startTime,
-        endTime
+      if (validation()) {
+        let bidData = {
+          name,
+          startTime,
+          endTime
+        }
+        createBids(bidData)
+          .then(data => {
+            router.back()
+          })
+          .catch(err => {
+            console.log(err, 'this is error')
+          })
       }
-      createBids(bidData)
-        .then(data => {
-          router.back()
-        })
-        .catch(err => {
-          console.log(err, 'this is error')
-        })
     }
   }
   let resetBid = () => {
     console.log('reset call')
     setForm({
+      ...form,
       name: '',
-      // id: '',
       startTime: '',
       endTime: ''
     })
@@ -180,19 +183,19 @@ export default function CreateBidPage() {
                     </Select>
                     {error.startTimeErr && <p style={{ color: 'red' }}>{error.startTimeErr}</p>}
                   </FormControl> */}
-
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer components={['TimePicker']}>
-                      <TimePicker
-                        label={'Open time'}
-                        value={form.startTime}
-                        onChange={e => {
-                          let value = e.target.value
-                          setForm({ ...form, startTime: value })
-                        }}
-                      />
-                    </DemoContainer>
-                  </LocalizationProvider>
+                  {data != null ? null : (
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer components={['TimePicker']}>
+                        <TimePicker
+                          label={'Open time'}
+                          value={form.startTime}
+                          onChange={newValue => {
+                            setForm({ ...form, startTime: dayjs(newValue).format('h:mm A') })
+                          }}
+                        />
+                      </DemoContainer>
+                    </LocalizationProvider>
+                  )}
                 </Grid>
                 <Grid item xs={12}>
                   {/* <FormControl fullWidth>
@@ -221,18 +224,19 @@ export default function CreateBidPage() {
                     {error.endTimeErr && <p style={{ color: 'red' }}>{error.endTimeErr}</p>}
                   </FormControl> */}
 
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer components={['TimePicker']}>
-                      <TimePicker
-                        label={'Close time'}
-                        value={form.endTime}
-                        onChange={e => {
-                          let value = e.target.value
-                          setForm({ ...form, endTime: value })
-                        }}
-                      />
-                    </DemoContainer>
-                  </LocalizationProvider>
+                  {data != null ? null : (
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer components={['TimePicker']}>
+                        <TimePicker
+                          label={'Close time'}
+                          value={form.endTime}
+                          onChange={newValue => {
+                            setForm({ ...form, endTime: dayjs(newValue).format('h:mm A') })
+                          }}
+                        />
+                      </DemoContainer>
+                    </LocalizationProvider>
+                  )}
                 </Grid>
                 <Grid item xs={12}>
                   <Box

@@ -24,8 +24,10 @@ const MarketOffDayTable = ({ columns = [], rows = [] }) => {
   // ** States
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
-  const [todayOpenTime, setTodayOpenTime] = useState(dayjs('2022-04-17T15:30'))
+  const [todayOpenTime, setTodayOpenTime] = useState(dayjs(Date.now()))
   const [todayCloseTime, setTodayCloseTime] = useState(dayjs('2022-04-17T11:59'))
+
+  console.log('todayOpenTime', todayOpenTime)
 
   const router = useRouter()
 
@@ -54,7 +56,6 @@ const MarketOffDayTable = ({ columns = [], rows = [] }) => {
             </TableHead>
             <TableBody>
               {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, rowIndex) => {
-                console.log('row', row)
                 return (
                   <TableRow hover role='checkbox' tabIndex={-1} key={rowIndex}>
                     {columns.map((column, index) => {
@@ -69,13 +70,19 @@ const MarketOffDayTable = ({ columns = [], rows = [] }) => {
                           ) : column.id === 'todayOpen' ? (
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                               <DemoContainer components={['TimePicker']}>
-                                <TimePicker value={todayOpenTime} onChange={newValue => setTodayOpenTime(newValue)} />
+                                <TimePicker
+                                  value={todayOpenTime}
+                                  onChange={newValue => setTodayOpenTime(dayjs(newValue).format('h:mm A'))}
+                                />
                               </DemoContainer>
                             </LocalizationProvider>
                           ) : column.id === 'todayClose' ? (
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                               <DemoContainer components={['TimePicker']}>
-                                <TimePicker value={todayCloseTime} onChange={newValue => setTodayCloseTime(newValue)} />
+                                <TimePicker
+                                  value={todayCloseTime}
+                                  onChange={newValue => setTodayCloseTime(dayjs(newValue).format('h:mm A'))}
+                                />
                               </DemoContainer>
                             </LocalizationProvider>
                           ) : (

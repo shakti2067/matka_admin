@@ -46,7 +46,6 @@ const GameTable = ({ columns = [], rows = [] }) => {
           </TableHead>
           <TableBody>
             {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, rowIndex) => {
-              console.log('row', row)
               return (
                 <TableRow hover role='checkbox' tabIndex={-1} key={rowIndex}>
                   {columns.map((column, index) => {
