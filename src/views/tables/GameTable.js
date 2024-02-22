@@ -69,13 +69,23 @@ const GameTable = ({ columns = [], rows = [] }) => {
                               onClick={() => {
                                 router.push({
                                   pathname: '/bids/create',
-                                  query: { gameData: JSON.stringify(row), edit: true }
+                                  query: { gameData: JSON.stringify(row) }
                                 })
                               }}
                             >
                               Edit
                             </Button>
-                            <Button variant='contained'>market off day</Button>
+                            <Button
+                              variant='contained'
+                              onClick={() => {
+                                router.push({
+                                  pathname: '//bids/marketoffday',
+                                  query: { gameId: 'gameid' }
+                                })
+                              }}
+                            >
+                              market off day
+                            </Button>
                           </div>
                         ) : column.id === 'isTransfer' ? (
                           <Switch checked={value} />

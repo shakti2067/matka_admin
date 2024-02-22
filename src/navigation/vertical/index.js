@@ -37,6 +37,19 @@ const navigation = () => {
       title: 'Game',
       icon: AccountArrowLeft,
       path: '/bids'
+      // children: [
+      //   {
+      //     title: 'Game rate',
+      //     icon: CubeOutline,
+      //     path: '/bids/rate'
+      //   }
+      //   // Add more subpages if needed
+      // ]
+    },
+    {
+      title: 'Game rate',
+      icon: CubeOutline,
+      path: '/bids/rate'
     },
     {
       title: 'Winners',
