@@ -16,13 +16,67 @@ function HowToPlay() {
     afterLoginMessage: ''
   })
 
-  console.log('appForm', appForm)
+  const [appFormErr, setAppFormErr] = useState({
+    linkErr: '',
+    shareMessageErr: '',
+    referralMessageErr: '',
+    afterLoginMessageErr: ''
+  })
+
+  console.log('appFormErr', appFormErr)
+  const [upiForm, setUpiForm] = useState({
+    googleUpi: '',
+    phonePayUpi: '',
+    otherUpi: ''
+  })
+
+  const [valueForm, setValueForm] = useState({
+    minDeposite: '',
+    maxDeposite: '',
+    minWithdrawal: '',
+    maxWithdrawal: '',
+    minTransfer: '',
+    maxTransfer: '',
+    minBidAmount: '',
+    maxBidAmount: '',
+    welcomeBounce: '',
+    referralPoint: '',
+    withdrawalOpenTime: '',
+    withdrawalCloseTime: '',
+    globalBatting: true,
+    withdrawalStatus: false
+  })
 
   const handleBankSubmit = () => {}
 
-  const handleAppLinkSubmit = () => {}
+  const handleAppLinkSubmit = () => {
+    console.log('appFormValidation', appFormValidation())
+  }
   const handleUpiIdSubmit = () => {}
   const handleAddValueSubmit = () => {}
+
+  let appFormValidation = () => {
+    let { link, shareMessage, referralMessage, afterLoginMessage } = appForm
+
+    if (link.length === 0) {
+      setAppFormErr({ ...appFormErr, linkErr: 'Please enter app link' })
+      return false
+    }
+
+    if (shareMessage.length === 0) {
+      setAppFormErr({ ...appFormErr, shareMessageErr: 'Please enter share message' })
+      return false
+    }
+    if (referralMessage.length === 0) {
+      setAppFormErr({ ...appFormErr, referralMessageErr: 'Please enter referral message' })
+      return false
+    }
+    if (afterLoginMessage.length === 0) {
+      setAppFormErr({ ...appFormErr, afterLoginMessageErr: 'Please enter after login message' })
+      return false
+    }
+    return true
+  }
 
   return (
     <div>
@@ -72,98 +126,72 @@ function HowToPlay() {
             <Typography style={{ margin: '5px' }}>App Link</Typography>
             <TextField
               type='text'
-              defaultValue='https://Timebazzar.com'
+              // defaultValue='https://Timebazzar.com'
               value={appForm.link}
               onChange={e => {
                 setAppForm({ ...appForm, link: e.target.value })
+                setAppFormErr({ ...appFormErr, linkErr: '' })
               }}
               style={{
                 width: '95%',
                 marginBottom: '20px'
               }}
             />
+
+            {appFormErr.linkErr && <Typography sx={{ color: 'red' }}>{appFormErr.linkErr}</Typography>}
+
             <Typography style={{ marginBottom: '5px' }}>Share Message</Typography>
             <textarea
-              defaultValue='https://Timebazzar.com'
+              // defaultValue='https://Timebazzar.com'
               rows={5}
               value={appForm.shareMessage}
               onChange={e => {
                 setAppForm({ ...appForm, shareMessage: e.target.value })
+                setAppFormErr({ ...appFormErr, shareMessageErr: '' })
               }}
               style={{
                 width: '95%',
-                marginBottom: '20px'
+                marginBottom: '20px',
+                fontSize: '16px'
               }}
             />
+            {appFormErr.shareMessageErr && <Typography sx={{ color: 'red' }}>{appFormErr.shareMessageErr}</Typography>}
             <Typography style={{ marginBottom: '5px', opacity: '0.9' }}>Referral Message</Typography>
             <textarea
               rows={5}
               value={appForm.referralMessage}
               onChange={e => {
                 setAppForm({ ...appForm, referralMessage: e.target.value })
+                setAppFormErr({ ...appFormErr, referralMessageErr: '' })
               }}
               style={{
                 width: '95%',
-                marginBottom: '20px'
-              }}
-            />
-            {/* <Typography style={{ marginBottom: '5px', opacity: '0.9' }}>Message After First Login</Typography>
-            <textarea
-              defaultValue='WELCOME  TOME BAZAR OFFICIAL APP
-            THIS APP IS MATKA GAME PLAY APP
-            FAST  RESULT AND 
-            FIRST SERVICE AND FAST WITHDRAWAL
-            
-            फ्रॉड मटका वालों से सावधान
-            Plzz alerts frod matka app
-            
-            
-            SERVICE 24×7 AVAILABLE 
-             
-            Best Of Luck !
-            
-            🙏🙏🙏🙏🙏🙏🙏🙏'
-              rows={5}
-              value={appForm.afterLoginMessage}
-              onChange={e => {
-                setAppForm({ ...appForm, afterLoginMessage: e.target.value })
-              }}
-              style={{
-                width: '95%',
+                marginBottom: '20px',
                 padding: '8px 15px',
-                borderRadius: '15px',
-                outline: 'none',
-                border: '1px solid lightGray',
-                margin: '5px',
-                opacity: '0.7'
+                fontSize: '16px'
               }}
-            /> */}
-            <Typography style={{ marginBottom: '5px', opacity: '0.9' }}>Referral Message</Typography>
+            />
+            {appFormErr.referralMessageErr && (
+              <Typography sx={{ color: 'red' }}>{appFormErr.referralMessageErr}</Typography>
+            )}
+
+            <Typography style={{ marginBottom: '5px', opacity: '0.9' }}>Message after First login</Typography>
             <textarea
-              defaultValue='WELCOME  TOME BAZAR OFFICIAL APP
-            THIS APP IS MATKA GAME PLAY APP
-            FAST  RESULT AND 
-            FIRST SERVICE AND FAST WITHDRAWAL
-            
-            फ्रॉड मटका वालों से सावधान
-            Plzz alerts frod matka app
-            
-            
-            SERVICE 24×7 AVAILABLE 
-             
-            Best Of Luck !
-            
-            🙏🙏🙏🙏🙏🙏🙏🙏'
               rows={5}
               value={appForm.afterLoginMessage}
               onChange={e => {
                 setAppForm({ ...appForm, afterLoginMessage: e.target.value })
+                setAppFormErr({ ...appFormErr, afterLoginMessageErr: '' })
               }}
               style={{
                 width: '95%',
-                marginBottom: '20px'
+                marginBottom: '20px',
+                fontSize: '16px'
               }}
             />
+            {appFormErr.afterLoginMessageErr && (
+              <Typography sx={{ color: 'red' }}>{appFormErr.afterLoginMessageErr}</Typography>
+            )}
             <br />
             <Button
               style={{ marginTop: 15, marginBottom: 10 }}
@@ -189,6 +217,10 @@ function HowToPlay() {
                 width: '95%',
                 marginBottom: '20px'
               }}
+              value={upiForm.googleUpi}
+              onChange={e => {
+                setUpiForm({ ...upiForm, googleUpi: e.target.value })
+              }}
             />
             <Typography style={{ marginBottom: '5px' }}>Phone Pe UPI Payment Id</Typography>
             <TextField
@@ -198,6 +230,10 @@ function HowToPlay() {
                 width: '95%',
                 marginBottom: '20px'
               }}
+              value={upiForm.phonePayUpi}
+              onChange={e => {
+                setUpiForm({ ...upiForm, phonePayUpi: e.target.value })
+              }}
             />
             <Typography style={{ marginBottom: '5px', opacity: '0.9' }}>Other UPI Payment Id</Typography>
             <TextField
@@ -206,6 +242,10 @@ function HowToPlay() {
               style={{
                 width: '95%',
                 marginBottom: '20px'
+              }}
+              value={upiForm.otherUpi}
+              onChange={e => {
+                setUpiForm({ ...upiForm, otherUpi: e.target.value })
               }}
             />
             <br />
@@ -238,8 +278,13 @@ function HowToPlay() {
                     width: '95%',
                     marginBottom: '15px'
                   }}
+                  value={valueForm.minDeposite}
+                  onChange={e => {
+                    setValueForm({ ...valueForm, minDeposite: e.target.value })
+                  }}
                 />
               </div>
+
               <div style={{ width: '33%' }}>
                 <Typography style={{ marginBottom: '5px', marginTop: '5px' }}>Maximum Deposite</Typography>
                 <TextField
@@ -248,6 +293,10 @@ function HowToPlay() {
                   style={{
                     width: '95%',
                     marginBottom: '15px'
+                  }}
+                  value={valueForm.maxDeposite}
+                  onChange={e => {
+                    setValueForm({ ...valueForm, maxDeposite: e.target.value })
                   }}
                 />
               </div>
@@ -259,6 +308,10 @@ function HowToPlay() {
                   style={{
                     width: '95%',
                     marginBottom: '15px'
+                  }}
+                  value={valueForm.minWithdrawal}
+                  onChange={e => {
+                    setValueForm({ ...valueForm, minWithdrawal: e.target.value })
                   }}
                 />
               </div>
@@ -273,6 +326,10 @@ function HowToPlay() {
                     width: '95%',
                     marginTop: '15px'
                   }}
+                  value={valueForm.maxWithdrawal}
+                  onChange={e => {
+                    setValueForm({ ...valueForm, maxWithdrawal: e.target.value })
+                  }}
                 />
               </div>
               <div style={{ width: '33%' }}>
@@ -284,6 +341,10 @@ function HowToPlay() {
                     width: '95%',
                     marginTop: '15px'
                   }}
+                  value={valueForm.minTransfer}
+                  onChange={e => {
+                    setValueForm({ ...valueForm, minTransfer: e.target.value })
+                  }}
                 />
               </div>
               <div style={{ width: '33%' }}>
@@ -294,6 +355,10 @@ function HowToPlay() {
                   style={{
                     width: '95%',
                     marginTop: '15px'
+                  }}
+                  value={valueForm.maxTransfer}
+                  onChange={e => {
+                    setValueForm({ ...valueForm, maxTransfer: e.target.value })
                   }}
                 />
               </div>
@@ -308,6 +373,10 @@ function HowToPlay() {
                     width: '95%',
                     marginTop: '15px'
                   }}
+                  value={valueForm.minBidAmount}
+                  onChange={e => {
+                    setValueForm({ ...valueForm, minBidAmount: e.target.value })
+                  }}
                 />
               </div>
               <div style={{ width: '33%' }}>
@@ -319,6 +388,10 @@ function HowToPlay() {
                     width: '95%',
                     marginTop: '15px'
                   }}
+                  value={valueForm.maxBidAmount}
+                  onChange={e => {
+                    setValueForm({ ...valueForm, maxBidAmount: e.target.value })
+                  }}
                 />
               </div>
               <div style={{ width: '33%' }}>
@@ -329,6 +402,10 @@ function HowToPlay() {
                   style={{
                     width: '95%',
                     marginTop: '15px'
+                  }}
+                  value={valueForm.welcomeBounce}
+                  onChange={e => {
+                    setValueForm({ ...valueForm, welcomeBounce: e.target.value })
                   }}
                 />
               </div>
@@ -343,6 +420,10 @@ function HowToPlay() {
                     width: '95%',
                     marginTop: '15px'
                   }}
+                  value={valueForm.referralPoint}
+                  onChange={e => {
+                    setValueForm({ ...valueForm, referralPoint: e.target.value })
+                  }}
                 />
               </div>
             </div>
@@ -353,8 +434,10 @@ function HowToPlay() {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={['TimePicker']}>
                     <TimePicker
-                      value={todayOpenTime}
-                      onChange={newValue => setTodayOpenTime(dayjs(newValue).format('h:mm A'))}
+                      value={valueForm.withdrawalOpenTime}
+                      onChange={newValue =>
+                        setValueForm({ ...valueForm, withdrawalOpenTime: dayjs(newValue).format('h:mm A') })
+                      }
                     />
                   </DemoContainer>
                 </LocalizationProvider>
@@ -364,17 +447,29 @@ function HowToPlay() {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={['TimePicker']}>
                     <TimePicker
-                      value={todayCloseTime}
-                      onChange={newValue => setTodayCloseTime(dayjs(newValue).format('h:mm A'))}
+                      value={valueForm.withdrawalCloseTime}
+                      onChange={newValue =>
+                        setValueForm({ ...valueForm, withdrawalCloseTime: dayjs(newValue).format('h:mm A') })
+                      }
                     />
                   </DemoContainer>
                 </LocalizationProvider>
               </div>
               <div style={{ width: '33%', display: 'flex', alignItems: 'center', paddingTop: '40px' }}>
-                <Switch defaultChecked />
+                <Switch
+                  value={valueForm.globalBatting}
+                  onChange={() => {
+                    setValueForm({ ...valueForm, globalBatting: !valueForm.globalBatting })
+                  }}
+                />
                 <Typography>Global Batting</Typography>
 
-                <Switch defaultChecked />
+                <Switch
+                  defaultChecked
+                  onChange={() => {
+                    setValueForm({ ...valueForm, withdrawalStatus: !valueForm.withdrawalStatus })
+                  }}
+                />
                 <Typography>Withdraw Status</Typography>
               </div>
             </div>

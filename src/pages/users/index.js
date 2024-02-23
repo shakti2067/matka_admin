@@ -45,6 +45,7 @@ export default function UsersPage() {
         console.log(err)
       })
   }
+
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
