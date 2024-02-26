@@ -1,18 +1,60 @@
 import { Button, Input, TextField } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { addContact, getContact } from 'src/helpers'
 
 function contactSettings() {
   const [form, setForm] = useState({
-    mobileNumber: '+918690786739',
-    telegramNumber: 'kalyankhatrionlinematka',
-    whatsappNumber: '+918690786739',
-    website: 'https://Timebazzar.com'
+    mobileNumber: '',
+    telegramNumber: '',
+    whatsAppNumber: '',
+    webSite: ''
   })
 
   const handleSubmit = () => {
-    let { mobileNumber, telegramNumber, whatsappNumber, website } = form
-    console.log('submit')
+    let { mobileNumber, telegramNumber, whatsAppNumber, webSite } = form
+
+    let params = {
+      mobileNumber,
+      telegramNumber: telegram,
+      whatsAppNumber,
+      webSite
+    }
+    addContact(params)
+      .then(data => {
+        if (data.success) {
+          getContactApi()
+          console.log('data', data)
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(error => {
+        console.log('error', error)
+      })
   }
+
+  const getContactApi = () => {
+    getContact()
+      .then(data => {
+        if (data.success) {
+          setForm({
+            mobileNumber: data.data.mobileNumber,
+            telegramNumber: data.data.telegram,
+            whatsAppNumber: data.data.whatsAppNumber,
+            webSite: data.data.webSite
+          })
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(error => {
+        console.log('error', error)
+      })
+  }
+
+  useEffect(() => {
+    getContactApi()
+  }, [])
 
   return (
     <div>
@@ -62,11 +104,11 @@ function contactSettings() {
                 style={{
                   width: '95%'
                 }}
-                value={form.whatsappNumber}
+                value={form.whatsAppNumber}
                 onChange={e => {
                   setForm({
                     ...form,
-                    whatsappNumber: e.target.value
+                    whatsAppNumber: e.target.value
                   })
                 }}
               />
@@ -74,18 +116,18 @@ function contactSettings() {
           </div>
           <div style={{ display: 'flex' }}>
             <div style={{ width: '33%' }}>
-              <h5 style={{ marginBottom: '5px' }}>Website</h5>
+              <h5 style={{ marginBottom: '5px' }}>Web Site</h5>
               <TextField
                 type='text'
                 defaultValue='https://Timebazzar.com'
                 style={{
                   width: '95%'
                 }}
-                value={form.website}
+                value={form.webSite}
                 onChange={e => {
                   setForm({
                     ...form,
-                    website: e.target.value
+                    webSite: e.target.value
                   })
                 }}
               />

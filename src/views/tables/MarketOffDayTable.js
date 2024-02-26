@@ -11,10 +11,10 @@ import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TablePagination from '@mui/material/TablePagination'
 import Switch from '@mui/material/Switch'
-import { Button, Checkbox, FormControlLabel, FormGroup, Grid } from '@mui/material'
+import { Box, Button, Checkbox, FormControlLabel, FormGroup, Grid } from '@mui/material'
 import moment from 'moment'
 import { useRouter } from 'next/router'
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
+// import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { TimePicker } from '@mui/x-date-pickers/TimePicker'
@@ -69,21 +69,21 @@ const MarketOffDayTable = ({ columns = [], rows = [] }) => {
                             row.day
                           ) : column.id === 'todayOpen' ? (
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                              <DemoContainer components={['TimePicker']}>
+                              <Box components={['TimePicker']}>
                                 <TimePicker
                                   value={todayOpenTime}
                                   onChange={newValue => setTodayOpenTime(dayjs(newValue).format('h:mm A'))}
                                 />
-                              </DemoContainer>
+                              </Box>
                             </LocalizationProvider>
                           ) : column.id === 'todayClose' ? (
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                              <DemoContainer components={['TimePicker']}>
+                              <Box components={['TimePicker']}>
                                 <TimePicker
                                   value={todayCloseTime}
                                   onChange={newValue => setTodayCloseTime(dayjs(newValue).format('h:mm A'))}
                                 />
-                              </DemoContainer>
+                              </Box>
                             </LocalizationProvider>
                           ) : (
                             value

@@ -1,12 +1,22 @@
-import { Button, Switch, TextField, Typography } from '@mui/material'
-import React, { useState } from 'react'
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
+import { Box, Button, FormControl, Switch, TextField, Typography } from '@mui/material'
+import React, { useEffect, useState } from 'react'
+// import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { TimePicker } from '@mui/x-date-pickers/TimePicker'
 import dayjs from 'dayjs'
+import {
+  addAmountValue,
+  addUpiId,
+  createAppLink,
+  getAmountValue,
+  getAppLink,
+  getGlobalSettings,
+  getUpiId
+} from 'src/helpers'
+import Datetime from 'react-datetime'
 
-function HowToPlay() {
+function MainSetting() {
   const [todayOpenTime, setTodayOpenTime] = useState(dayjs(Date.now()))
   const [todayCloseTime, setTodayCloseTime] = useState(dayjs(Date.now()))
   const [appForm, setAppForm] = useState({
@@ -23,7 +33,6 @@ function HowToPlay() {
     afterLoginMessageErr: ''
   })
 
-  console.log('appFormErr', appFormErr)
   const [upiForm, setUpiForm] = useState({
     googleUpi: '',
     phonePayUpi: '',
@@ -47,13 +56,8 @@ function HowToPlay() {
     withdrawalStatus: false
   })
 
+  console.log('valueForm', valueForm)
   const handleBankSubmit = () => {}
-
-  const handleAppLinkSubmit = () => {
-    console.log('appFormValidation', appFormValidation())
-  }
-  const handleUpiIdSubmit = () => {}
-  const handleAddValueSubmit = () => {}
 
   let appFormValidation = () => {
     let { link, shareMessage, referralMessage, afterLoginMessage } = appForm
@@ -67,16 +71,189 @@ function HowToPlay() {
       setAppFormErr({ ...appFormErr, shareMessageErr: 'Please enter share message' })
       return false
     }
-    if (referralMessage.length === 0) {
-      setAppFormErr({ ...appFormErr, referralMessageErr: 'Please enter referral message' })
-      return false
-    }
+    // if (referralMessage.length === 0) {
+    //   setAppFormErr({ ...appFormErr, referralMessageErr: 'Please enter referral message' })
+    //   return false
+    // }
     if (afterLoginMessage.length === 0) {
       setAppFormErr({ ...appFormErr, afterLoginMessageErr: 'Please enter after login message' })
       return false
     }
     return true
   }
+
+  const handleAppLinkSubmit = () => {
+    if (appFormValidation()) {
+      let { link, referralMessage, shareMessage, afterLoginMessage } = appForm
+      let params = { link, referralMessage, shareMessage, afterLoginMessage }
+      createAppLink(params)
+        .then(data => {
+          if (data.success) {
+            console.log('data', data)
+            getGlobalSettingsApi()
+          } else {
+            console.error('error')
+          }
+        })
+        .catch(error => {
+          console.log('error', error)
+        })
+    }
+  }
+
+  const handleUpiIdSubmit = () => {
+    let { googleUpi, phonePayUpi, otherUpi } = upiForm
+
+    let params = {
+      googleUpi,
+      phonePayUpi,
+      otherUpi
+    }
+    addUpiId(params)
+      .then(data => {
+        if (data.success) {
+          getGlobalSettingsApi()
+          console.log('data', data)
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(error => {
+        console.log('error', error)
+      })
+  }
+
+  const handleAddValueSubmit = () => {
+    let {
+      globalBatting,
+      maxBidAmount,
+      maxDeposite,
+      maxTransfer,
+      maxWithdrawal,
+      minBidAmount,
+      minDeposite,
+      minTransfer,
+      minWithdrawal,
+      referralPoint,
+      welcomeBounce,
+      withdrawalCloseTime,
+      withdrawalOpenTime,
+      withdrawalStatus
+    } = valueForm
+
+    let params = {
+      globalBatting,
+      maxBidAmount,
+      maxDeposit: maxDeposite,
+      maxTransfer,
+      maxWithdrawal,
+      minBidAmount,
+      minDeposit: minDeposite,
+      minTransfer,
+      minWithdrawal,
+      referralPoint,
+      welcomeBounce,
+      withdrawCloseTime: withdrawalCloseTime,
+      withdrawOpenTime: withdrawalOpenTime,
+      withdrawStatus: withdrawalStatus
+    }
+    console.log('params', params)
+    addAmountValue(params)
+      .then(data => {
+        if (data.success) {
+          console.log('data', data)
+          getGlobalSettingsApi()
+        } else {
+          console.error('error')
+        }
+      })
+      .catch(error => {
+        console.error('error', error)
+      })
+  }
+
+  // const getAmountValueApi = () => {
+  //   getAmountValue()
+  //     .then(data => {
+  //       if (data.success) {
+  //         console.log('data', data)
+  //         setValueForm({
+  //           globalBatting: data.data.globalBatting,
+  //           maxBidAmount: data.data.maxBidAmount,
+  //           maxDeposite: data.data.maxDeposit,
+  //           maxTransfer: data.data.maxTransfer,
+  //           maxWithdrawal: data.data.maxWithdrawal,
+  //           minBidAmount: data.data.minBidAmount,
+  //           minDeposite: data.data.minDeposit,
+  //           minTransfer: data.data.minTransfer,
+  //           minWithdrawal: data.data.minWithdrawal,
+  //           referralPoint: data.data.referralPoint,
+  //           welcomeBounce: data.data.welcomeBounce,
+  //           withdrawalCloseTime: data.data.withdrawCloseTime,
+  //           withdrawalOpenTime: data.data.withdrawOpenTime,
+  //           withdrawalStatus: data.data.withdrawStatus
+  //         })
+  //       } else {
+  //         console.error('error')
+  //       }
+  //     })
+  //     .catch(error => {
+  //       console.log('error', error)
+  //     })
+  // }
+
+  const getGlobalSettingsApi = () => {
+    getGlobalSettings()
+      .then(data => {
+        if (data.success) {
+          console.log('getGlobalSettings', data.data.upiId)
+          setUpiForm({
+            googleUpi: data.data.upiId.googleUpi,
+            phonePayUpi: data.data.upiId.phonePayUpi,
+            otherUpi: data.data.upiId.otherUpi
+          })
+          setAppForm({
+            link: data.data.link,
+            afterLoginMessage: data.data.appLink.afterLoginMessage,
+            shareMessage: data.data.appLink.shareMessage,
+            referralMessage: data.data.appLink.referralMessage
+          })
+
+          setAppForm({
+            link: data.data.appLink.link,
+            afterLoginMessage: data.data.appLink.afterLoginMessage,
+            shareMessage: data.data.appLink.shareMessage,
+            referralMessage: data.data.appLink.referralMessage
+          })
+          setValueForm({
+            globalBatting: data.data.amountValue.globalBatting,
+            maxBidAmount: data.data.amountValue.maxBidAmount,
+            maxDeposite: data.data.amountValue.maxDeposit,
+            maxTransfer: data.data.amountValue.maxTransfer,
+            maxWithdrawal: data.data.amountValue.maxWithdrawal,
+            minBidAmount: data.data.amountValue.minBidAmount,
+            minDeposite: data.data.amountValue.minDeposit,
+            minTransfer: data.data.amountValue.minTransfer,
+            minWithdrawal: data.data.amountValue.minWithdrawal,
+            referralPoint: data.data.amountValue.referralPoint,
+            welcomeBounce: data.data.amountValue.welcomeBounce,
+            withdrawalCloseTime: data.data.amountValue.withdrawCloseTime,
+            withdrawalOpenTime: data.data.amountValue.withdrawOpenTime,
+            withdrawalStatus: data.data.amountValue.withdrawStatus
+          })
+        } else {
+          console.error('error')
+        }
+      })
+      .catch(error => {
+        console.log('error', error)
+      })
+  }
+
+  useEffect(() => {
+    // getAmountValueApi()
+    getGlobalSettingsApi()
+  }, [])
 
   return (
     <div>
@@ -167,7 +344,6 @@ function HowToPlay() {
               style={{
                 width: '95%',
                 marginBottom: '20px',
-                padding: '8px 15px',
                 fontSize: '16px'
               }}
             />
@@ -272,6 +448,7 @@ function HowToPlay() {
               <div style={{ width: '33%' }}>
                 <Typography style={{ marginBottom: '5px', marginTop: '5px' }}>Minimum Deposite</Typography>
                 <TextField
+                  InputProps={{ inputProps: { min: 0 } }}
                   type='number'
                   defaultValue='300'
                   style={{
@@ -288,6 +465,7 @@ function HowToPlay() {
               <div style={{ width: '33%' }}>
                 <Typography style={{ marginBottom: '5px', marginTop: '5px' }}>Maximum Deposite</Typography>
                 <TextField
+                  InputProps={{ inputProps: { min: 0 } }}
                   type='number'
                   defaultValue='100000'
                   style={{
@@ -303,6 +481,7 @@ function HowToPlay() {
               <div style={{ width: '33%' }}>
                 <Typography style={{ marginBottom: '5px', marginTop: '5px' }}>Minimum Withdrawal</Typography>
                 <TextField
+                  InputProps={{ inputProps: { min: 0 } }}
                   type='number'
                   defaultValue='300'
                   style={{
@@ -320,6 +499,7 @@ function HowToPlay() {
               <div style={{ width: '33%' }}>
                 <Typography>Maximum Withdrawal</Typography>
                 <TextField
+                  InputProps={{ inputProps: { min: 0 } }}
                   type='number'
                   defaultValue='100000'
                   style={{
@@ -335,6 +515,7 @@ function HowToPlay() {
               <div style={{ width: '33%' }}>
                 <Typography>Minimum Transfer</Typography>
                 <TextField
+                  InputProps={{ inputProps: { min: 0 } }}
                   type='number'
                   defaultValue='10'
                   style={{
@@ -350,6 +531,7 @@ function HowToPlay() {
               <div style={{ width: '33%' }}>
                 <Typography>Maximum Transfer</Typography>
                 <TextField
+                  InputProps={{ inputProps: { min: 0 } }}
                   type='number'
                   defaultValue='10000'
                   style={{
@@ -367,6 +549,7 @@ function HowToPlay() {
               <div style={{ width: '33%' }}>
                 <Typography style={{ marginTop: '15px' }}>Minimum Bid Amount</Typography>
                 <TextField
+                  InputProps={{ inputProps: { min: 0 } }}
                   type='number'
                   defaultValue='10'
                   style={{
@@ -382,6 +565,7 @@ function HowToPlay() {
               <div style={{ width: '33%' }}>
                 <Typography style={{ marginTop: '15px' }}>Maximum Bid Amount</Typography>
                 <TextField
+                  InputProps={{ inputProps: { min: 0 } }}
                   type='number'
                   defaultValue='25000'
                   style={{
@@ -397,6 +581,7 @@ function HowToPlay() {
               <div style={{ width: '33%' }}>
                 <Typography style={{ marginTop: '15px' }}>Welcome Bonus</Typography>
                 <TextField
+                  InputProps={{ inputProps: { min: 0 } }}
                   type='number'
                   defaultValue='5'
                   style={{
@@ -414,6 +599,7 @@ function HowToPlay() {
               <div style={{ width: '33%' }}>
                 <Typography style={{ marginTop: '15px' }}>Referral Points</Typography>
                 <TextField
+                  InputProps={{ inputProps: { min: 0 } }}
                   type='number'
                   defaultValue='50'
                   style={{
@@ -432,31 +618,45 @@ function HowToPlay() {
                 <Typography style={{ marginTop: '15px' }}>Withdraw Open Time</Typography>
 
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <Box components={['TimePicker']}>
+                    <TimePicker
+                      value={valueForm.withdrawalOpenTime}
+                      // value={todayOpenTime}
+                      onChange={newValue =>
+                        setValueForm({ ...valueForm, withdrawalOpenTime: dayjs(newValue).format('h:mm A') })
+                      }
+                    />
+                  </Box>
+                </LocalizationProvider>
+
+                {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={['TimePicker']}>
                     <TimePicker
                       value={valueForm.withdrawalOpenTime}
+                      // value={todayOpenTime}
                       onChange={newValue =>
                         setValueForm({ ...valueForm, withdrawalOpenTime: dayjs(newValue).format('h:mm A') })
                       }
                     />
                   </DemoContainer>
-                </LocalizationProvider>
+                </LocalizationProvider> */}
               </div>
               <div style={{ width: '33%' }}>
                 <Typography style={{ marginTop: '15px' }}>Withdraw Close Time</Typography>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DemoContainer components={['TimePicker']}>
+                  <Box components={['TimePicker']}>
                     <TimePicker
                       value={valueForm.withdrawalCloseTime}
                       onChange={newValue =>
                         setValueForm({ ...valueForm, withdrawalCloseTime: dayjs(newValue).format('h:mm A') })
                       }
                     />
-                  </DemoContainer>
+                  </Box>
                 </LocalizationProvider>
               </div>
               <div style={{ width: '33%', display: 'flex', alignItems: 'center', paddingTop: '40px' }}>
                 <Switch
+                  checked={valueForm.globalBatting}
                   value={valueForm.globalBatting}
                   onChange={() => {
                     setValueForm({ ...valueForm, globalBatting: !valueForm.globalBatting })
@@ -465,7 +665,8 @@ function HowToPlay() {
                 <Typography>Global Batting</Typography>
 
                 <Switch
-                  defaultChecked
+                  checked={valueForm.withdrawalStatus}
+                  value={valueForm.withdrawalStatus}
                   onChange={() => {
                     setValueForm({ ...valueForm, withdrawalStatus: !valueForm.withdrawalStatus })
                   }}
@@ -489,4 +690,4 @@ function HowToPlay() {
   )
 }
 
-export default HowToPlay
+export default MainSetting

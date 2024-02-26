@@ -1,10 +1,11 @@
 import { Button, TextField, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { createHowToPlay, getHowToPlay } from 'src/helpers/service'
 
 function HowToPlay() {
   const [form, setForm] = useState({
     content: '',
-    videLink: ''
+    videoLink: ''
   })
   const [error, setError] = useState({
     contentErr: '',
@@ -12,21 +13,61 @@ function HowToPlay() {
   })
 
   let validation = () => {
-    let { content, videLink } = form
+    let { content, videoLink } = form
 
     if (content.length === 0) {
       setError({ ...error, contentErr: 'Please enter content' })
       return false
     }
-    if (videLink.length === 0) {
+    if (videoLink.length === 0) {
       setError({ ...error, videLinkErr: 'Please enter video link' })
       return false
     }
     return true
   }
 
-  const handleSubmit = () => {}
+  const handleSubmit = () => {
+    if (validation()) {
+      let { content, videoLink } = form
+      let params = {
+        content,
+        videoLink
+      }
+      createHowToPlay(params)
+        .then(data => {
+          if (data.success) {
+            getHowToPlayApi()
+          } else {
+            console.log('error')
+          }
+        })
+        .catch(error => {
+          console.log('error', error)
+        })
+    }
+  }
 
+  const getHowToPlayApi = () => {
+    getHowToPlay()
+      .then(data => {
+        if (data.success) {
+          console.log('Data', data)
+          setForm({
+            content: data.data.content,
+            videoLink: data.data.videoLink
+          })
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(error => {
+        console.log('error', error)
+      })
+  }
+
+  useEffect(() => {
+    getHowToPlayApi()
+  }, [])
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
       <div
@@ -67,9 +108,9 @@ function HowToPlay() {
           <TextField
             type='text'
             id='videoLink'
-            value={form.videLink}
+            value={form.videoLink}
             onChange={e => {
-              setForm({ ...form, videLink: e.target.value })
+              setForm({ ...form, videoLink: e.target.value })
             }}
             style={{
               width: '100%'

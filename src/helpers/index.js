@@ -1,3 +1,45 @@
-import { adminLogin, adminRegister, adminLogout, getUser, getBetCategory, createBids, getAllWinner } from './service'
+import {
+  adminLogin,
+  adminRegister,
+  adminLogout,
+  getUser,
+  getBetCategory,
+  createBids,
+  getAllWinner,
+  createAppLink,
+  getAppLink,
+  addUpiId,
+  getUpiId,
+  addAmountValue,
+  getAmountValue,
+  getGlobalSettings,
+  addContact,
+  getContact,
+  getHowToPlay,
+  getAllSliderImage,
+  addSliderImage,
+  updateSliderImage
+} from './service'
 
-export { adminLogin, adminRegister, adminLogout, getUser, getBetCategory, createBids, getAllWinner }
+export {
+  adminLogin,
+  adminRegister,
+  adminLogout,
+  getUser,
+  getBetCategory,
+  createBids,
+  getAllWinner,
+  createAppLink,
+  getAppLink,
+  addUpiId,
+  getUpiId,
+  addAmountValue,
+  getAmountValue,
+  getGlobalSettings,
+  addContact,
+  getContact,
+  getHowToPlay,
+  getAllSliderImage,
+  addSliderImage,
+  updateSliderImage
+}

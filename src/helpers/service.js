@@ -81,3 +81,165 @@ export let getAllWinner = data => {
       return error
     })
 }
+
+export let createAppLink = data => {
+  return apis
+    .post('master/addAppLink', data)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let getAppLink = () => {
+  return apis
+    .get(`master/getAppLink`)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let addUpiId = data => {
+  return apis
+    .post('master/addUpiId', data)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let getUpiId = () => {
+  return apis
+    .get(`master/getUpiId`)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let addAmountValue = data => {
+  return apis
+    .post('master/addAmountValue', data)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+export let getAmountValue = () => {
+  return apis
+    .get(`master/getAmountValue`)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let getGlobalSettings = () => {
+  return apis
+    .get(`master/getGlobalSettings`)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let addContact = data => {
+  return apis
+    .post('master/addContact', data)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let getContact = () => {
+  return apis
+    .get('master/getContact')
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let createHowToPlay = data => {
+  return apis
+    .post('master/createHowToPlay', data)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let getHowToPlay = () => {
+  return apis
+    .get('master/getHowToPlay')
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let addSliderImage = sliderData => {
+  let formData = new FormData()
+  for (let key in sliderData) {
+    formData.append(key, sliderData[key])
+  }
+
+  return apis
+    .post('master/addSliderImage', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let getAllSliderImage = () => {
+  return apis
+    .get('master/getAllSliderImage')
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let updateSliderImage = data => {
+  return apis
+    .post('master/updateSliderImage', data)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
