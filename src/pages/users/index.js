@@ -31,7 +31,13 @@ const columns = [
 
 export default function UsersPage() {
   let [rows, setRows] = useState([])
+  let [refresh, setRefresh] = useState(false)
   console.log('rows')
+  console.log('refresh', refresh)
+
+  const isRefresh = () => {
+    setRefresh(true)
+  }
   useEffect(() => {
     getAllUsers()
   }, [])
@@ -53,7 +59,7 @@ export default function UsersPage() {
       </Grid>
       <Grid item xs={12}>
         <Card>
-          <UserTable columns={columns} rows={rows} />
+          <UserTable columns={columns} rows={rows} refreshPage={isRefresh} />
         </Card>
       </Grid>
     </Grid>

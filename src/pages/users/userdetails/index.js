@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Avatar,
   Button,
   CardContent,
+  Switch,
   Tab,
   Table,
   TableBody,
@@ -16,51 +17,10 @@ import { Card } from '@mui/material'
 import AntSwitch from 'src/components/AntSwitchToggle'
 import InputBox from 'src/components/InputBox'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
-
-const rowPersonalInfo = [
-  {
-    id: 'Full Name :',
-    userId: 'vinod Kumar',
-    data: 'Email :',
-    userData: 'chigicharlavinod25@gmail.com'
-  },
-  {
-    id: 'Mobile :',
-    userId: '6300591466',
-    data: 'Password :',
-    userData: '	95052181'
-  },
-  {
-    id: 'District Name :',
-    userId: 'N/A',
-    data: 'Flat/Plot No. :',
-    userData: 'N/A'
-  },
-  {
-    id: 'Address Lane 1 :',
-    userId: 'N/A',
-    data: 'Address Lane 2 :',
-    userData: 'N/A'
-  },
-  {
-    id: 'Area :',
-    userId: 'N/A',
-    data: 'Pin Code :',
-    userData: 'N/A'
-  },
-  {
-    id: 'State Name :',
-    userId: 'N/A',
-    data: '',
-    userData: ''
-  },
-  {
-    id: 'Creation Date :',
-    userId: '2024-02-22 15:25:06',
-    data: 'Last Seen :',
-    userData: '2024-02-22 15:25:06'
-  }
-]
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { useRouter } from 'next/router'
+import { getUserById } from 'src/helpers'
 
 const collumnPayment = [
   {
@@ -449,7 +409,7 @@ function createWinningHistory(name, gameName, txId, txDate) {
 }
 const rowwinningHistory = [createWinningHistory('1000', 'Dream Kalyan Mantra', 1324171354, '26/02/2024')]
 
-function index() {
+function UserDetails() {
   const [addFundPage, setAddFundPage] = useState(0)
   const [withdrawFundPage, setwithdrawFundPage] = useState(0)
   const [bidPage, setBidPage] = useState(0)
@@ -466,7 +426,75 @@ function index() {
   const [rowWalletSliderSecondPage, setrowWalletSliderSecondPage] = useState(10)
   const [rowWalletSliderThirdPage, setrowWalletSliderThirdPage] = useState(10)
   const [rowWinningHistoryPage, setroWinningHistoryPage] = useState(10)
+  const [userDetails, setUserDetails] = useState([])
 
+  const router = useRouter()
+
+  const userId = router.query.userId ? router.query.userId : null
+
+  const getUserApi = () => {
+    getUserById(userId)
+      .then(data => {
+        if (data.success) {
+          console.log('data', data)
+          setUserDetails(data.data)
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(e => {
+        console.log('error', error)
+      })
+  }
+
+  const rowPersonalInfo = [
+    {
+      id: 'Full Name :',
+      userId: userDetails.name,
+      data: 'Email :',
+      userData: 'chigicharlavinod25@gmail.com'
+    },
+    {
+      id: 'Mobile :',
+      userId: userDetails.mobile,
+      data: 'Password :',
+      userData: '1234' //userDetails.password
+    },
+    {
+      id: 'District Name :',
+      userId: 'N/A',
+      data: 'Flat/Plot No. :',
+      userData: 'N/A'
+    },
+    {
+      id: 'Address Lane 1 :',
+      userId: 'N/A',
+      data: 'Address Lane 2 :',
+      userData: 'N/A'
+    },
+    {
+      id: 'Area :',
+      userId: 'N/A',
+      data: 'Pin Code :',
+      userData: 'N/A'
+    },
+    {
+      id: 'State Name :',
+      userId: 'N/A',
+      data: '',
+      userData: ''
+    },
+    {
+      id: 'Creation Date :',
+      userId: userDetails.createdAt,
+      data: 'Last Seen :',
+      userData: '2024-02-22 15:25:06'
+    }
+  ]
+
+  useEffect(() => {
+    getUserApi()
+  }, [userId])
   const today = new Date().toISOString().split('T')[0]
 
   const [selectedDate, setSelectedDate] = useState(today)
@@ -550,23 +578,24 @@ function index() {
                 }}
               >
                 <div>
-                  <h4 style={{ margin: '0' }}>Armaan</h4>
+                  <h4 style={{ margin: '0' }}>{userDetails.name}</h4>
                   <h6 style={{ marginTop: '5px', display: 'flex', alignItems: 'center', fontSize: '13px' }}>
-                    9672555305 <p>&#128241;</p>
+                    {userDetails.mobile} <p>&#128241;</p>
                   </h6>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
                   <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
                     <h5 style={{ margin: '0', marginRight: '5px' }}>Active:</h5>
-                    <AntSwitch />
+                    {/* <AntSwitch /> */}
+                    <Switch value={userDetails._id} checked={userDetails.isActive} />
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
                     <h5 style={{ margin: '0', marginRight: '5px' }}>Batting:</h5>
-                    <AntSwitch />
+                    <Switch value={userDetails._id} checked={userDetails.isBetting} />
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
                     <h5 style={{ margin: '0', marginRight: '5px' }}>TP:</h5>
-                    <AntSwitch />
+                    <Switch value={userDetails._id} checked={userDetails.isTransfer} />
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
                     <h5 style={{ margin: '0', marginRight: '5px' }}>Logout Status:</h5>
@@ -600,7 +629,7 @@ function index() {
                 >
                   <div>
                     <h5 style={{ margin: '5px' }}>Security Pin</h5>
-                    <h5 style={{ margin: '5px' }}>5123</h5>
+                    <h5 style={{ margin: '5px' }}>{userDetails.pin}</h5>
                   </div>
                   <div>
                     <Button style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px' }}>Change</Button>
@@ -609,7 +638,7 @@ function index() {
                 <div>
                   <div style={{ margin: '10px 0 5px 0' }}>
                     <h5 style={{ margin: '5px' }}>Available Balance</h5>
-                    <h4 style={{ margin: '5px' }}>5</h4>
+                    <h4 style={{ margin: '5px' }}>{userDetails.balance}</h4>
                   </div>
                   <div style={{ paddingTop: '1rem', display: 'flex', justifyContent: 'space-evenly' }}>
                     <Button style={{ backgroundColor: '#34c38f', color: 'white', fontSize: '13px' }}>Add Fund</Button>
@@ -1011,25 +1040,15 @@ function index() {
             <h4 style={{ marginLeft: '20px' }}>Winning History Report</h4>
             <div>
               <h5 style={{ marginBottom: '5px', marginLeft: '20px' }}>Date</h5>
-              <div style={{ marginLeft: '20px', marginBottom: '10px' }}>
-                <input
-                  type='date'
-                  id='datePicker'
-                  value={selectedDate}
-                  onChange={handleDateChange}
-                  style={{
-                    padding: '10px',
-                    borderRadius: '25px',
-                    border: '1px solid #ccc',
-                    width: '16rem',
-                    marginRight: '20px',
-                    fontFamily: 'sans-serif',
-                    outline: 'none',
-                    fontSize: '15px',
-                    color: 'gray'
-                  }}
-                />
-                <Button style={{ backgroundColor: '#9155FD', color: 'white', width: '11rem', padding: '5px' }}>
+              <div
+                style={{ marginLeft: '20px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '20px' }}
+              >
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker />
+                </LocalizationProvider>
+                <Button
+                  style={{ backgroundColor: '#9155FD', color: 'white', width: '11rem', padding: '5px', height: '3rem' }}
+                >
                   Submit
                 </Button>
               </div>
@@ -1077,4 +1096,4 @@ function index() {
   )
 }
 
-export default index
+export default UserDetails

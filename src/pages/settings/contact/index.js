@@ -15,7 +15,7 @@ function contactSettings() {
 
     let params = {
       mobileNumber,
-      telegramNumber: telegram,
+      telegram: telegramNumber,
       whatsAppNumber,
       webSite
     }

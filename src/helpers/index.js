@@ -18,7 +18,9 @@ import {
   getHowToPlay,
   getAllSliderImage,
   addSliderImage,
-  updateSliderImage
+  updateSliderImage,
+  updateUser,
+  getUserById
 } from './service'
 
 export {
@@ -41,5 +43,7 @@ export {
   getHowToPlay,
   getAllSliderImage,
   addSliderImage,
-  updateSliderImage
+  updateSliderImage,
+  updateUser,
+  getUserById
 }

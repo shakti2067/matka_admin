@@ -57,6 +57,7 @@ function MainSetting() {
   })
 
   console.log('valueForm', valueForm)
+
   const handleBankSubmit = () => {}
 
   let appFormValidation = () => {
@@ -237,8 +238,8 @@ function MainSetting() {
             minWithdrawal: data.data.amountValue.minWithdrawal,
             referralPoint: data.data.amountValue.referralPoint,
             welcomeBounce: data.data.amountValue.welcomeBounce,
-            withdrawalCloseTime: data.data.amountValue.withdrawCloseTime,
-            withdrawalOpenTime: data.data.amountValue.withdrawOpenTime,
+            withdrawalCloseTime: dayjs(data.data.amountValue.withdrawCloseTime, 'h:mm A').format('HH:mm'),
+            withdrawalOpenTime: dayjs(data.data.amountValue.withdrawOpenTime, 'h:mm A').format('HH:mm'),
             withdrawalStatus: data.data.amountValue.withdrawStatus
           })
         } else {
@@ -620,7 +621,9 @@ function MainSetting() {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <Box components={['TimePicker']}>
                     <TimePicker
-                      value={valueForm.withdrawalOpenTime}
+                      value={dayjs()
+                        .set('hour', parseInt(valueForm.withdrawalOpenTime.split(':')[0]))
+                        .set('minute', parseInt(valueForm.withdrawalOpenTime.split(':')[1]))}
                       // value={todayOpenTime}
                       onChange={newValue =>
                         setValueForm({ ...valueForm, withdrawalOpenTime: dayjs(newValue).format('h:mm A') })
@@ -646,7 +649,10 @@ function MainSetting() {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <Box components={['TimePicker']}>
                     <TimePicker
-                      value={valueForm.withdrawalCloseTime}
+                      // value={valueForm.withdrawalCloseTime}
+                      value={dayjs()
+                        .set('hour', valueForm.withdrawalCloseTime.split(':')[0])
+                        .set('minute', valueForm.withdrawalCloseTime.split(':')[1])}
                       onChange={newValue =>
                         setValueForm({ ...valueForm, withdrawalCloseTime: dayjs(newValue).format('h:mm A') })
                       }

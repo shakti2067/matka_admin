@@ -10,8 +10,7 @@ import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TablePagination from '@mui/material/TablePagination'
-import InputBox from 'src/components/InputBox'
-import { useRouter } from 'next/router'
+import InputBox from 'src/layouts/components/inputBox/InputBox'
 
 const columnFundRequest = [
   {
@@ -68,13 +67,6 @@ const rowFundRequest = [
   createFundRequestData('India', 'IN', 1324171354, 3287263, 'data', 'data', 'data', 'data', 'data')
 ]
 function DashBoardNew() {
-  const router = useRouter()
-  useEffect(() => {
-    let data = window?.localStorage.getItem('user')
-    if (data == null || data == '') {
-      router.replace('/pages/login')
-    }
-  }, [])
   const [fundRequestPage, setFundRequestPage] = useState(0)
   const [rowsFundRequestPerPage, setRowsFundRequestPerPage] = useState(10)
 
@@ -89,7 +81,12 @@ function DashBoardNew() {
   return (
     <div>
       <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0' }}></div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0' }}>
+          <h4>DASHBOARD</h4>
+          <div>
+            <h5>Dashboards &nbsp; / &nbsp; Dashboard</h5>
+          </div>
+        </div>
         <div style={{ display: 'flex', gap: '20px' }}>
           <Card sx={{ position: 'relative', width: '33%' }}>
             <div

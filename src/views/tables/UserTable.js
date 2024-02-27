@@ -14,8 +14,10 @@ import Switch from '@mui/material/Switch'
 import { FormControlLabel, FormGroup, Typography } from '@mui/material'
 import moment from 'moment'
 import { useRouter } from 'next/router'
+import { updateUser } from 'src/helpers'
 
-const UserTable = ({ columns = [], rows = [] }) => {
+const UserTable = ({ columns = [], rows = [], refreshPage }) => {
+  console.log('refreshpage', refreshPage)
   // ** States
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
@@ -28,6 +30,63 @@ const UserTable = ({ columns = [], rows = [] }) => {
   const handleChangeRowsPerPage = event => {
     setRowsPerPage(+event.target.value)
     setPage(0)
+  }
+
+  const handleActiveChange = event => {
+    let params = {
+      userId: event.target.value,
+      isActive: event.target.checked
+    }
+
+    updateUser(params)
+      .then(data => {
+        if (data.success) {
+          console.log('data', data)
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(error => {
+        console.log('error', error)
+      })
+  }
+
+  const handleTransferChange = event => {
+    let params = {
+      userId: event.target.value,
+      isTransfer: event.target.checked
+    }
+
+    updateUser(params)
+      .then(data => {
+        if (data.success) {
+          console.log('data', data)
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(error => {
+        console.log('error', error)
+      })
+  }
+
+  const handleBettingChange = event => {
+    let params = {
+      userId: event.target.value,
+      isBetting: event.target.checked
+    }
+
+    updateUser(params)
+      .then(data => {
+        if (data.success) {
+          console.log('data', data)
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(error => {
+        console.log('error', error)
+      })
   }
 
   return (
@@ -54,7 +113,7 @@ const UserTable = ({ columns = [], rows = [] }) => {
                     return (
                       <TableCell key={index} align={column.align}>
                         {column.id === 'isActive' ? (
-                          <Switch checked={value} />
+                          <Switch checked={row.isActive} value={row._id} onClick={handleActiveChange} />
                         ) : column.id === 'name' ? (
                           <Typography
                             style={{ color: 'blue', cursor: 'pointer' }}
@@ -62,8 +121,8 @@ const UserTable = ({ columns = [], rows = [] }) => {
                               // router.push('/users/userdetails')
                               router.push({
                                 pathname: '/users/userdetails',
-                                // query: { user: JSON.stringify(row) }
-                                query: { user: '' }
+                                query: { userId: row._id }
+                                // query: { user: '' }
                               })
                             }}
                           >
@@ -72,9 +131,9 @@ const UserTable = ({ columns = [], rows = [] }) => {
                         ) : column.id === 'no' ? (
                           <span>{rowIndex + 1}</span>
                         ) : column.id === 'isBetting' ? (
-                          <Switch checked={value} />
+                          <Switch checked={row.isBetting} value={row._id} onClick={handleBettingChange} />
                         ) : column.id === 'isTransfer' ? (
-                          <Switch checked={value} />
+                          <Switch checked={row.isTransfer} value={row._id} onClick={handleTransferChange} />
                         ) : column.id === 'createdAt' ? (
                           moment(value).format('YYYY-MM-DD')
                         ) : column.format && typeof value === 'number' ? (

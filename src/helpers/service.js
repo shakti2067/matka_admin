@@ -243,3 +243,26 @@ export let updateSliderImage = data => {
       return error
     })
 }
+
+export let updateUser = data => {
+  return apis
+    .put('master/updateUserStatus', data)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let getUserById = userId => {
+  console.log('userId in api ', userId)
+  return apis
+    .get(`auth/getUserById/${userId}`)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}

@@ -30,6 +30,7 @@ axiosInstance.interceptors.request.use(
     if (authToken) {
       config.headers['Authorization'] = authToken
     }
+    console.log('config', config)
     return config
   },
   error => {
