@@ -20,7 +20,8 @@ import {
   addSliderImage,
   updateSliderImage,
   updateUser,
-  getUserById
+  getUserById,
+  adminChangePassword
 } from './service'
 
 export {
@@ -45,5 +46,6 @@ export {
   addSliderImage,
   updateSliderImage,
   updateUser,
-  getUserById
+  getUserById,
+  adminChangePassword
 }

@@ -17,7 +17,6 @@ import { useRouter } from 'next/router'
 import { updateUser } from 'src/helpers'
 
 const UserTable = ({ columns = [], rows = [], refreshPage }) => {
-  console.log('refreshpage', refreshPage)
   // ** States
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
@@ -42,6 +41,7 @@ const UserTable = ({ columns = [], rows = [], refreshPage }) => {
       .then(data => {
         if (data.success) {
           console.log('data', data)
+          refreshPage()
         } else {
           console.log('error')
         }
@@ -61,6 +61,7 @@ const UserTable = ({ columns = [], rows = [], refreshPage }) => {
       .then(data => {
         if (data.success) {
           console.log('data', data)
+          refreshPage()
         } else {
           console.log('error')
         }
@@ -80,6 +81,7 @@ const UserTable = ({ columns = [], rows = [], refreshPage }) => {
       .then(data => {
         if (data.success) {
           console.log('data', data)
+          refreshPage()
         } else {
           console.log('error')
         }

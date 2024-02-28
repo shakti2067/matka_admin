@@ -67,7 +67,7 @@ const TabAccount = () => {
   useEffect(() => {
     let data = window?.localStorage.getItem('user')
     if (data == null || data == '') {
-      router.replace('/pages/login')
+      router.replace('/admin/login')
     } else {
       let user = JSON.parse(window.localStorage.getItem('user'))
 

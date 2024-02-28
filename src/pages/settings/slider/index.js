@@ -140,90 +140,6 @@ function sliderImages() {
           >
             Add Slider Image
           </Button>
-          {isPopupOpen && (
-            <div
-              style={{
-                borderRadius: '5px',
-                // width: '60%',
-                height: '50%',
-                position: 'fixed',
-                top: '44%',
-                left: '53%',
-                transform: 'translate(-50%, -50%)',
-                backgroundColor: '#F7F7F7',
-                padding: '20px',
-                boxShadow: '0 0 10px #d3bdff'
-              }}
-            >
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <h3 style={{ margin: '0' }}>Add Slider Image</h3>
-                  <div onClick={togglePopup} style={{ cursor: 'pointer' }}>
-                    &#10006;
-                  </div>
-                </div>
-                <div>
-                  <h5 style={{ marginBottom: '5px' }}>Slider Image(Allow Only.jpeg,.jpg,.png)</h5>
-                  <TextField
-                    type='file'
-                    placeholder='Type something'
-                    style={{
-                      paddingRight: '30px',
-                      padding: '8px',
-                      width: '100%',
-                      outline: 'none',
-                      transition: 'border-color 0.3s'
-                    }}
-                    onChange={e => {
-                      setForm({ ...form, image: e.target.files[0] })
-                    }}
-                  />
-                </div>
-                <div>
-                  <h5 style={{ marginBottom: '5px' }}>Display Order</h5>
-                  <TextField
-                    inputProps={{ min: '1' }}
-                    style={{
-                      paddingRight: '30px',
-                      padding: '8px',
-                      width: '100%',
-                      outline: 'none'
-                    }}
-                    type='number'
-                    value={form.displayOrder}
-                    onChange={e => {
-                      setForm({ ...form, displayOrder: e.target.value })
-                    }}
-                  ></TextField>
-                </div>
-                <div style={{ marginTop: '20px' }}>
-                  <Button
-                    style={{ backgroundColor: '#9155FD', color: 'white', width: '11rem', padding: '5px' }}
-                    onClick={handleImageUpload}
-                  >
-                    Submit
-                  </Button>
-                  <Button
-                    style={{
-                      backgroundColor: '#f46a6a',
-                      color: 'white',
-                      width: '11rem',
-                      padding: '5px',
-                      marginLeft: '30px'
-                    }}
-                    onClick={() => {
-                      setForm({
-                        image: '',
-                        displayOrder: ''
-                      })
-                    }}
-                  >
-                    Reset
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px', marginBottom: '10px' }}>
           {/* <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -380,6 +296,106 @@ function sliderImages() {
           </div>
         </div> */}
       </div>
+      {isPopupOpen && (
+        <div>
+          <div
+            className='overlay'
+            onClick={togglePopup}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              zIndex: 9998 // Ensure the overlay is below the popup but above the rest of the content
+            }}
+          />
+          <div
+            style={{
+              borderRadius: '5px',
+              // width: '60%',
+              height: '50%',
+              position: 'fixed',
+              top: '44%',
+              left: '53%',
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: '#F7F7F7',
+              padding: '20px',
+
+              zIndex: 9999
+            }}
+          >
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h3 style={{ margin: '0' }}>Add Slider Image</h3>
+                <div onClick={togglePopup} style={{ cursor: 'pointer' }}>
+                  &#10006;
+                </div>
+              </div>
+              <div>
+                <h5 style={{ marginBottom: '5px' }}>Slider Image(Allow Only.jpeg,.jpg,.png)</h5>
+                <TextField
+                  type='file'
+                  placeholder='Type something'
+                  style={{
+                    paddingRight: '30px',
+                    padding: '8px',
+                    width: '100%',
+                    outline: 'none',
+                    transition: 'border-color 0.3s'
+                  }}
+                  onChange={e => {
+                    setForm({ ...form, image: e.target.files[0] })
+                  }}
+                />
+              </div>
+              <div>
+                <h5 style={{ marginBottom: '5px' }}>Display Order</h5>
+                <TextField
+                  inputProps={{ min: '1' }}
+                  style={{
+                    paddingRight: '30px',
+                    padding: '8px',
+                    width: '100%',
+                    outline: 'none'
+                  }}
+                  type='number'
+                  value={form.displayOrder}
+                  onChange={e => {
+                    setForm({ ...form, displayOrder: e.target.value })
+                  }}
+                ></TextField>
+              </div>
+              <div style={{ marginTop: '20px' }}>
+                <Button
+                  style={{ backgroundColor: '#9155FD', color: 'white', width: '11rem', padding: '5px' }}
+                  onClick={handleImageUpload}
+                >
+                  Submit
+                </Button>
+                <Button
+                  style={{
+                    backgroundColor: '#f46a6a',
+                    color: 'white',
+                    width: '11rem',
+                    padding: '5px',
+                    marginLeft: '30px'
+                  }}
+                  onClick={() => {
+                    setForm({
+                      image: '',
+                      displayOrder: ''
+                    })
+                  }}
+                >
+                  Reset
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

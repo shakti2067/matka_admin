@@ -1,9 +1,8 @@
 // ** React Imports
-import { useEffect, useState } from 'react'
+import { useState, Fragment } from 'react'
 
 // ** Next Imports
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 
 // ** MUI Components
 import Box from '@mui/material/Box'
@@ -11,8 +10,8 @@ import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Checkbox from '@mui/material/Checkbox'
 import TextField from '@mui/material/TextField'
-import InputLabel from '@mui/material/InputLabel'
 import Typography from '@mui/material/Typography'
+import InputLabel from '@mui/material/InputLabel'
 import IconButton from '@mui/material/IconButton'
 import CardContent from '@mui/material/CardContent'
 import FormControl from '@mui/material/FormControl'
@@ -38,9 +37,9 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
-import { adminLogin } from 'src/helpers'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+import { adminRegister } from 'src/helpers'
+import { useRouter } from 'next/router'
+
 // ** Styled Components
 const Card = styled(MuiCard)(({ theme }) => ({
   [theme.breakpoints.up('sm')]: { width: '28rem' }
@@ -53,47 +52,29 @@ const LinkStyled = styled('a')(({ theme }) => ({
 }))
 
 const FormControlLabel = styled(MuiFormControlLabel)(({ theme }) => ({
+  marginTop: theme.spacing(1.5),
+  marginBottom: theme.spacing(4),
   '& .MuiFormControlLabel-label': {
     fontSize: '0.875rem',
     color: theme.palette.text.secondary
   }
 }))
 
-const LoginPage = () => {
-  // ** State
+const RegisterPage = () => {
+  const router = useRouter()
+  // ** States
   const [values, setValues] = useState({
     password: '',
     showPassword: false
   })
   const [form, setForm] = useState({
+    userName: '',
     email: '',
     password: ''
   })
 
-  const validation = () => {
-    let { email, password } = form
-    let emailReg =
-      /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
-
-    if (email.length === 0) {
-      // toast.error('Please enter email')
-      alert('enter pass')
-      return false
-    }
-    if (!emailReg.test(email)) {
-      toast.error('Please enter valid email')
-      return false
-    }
-    if (password.length < 8) {
-      toast.error('Please enter password')
-      return false
-    }
-    return true
-  }
-
   // ** Hook
   const theme = useTheme()
-  const router = useRouter()
 
   const handleChange = prop => event => {
     setValues({ ...values, [prop]: event.target.value })
@@ -108,35 +89,54 @@ const LoginPage = () => {
     event.preventDefault()
   }
 
-  const adminLoginApi = () => {
-    // if (!validation()) {
-    let { email, password } = form
-    let params = {
-      email: email,
-      password: password
-    }
-    adminLogin(params)
-      .then(data => {
-        console.log('data inside fun', data)
-        if (data.success) {
-          if (window) {
-            window.localStorage.setItem('user', JSON.stringify(data.data))
-            router.replace('/')
-          }
-        } else {
-          console.log('error message', data.message)
-          // toast.error(data.result.message)
-        }
-      })
-      .catch(err => {
-        console.log('error', err)
-        // toast.error(err)
-      })
-    // }
+  const handleSubmit = () => {
+    adminRegisterApi()
   }
 
-  const handleLogin = () => {
-    adminLoginApi()
+  const validation = () => {
+    let { email, password } = form
+    let emailReg =
+      /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
+
+    if (email.length === 0) {
+      // toast.error('Please enter email')
+      alert('enter email')
+      return false
+    }
+    if (!emailReg.test(email)) {
+      alert('Please enter valid email')
+      return false
+    }
+    if (password.length === 0) {
+      alert('Please enter password')
+      return false
+    }
+    return true
+  }
+
+  const adminRegisterApi = () => {
+    let { userName, email, password } = form
+
+    if (validation()) {
+      let params = {
+        name: userName,
+        email: email,
+        password: password
+      }
+
+      adminRegister(params)
+        .then(data => {
+          if (data.success) {
+            alert(data.message)
+            router.push('/admin/login')
+          } else {
+            alert(data.response.data.message)
+          }
+        })
+        .catch(error => {
+          console.log('error', error)
+        })
+    }
   }
 
   return (
@@ -216,18 +216,25 @@ const LoginPage = () => {
               {themeConfig.templateName}
             </Typography>
           </Box>
-          <Box sx={{ mb: 6 }}>
-            <Typography variant='h5' sx={{ fontWeight: 600, marginBottom: 1.5 }}>
-              Welcome to {themeConfig.templateName}! 👋🏻
-            </Typography>
-          </Box>
-          <form noValidate autoComplete='off' onSubmit={() => {}}>
+
+          <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
             <TextField
               autoFocus
               fullWidth
-              id='email'
+              id='username'
+              label='Username'
+              sx={{ marginBottom: 4 }}
+              onChange={event => {
+                setForm({
+                  ...form,
+                  userName: event.target.value
+                })
+              }}
+            />
+            <TextField
+              fullWidth
+              type='email'
               label='Email'
-              // value={form.email}
               sx={{ marginBottom: 4 }}
               onChange={event => {
                 setForm({
@@ -237,11 +244,11 @@ const LoginPage = () => {
               }}
             />
             <FormControl fullWidth>
-              <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
+              <InputLabel htmlFor='auth-register-password'>Password</InputLabel>
               <OutlinedInput
                 label='Password'
                 value={values.password}
-                id='auth-login-password'
+                id='auth-register-password'
                 onChange={handleChange('password')}
                 type={values.showPassword ? 'text' : 'password'}
                 endAdornment={
@@ -252,37 +259,30 @@ const LoginPage = () => {
                       onMouseDown={handleMouseDownPassword}
                       aria-label='toggle password visibility'
                     >
-                      {values.showPassword ? <EyeOutline /> : <EyeOffOutline />}
+                      {values.showPassword ? <EyeOutline fontSize='small' /> : <EyeOffOutline fontSize='small' />}
                     </IconButton>
                   </InputAdornment>
                 }
               />
             </FormControl>
-            <Box
-              sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
-            >
-              <FormControlLabel control={<Checkbox />} label='Remember Me' />
-              <Link passHref href='/'>
-                <LinkStyled onClick={e => e.preventDefault()}>Forgot Password?</LinkStyled>
-              </Link>
-            </Box>
+
             <Button
               fullWidth
               size='large'
+              type='submit'
               variant='contained'
-              sx={{ marginBottom: 7 }}
-              // onClick={() => router.push('/')}
-              onClick={handleLogin}
+              sx={{ marginBottom: 7, marginTop: 9 }}
+              onClick={handleSubmit}
             >
-              Login
+              Sign up
             </Button>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
               <Typography variant='body2' sx={{ marginRight: 2 }}>
-                New on our platform?
+                Already have an account?
               </Typography>
               <Typography variant='body2'>
-                <Link passHref href='/pages/register'>
-                  <LinkStyled>Create an account</LinkStyled>
+                <Link passHref href='/admin/login'>
+                  <LinkStyled>Sign in instead</LinkStyled>
                 </Link>
               </Typography>
             </Box>
@@ -293,6 +293,6 @@ const LoginPage = () => {
     </Box>
   )
 }
-LoginPage.getLayout = page => <BlankLayout>{page}</BlankLayout>
+RegisterPage.getLayout = page => <BlankLayout>{page}</BlankLayout>
 
-export default LoginPage
+export default RegisterPage

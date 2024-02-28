@@ -72,7 +72,7 @@ function DashBoardNew() {
   useEffect(() => {
     let data = window?.localStorage.getItem('user')
     if (data == null || data == '') {
-      router.replace('/pages/login')
+      router.replace('/admin/login')
     }
   }, [])
   const [fundRequestPage, setFundRequestPage] = useState(0)

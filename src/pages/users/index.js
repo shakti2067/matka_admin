@@ -31,12 +31,9 @@ const columns = [
 
 export default function UsersPage() {
   let [rows, setRows] = useState([])
-  let [refresh, setRefresh] = useState(false)
-  console.log('rows')
-  console.log('refresh', refresh)
 
   const isRefresh = () => {
-    setRefresh(true)
+    getAllUsers()
   }
   useEffect(() => {
     getAllUsers()

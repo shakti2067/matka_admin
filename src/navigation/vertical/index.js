@@ -18,7 +18,7 @@ const navigation = () => {
   useEffect(() => {
     let data = window?.localStorage.getItem('user')
     if (data == null || data == '') {
-      router.replace('/pages/login')
+      router.replace('/admin/login')
     }
   }, [])
 
@@ -93,7 +93,7 @@ const navigation = () => {
     // {
     //   title: 'Login',
     //   icon: Login,
-    //   path: '/pages/login',
+    //   path: '/admin/login',
     //   openInNewTab: true
     // },
     // {

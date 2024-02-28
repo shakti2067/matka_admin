@@ -11,7 +11,9 @@ import {
   TableContainer,
   TableHead,
   TablePagination,
-  TableRow
+  TableRow,
+  TextField,
+  Typography
 } from '@mui/material'
 import { Card } from '@mui/material'
 import AntSwitch from 'src/components/AntSwitchToggle'
@@ -21,6 +23,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { useRouter } from 'next/router'
 import { getUserById } from 'src/helpers'
+import moment from 'moment'
 
 const collumnPayment = [
   {
@@ -427,6 +430,20 @@ function UserDetails() {
   const [rowWalletSliderThirdPage, setrowWalletSliderThirdPage] = useState(10)
   const [rowWinningHistoryPage, setroWinningHistoryPage] = useState(10)
   const [userDetails, setUserDetails] = useState([])
+  const [isPopupOpen, setPopupOpen] = useState(false)
+  const togglePopup = () => {
+    setPopupOpen(!isPopupOpen)
+  }
+
+  const [isPopupOpenAddFund, setPopupOpenAddFund] = useState(false)
+  const togglePopupAddFund = () => {
+    setPopupOpenAddFund(!isPopupOpenAddFund)
+  }
+
+  const [isPopupOpenWithdrow, setPopupOpenWithdrow] = useState(false)
+  const togglePopupWithdrow = () => {
+    setPopupOpenWithdrow(!isPopupOpenWithdrow)
+  }
 
   const router = useRouter()
 
@@ -452,13 +469,13 @@ function UserDetails() {
       id: 'Full Name :',
       userId: userDetails.name,
       data: 'Email :',
-      userData: 'chigicharlavinod25@gmail.com'
+      userData: ''
     },
     {
       id: 'Mobile :',
       userId: userDetails.mobile,
       data: 'Password :',
-      userData: '1234' //userDetails.password
+      userData: userDetails.password
     },
     {
       id: 'District Name :',
@@ -486,9 +503,9 @@ function UserDetails() {
     },
     {
       id: 'Creation Date :',
-      userId: userDetails.createdAt,
+      userId: moment(userDetails.createdAt).format('YYYY-MM-DD HH:mm:ss'),
       data: 'Last Seen :',
-      userData: '2024-02-22 15:25:06'
+      userData: moment(userDetails.updatedAt).format('YYYY-MM-DD HH:mm:ss')
     }
   ]
 
@@ -570,8 +587,8 @@ function UserDetails() {
             <Card sx={{ position: 'relative' }}>
               <div
                 style={{
-                  backgroundImage: 'linear-gradient(98deg,#9155FD, #C6A7FE  94%)',
-                  height: '11rem',
+                  backgroundImage: 'linear-gradient(98deg,rgb(85 98 253), rgb(254 220 167)  94%)',
+                  height: '14rem',
                   padding: '20px',
                   display: 'flex',
                   justifyContent: 'space-between'
@@ -580,7 +597,7 @@ function UserDetails() {
                 <div>
                   <h4 style={{ margin: '0' }}>{userDetails.name}</h4>
                   <h6 style={{ marginTop: '5px', display: 'flex', alignItems: 'center', fontSize: '13px' }}>
-                    {userDetails.mobile} <p>&#128241;</p>
+                    {userDetails.mobile}
                   </h6>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
@@ -599,9 +616,11 @@ function UserDetails() {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
                     <h5 style={{ margin: '0', marginRight: '5px' }}>Logout Status:</h5>
-                    <Button style={{ backgroundColor: '#f46a6a', color: 'white', padding: '5px', fontSize: '10px' }}>
+                    {/* <Button style={{ backgroundColor: '#f46a6a', color: 'white', padding: '5px', fontSize: '10px' }}>
                       Logout Now
-                    </Button>
+                    </Button> */}
+                    <Switch value={userDetails._id} checked={userDetails.isActive} />
+                    {userDetails.isActive ? 'Login' : 'Logout'}
                   </div>
                 </div>
               </div>
@@ -612,7 +631,7 @@ function UserDetails() {
                   width: 75,
                   height: 75,
                   left: '1.313rem',
-                  top: '9rem',
+                  top: '11rem',
                   position: 'absolute',
                   border: theme => `0.25rem solid ${theme.palette.common.white}`
                 }}
@@ -623,8 +642,7 @@ function UserDetails() {
                     display: 'flex',
                     justifyContent: 'space-evenly',
                     marginLeft: '20px',
-                    alignItems: 'center',
-                    borderBottom: '1px solid lightgray'
+                    alignItems: 'center'
                   }}
                 >
                   <div>
@@ -632,19 +650,182 @@ function UserDetails() {
                     <h5 style={{ margin: '5px' }}>{userDetails.pin}</h5>
                   </div>
                   <div>
-                    <Button style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px' }}>Change</Button>
+                    <Button
+                      onClick={togglePopup}
+                      style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px' }}
+                    >
+                      Change
+                    </Button>
+                    {isPopupOpen && (
+                      <div>
+                        <div
+                          className='overlay'
+                          onClick={togglePopup}
+                          style={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                            zIndex: 9998 // Ensure the overlay is below the popup but above the rest of the content
+                          }}
+                        />
+                        <div
+                          style={{
+                            borderRadius: '5px',
+                            width: '35%',
+                            position: 'fixed',
+                            top: '20%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            backgroundColor: '#F7F7F7',
+                            padding: '20px',
+                            zIndex: 9999 // Ensure the popup is above the overlay
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <Typography variant='h6'>Change Pin</Typography>
+                            <div onClick={togglePopup} style={{ cursor: 'pointer' }}>
+                              &#10006;
+                            </div>
+                          </div>
+                          <Typography style={{ margin: '10px 0 5px 0' }}>Enter New Pin</Typography>
+                          <TextField
+                            type='number'
+                            style={{
+                              width: '95%',
+                              marginBottom: '20px'
+                            }}
+                          />
+                          <Button style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px' }}>
+                            Submit
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <Button style={{ backgroundColor: '#D31FA4', color: 'white', fontSize: '13px' }}>
+                      Change password
+                    </Button>
                   </div>
                 </div>
+                <hr style={{ border: '1px solid #F2F1F1 ' }} />
                 <div>
                   <div style={{ margin: '10px 0 5px 0' }}>
                     <h5 style={{ margin: '5px' }}>Available Balance</h5>
                     <h4 style={{ margin: '5px' }}>{userDetails.balance}</h4>
                   </div>
-                  <div style={{ paddingTop: '1rem', display: 'flex', justifyContent: 'space-evenly' }}>
-                    <Button style={{ backgroundColor: '#34c38f', color: 'white', fontSize: '13px' }}>Add Fund</Button>
-                    <Button style={{ backgroundColor: '#f46a6a', color: 'white', fontSize: '13px' }}>
+                  <div style={{ paddingTop: '1rem', display: 'flex', gap: '20px' }}>
+                    <Button
+                      onClick={togglePopupAddFund}
+                      style={{ backgroundColor: '#34c38f', color: 'white', fontSize: '13px' }}
+                    >
+                      Add Fund
+                    </Button>
+                    {isPopupOpenAddFund && (
+                      <div>
+                        <div
+                          className='overlay'
+                          onClick={togglePopupAddFund}
+                          style={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                            zIndex: 9998 // Ensure the overlay is below the popup but above the rest of the content
+                          }}
+                        />
+                        <div
+                          style={{
+                            borderRadius: '5px',
+                            width: '35%',
+                            position: 'fixed',
+                            top: '20%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            backgroundColor: '#F7F7F7',
+                            padding: '20px',
+                            zIndex: 9999 // Ensure the popup is above the overlay
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <Typography variant='h6'>Add Fund</Typography>
+                            <div onClick={togglePopupAddFund} style={{ cursor: 'pointer' }}>
+                              &#10006;
+                            </div>
+                          </div>
+                          <Typography style={{ margin: '10px 0 5px 0' }}>Amount</Typography>
+                          <TextField
+                            type='number'
+                            style={{
+                              width: '95%',
+                              marginBottom: '20px'
+                            }}
+                          />
+                          <Button style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px' }}>
+                            Submit
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                    <Button
+                      onClick={togglePopupWithdrow}
+                      style={{ backgroundColor: '#f46a6a', color: 'white', fontSize: '13px' }}
+                    >
                       Withdrow Fund
                     </Button>
+                    {isPopupOpenWithdrow && (
+                      <div>
+                        <div
+                          className='overlay'
+                          onClick={togglePopupWithdrow}
+                          style={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                            zIndex: 9998 // Ensure the overlay is below the popup but above the rest of the content
+                          }}
+                        />
+                        <div
+                          style={{
+                            borderRadius: '5px',
+                            width: '35%',
+                            position: 'fixed',
+                            top: '20%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            backgroundColor: '#F7F7F7',
+                            padding: '20px',
+                            zIndex: 9999 // Ensure the popup is above the overlay
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <Typography variant='h6'>Withdrow Fund</Typography>
+                            <div onClick={togglePopupWithdrow} style={{ cursor: 'pointer' }}>
+                              &#10006;
+                            </div>
+                          </div>
+                          <Typography style={{ margin: '10px 0 5px 0' }}>Amount</Typography>
+                          <TextField
+                            type='number'
+                            style={{
+                              width: '95%',
+                              marginBottom: '20px'
+                            }}
+                          />
+                          <Button style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px' }}>
+                            Submit
+                          </Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>

@@ -266,3 +266,14 @@ export let getUserById = userId => {
       return error
     })
 }
+
+export let adminChangePassword = data => {
+  return apis
+    .post('auth/adminChangePassword', data)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}

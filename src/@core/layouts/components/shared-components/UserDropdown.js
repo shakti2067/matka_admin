@@ -22,7 +22,8 @@ import LogoutVariant from 'mdi-material-ui/LogoutVariant'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import MessageOutline from 'mdi-material-ui/MessageOutline'
 import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
-import { adminLogout } from 'src/helpers'
+import { adminChangePassword, adminLogout } from 'src/helpers'
+import { Button, TextField } from '@mui/material'
 
 // ** Styled Components
 const BadgeContentSpan = styled('span')(({ theme }) => ({
@@ -41,6 +42,27 @@ const UserDropdown = () => {
     role: ''
   })
 
+  const [isPopupOpenWithdrow, setPopupOpenWithdrow] = useState(false)
+  let [form, setForm] = useState({
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  })
+
+  let [error, setError] = useState({
+    oldPasswordErr: '',
+    newPasswordErr: '',
+    confirmPasswordErr: ''
+  })
+
+  console.log('error', error)
+  console.log('form', form)
+
+  const togglePopupWithdrow = () => {
+    setPopupOpenWithdrow(!isPopupOpenWithdrow)
+    setAnchorEl(null)
+  }
+
   // ** Hooks
   const router = useRouter()
 
@@ -54,6 +76,25 @@ const UserDropdown = () => {
     }
     setAnchorEl(null)
   }
+  const validation = () => {
+    let { oldPassword, newPassword, confirmPassword } = form
+
+    if (oldPassword.length === 0) {
+      setError({ ...error, oldPasswordErr: 'Please enter old password' })
+      return false
+    }
+
+    if (newPassword.length === 0) {
+      setError({ ...error, newPasswordErr: 'Please enter new password' })
+      return false
+    }
+    if (confirmPassword.length === 0) {
+      setError({ ...error, confirmPasswordErr: 'Please enter confirm password' })
+      return false
+    }
+
+    return true
+  }
 
   const handleLogout = () => {
     adminLogout()
@@ -61,7 +102,7 @@ const UserDropdown = () => {
         if (data.success) {
           localStorage.removeItem('user')
           alert(data.message)
-          router.replace('/pages/login')
+          router.replace('/admin/login')
         } else {
           console.log('error')
         }
@@ -69,6 +110,22 @@ const UserDropdown = () => {
       .catch(error => {
         console.log('error', error)
       })
+  }
+
+  const handlePasswordChange = () => {
+    if (validation()) {
+      adminChangePassword()
+        .then(data => {
+          if (data.success) {
+            router.replace('/admin/login')
+          } else {
+            console.log('error')
+          }
+        })
+        .catch(error => {
+          console.log('error', error)
+        })
+    }
   }
 
   const styles = {
@@ -88,7 +145,7 @@ const UserDropdown = () => {
   useEffect(() => {
     let data = window?.localStorage.getItem('user')
     if (data == null || data == '') {
-      router.replace('/pages/login')
+      router.replace('/admin/login')
     } else {
       let user = JSON.parse(window.localStorage.getItem('user'))
 
@@ -177,13 +234,125 @@ const UserDropdown = () => {
             <HelpCircleOutline sx={{ marginRight: 2 }} />
             FAQ
           </Box>
-        </MenuItem> */}
+        </MenuItem>*/}
         {/* <Divider /> */}
         <MenuItem sx={{ py: 2 }} onClick={handleLogout}>
           <LogoutVariant sx={{ marginRight: 2, fontSize: '1.375rem', color: 'text.secondary' }} />
           Logout
         </MenuItem>
+        <MenuItem sx={{ p: 0 }} onClick={togglePopupWithdrow}>
+          <Box sx={styles}>
+            <CogOutline sx={{ marginRight: 2 }} />
+            Change password
+          </Box>
+        </MenuItem>
       </Menu>
+      {isPopupOpenWithdrow && (
+        <div>
+          <div
+            className='overlay'
+            onClick={togglePopupWithdrow}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              zIndex: 9998 // Ensure the overlay is below the popup but above the rest of the content
+            }}
+          />
+          <div
+            style={{
+              borderRadius: '5px',
+              width: '35%',
+              position: 'fixed',
+              top: '47%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: '#F7F7F7',
+              padding: '20px',
+              zIndex: 9999 // Ensure the popup is above the overlay
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Typography variant='h6'>Change password</Typography>
+              <div onClick={togglePopupWithdrow} style={{ cursor: 'pointer' }}>
+                &#10006;
+              </div>
+            </div>
+            <Typography style={{ margin: '10px 0 5px 0' }}>Old password</Typography>
+            <TextField
+              type='text'
+              style={{
+                width: '95%',
+                marginBottom: '20px'
+              }}
+              value={form.oldPassword}
+              onChange={d => {
+                setForm({
+                  ...form,
+                  oldPassword: d.target.value
+                })
+                setError({
+                  ...error,
+                  oldPasswordErr: ''
+                })
+              }}
+            />
+            {error.oldPasswordErr ? <Typography style={{ color: 'red' }}>{error.oldPasswordErr}</Typography> : null}
+            <Typography style={{ margin: '10px 0 5px 0' }}>new password</Typography>
+            <TextField
+              type='text'
+              style={{
+                width: '95%',
+                marginBottom: '20px'
+              }}
+              value={form.newPassword}
+              onChange={d => {
+                setForm({
+                  ...form,
+                  newPassword: d.target.value
+                })
+                setError({
+                  ...error,
+                  newPasswordErr: ''
+                })
+              }}
+            />
+            {error.newPasswordErr ? <Typography style={{ color: 'red' }}>{error.newPasswordErr}</Typography> : null}
+
+            <Typography style={{ margin: '10px 0 5px 0' }}>confirm password</Typography>
+            <TextField
+              type='text'
+              style={{
+                width: '95%',
+                marginBottom: '20px'
+              }}
+              value={form.confirmPassword}
+              onChange={d => {
+                setForm({
+                  ...form,
+                  confirmPassword: d.target.value
+                })
+                setError({
+                  ...error,
+                  confirmPasswordErr: ''
+                })
+              }}
+            />
+            {error.confirmPasswordErr ? (
+              <Typography style={{ color: 'red' }}>{error.confirmPasswordErr}</Typography>
+            ) : null}
+            <Button
+              style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px' }}
+              onClick={handlePasswordChange}
+            >
+              update password
+            </Button>
+          </div>
+        </div>
+      )}
     </Fragment>
   )
 }
