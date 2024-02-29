@@ -11,7 +11,7 @@ import AlertCircleOutline from 'mdi-material-ui/AlertCircleOutline'
 import GoogleCirclesExtended from 'mdi-material-ui/GoogleCirclesExtended'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { Account, AccountArrowLeft, AccountCheckOutline } from 'mdi-material-ui'
+import { Account, AccountArrowLeft, AccountCash, AccountCheckOutline } from 'mdi-material-ui'
 
 const navigation = () => {
   const router = useRouter()
@@ -34,6 +34,11 @@ const navigation = () => {
       path: '/users'
     },
     {
+      title: 'Declare result',
+      icon: AccountCash,
+      path: '/declare-result'
+    },
+    {
       title: 'Winners',
       icon: AccountCheckOutline,
       path: '/winners'
@@ -41,6 +46,7 @@ const navigation = () => {
     {
       sectionTitle: 'Games managment'
     },
+
     {
       title: 'Game',
       icon: AccountArrowLeft,
@@ -59,6 +65,47 @@ const navigation = () => {
       icon: CubeOutline,
       path: '/bids/rate'
     },
+
+    {
+      sectionTitle: 'Games & number'
+    },
+
+    {
+      title: 'Single Digit',
+      icon: CubeOutline,
+      path: '/gamenumber/singledigit'
+    },
+    {
+      title: 'Jodi Digit',
+      icon: CubeOutline,
+      path: '/gamenumber/jodi-digit'
+    },
+    {
+      title: 'Single Pana',
+      icon: CubeOutline,
+      path: '/gamenumber/singlepana'
+    },
+    {
+      title: 'Double Pana',
+      icon: CubeOutline,
+      path: '/gamenumber/doublepana'
+    },
+    {
+      title: 'Triple Pana',
+      icon: CubeOutline,
+      path: '/gamenumber/triplepana'
+    },
+    {
+      title: 'Half sangam',
+      icon: CubeOutline,
+      path: '/gamenumber/halfsangam'
+    },
+    {
+      title: 'Full sangam',
+      icon: CubeOutline,
+      path: '/gamenumber/fullsangam'
+    },
+
     {
       sectionTitle: 'Settings'
     },
@@ -81,12 +128,12 @@ const navigation = () => {
       title: 'How to Play',
       icon: AccountCogOutline,
       path: '/settings/howtoplay'
-    },
-    {
-      title: 'Account Settings',
-      icon: AccountCogOutline,
-      path: '/account-settings'
     }
+    // {
+    //   title: 'Account Settings',
+    //   icon: AccountCogOutline,
+    //   path: '/account-settings'
+    // }
     // {
     //   sectionTitle: 'Pages'
     // },

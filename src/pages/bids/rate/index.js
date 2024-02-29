@@ -1,4 +1,4 @@
-import { Button } from '@mui/material'
+import { Button, TextField, Typography } from '@mui/material'
 import React, { useState } from 'react'
 
 function GameRate() {
@@ -44,28 +44,24 @@ function GameRate() {
     <div>
       <div style={{ margin: '5px', borderRadius: '5px' }}>
         <div style={{ backgroundColor: 'white', padding: '25px' }}>
-          <h3
+          <Typography
+            variant='h6'
             style={{
               //   padding: '15px',
               margin: '0px'
             }}
           >
             Add Games Rate
-          </h3>
+          </Typography>
           <div style={{ display: 'flex' }}>
             <div style={{ width: '50%' }}>
-              <h5 style={{ marginBottom: '5px' }}>Single Digit Value 1</h5>
-              <input
+              <Typography style={{ marginTop: '15px' }}>Single Digit Value 1</Typography>
+              <TextField
                 type='number'
                 value={form.singleDigitValue1}
                 defaultValue='10'
                 style={{
-                  width: '95%',
-                  padding: '8px 15px',
-                  borderRadius: '15px',
-                  outline: 'none',
-                  border: '1px solid lightGray',
-                  opacity: '0.7'
+                  width: '95%'
                 }}
                 onChange={e => {
                   setForm({ ...form, singleDigitValue1: e.target.value })
@@ -73,19 +69,14 @@ function GameRate() {
               />
             </div>
             <div style={{ width: '50%' }}>
-              <h5 style={{ marginBottom: '5px' }}>Single Digit Value 2</h5>
-              <input
+              <Typography style={{ marginTop: '15px' }}>Single Digit Value 2</Typography>
+              <TextField
                 type='number'
                 defaultValue='0'
                 value={form.singleDigitValue2}
                 placeholder='Enter EMAIL'
                 style={{
-                  width: '95%',
-                  padding: '8px 15px',
-                  borderRadius: '15px',
-                  outline: 'none',
-                  border: '1px solid lightGray',
-                  opacity: '0.7'
+                  width: '95%'
                 }}
                 onChange={e => {
                   setForm({ ...form, singleDigitValue2: e.target.value })
@@ -95,19 +86,14 @@ function GameRate() {
           </div>
           <div style={{ display: 'flex' }}>
             <div style={{ width: '50%' }}>
-              <h5 style={{ marginBottom: '5px' }}>Jodi Digit Value 1</h5>
-              <input
+              <Typography style={{ marginTop: '15px' }}>Jodi Digit Value 1</Typography>
+              <TextField
                 type='number'
                 placeholder='Enter Facebook Link'
                 defaultValue='0'
                 value={form.jodiDigitValue1}
                 style={{
-                  width: '95%',
-                  padding: '8px 15px',
-                  borderRadius: '15px',
-                  outline: 'none',
-                  border: '1px solid lightGray',
-                  opacity: '0.7'
+                  width: '95%'
                 }}
                 onChange={e => {
                   setForm({ ...form, jodiDigitValue1: e.target.value })
@@ -115,19 +101,14 @@ function GameRate() {
               />
             </div>
             <div style={{ width: '50%' }}>
-              <h5 style={{ marginBottom: '5px' }}>Jodi Digit Value 2</h5>
-              <input
+              <Typography style={{ marginTop: '15px' }}>Jodi Digit Value 2</Typography>
+              <TextField
                 type='number'
                 placeholder='Enter Twitter Link'
                 defaultValue='0'
                 value={form.jodiDigitValue2}
                 style={{
-                  width: '95%',
-                  padding: '8px 15px',
-                  borderRadius: '15px',
-                  outline: 'none',
-                  border: '1px solid lightGray',
-                  opacity: '0.7'
+                  width: '95%'
                 }}
                 onChange={e => {
                   setForm({ ...form, jodiDigitValue2: e.target.value })
@@ -137,19 +118,14 @@ function GameRate() {
           </div>
           <div style={{ display: 'flex' }}>
             <div style={{ width: '50%' }}>
-              <h5 style={{ marginBottom: '5px' }}>Single Pana Value 1</h5>
-              <input
+              <Typography style={{ marginTop: '15px' }}>Single Pana Value 1</Typography>
+              <TextField
                 type='number'
                 defaultValue='0'
                 value={form.singlePanaValue1}
                 placeholder='Enter Youtube Link'
                 style={{
-                  width: '95%',
-                  padding: '8px 15px',
-                  borderRadius: '15px',
-                  outline: 'none',
-                  border: '1px solid lightGray',
-                  opacity: '0.7'
+                  width: '95%'
                 }}
                 onChange={e => {
                   setForm({ ...form, singlePanaValue1: e.target.value })
@@ -157,19 +133,14 @@ function GameRate() {
               />
             </div>
             <div style={{ width: '50%' }}>
-              <h5 style={{ marginBottom: '5px' }}>Single Pana Value 2</h5>
-              <input
+              <Typography style={{ marginTop: '15px' }}>Single Pana Value 2</Typography>
+              <TextField
                 type='number'
                 defaultValue='0'
                 value={form.singlePanaValue2}
                 placeholder='Enter Google Plus Link'
                 style={{
-                  width: '95%',
-                  padding: '8px 15px',
-                  borderRadius: '15px',
-                  outline: 'none',
-                  border: '1px solid lightGray',
-                  opacity: '0.7'
+                  width: '95%'
                 }}
                 onChange={e => {
                   setForm({ ...form, singlePanaValue2: e.target.value })
@@ -179,19 +150,14 @@ function GameRate() {
           </div>
           <div style={{ display: 'flex' }}>
             <div style={{ width: '50%' }}>
-              <h5 style={{ marginBottom: '5px' }}>Double Pana Value 1</h5>
-              <input
+              <Typography style={{ marginTop: '15px' }}>Double Pana Value 1</Typography>
+              <TextField
                 type='number'
                 defaultValue='0'
                 value={form.doublePanaValue1}
                 placeholder='Enter Instagram Link'
                 style={{
-                  width: '95%',
-                  padding: '8px 15px',
-                  borderRadius: '15px',
-                  outline: 'none',
-                  border: '1px solid lightGray',
-                  opacity: '0.7'
+                  width: '95%'
                 }}
                 onChange={e => {
                   setForm({ ...form, doublePanaValue1: e.target.value })
@@ -199,19 +165,14 @@ function GameRate() {
               />
             </div>
             <div style={{ width: '50%' }}>
-              <h5 style={{ marginBottom: '5px' }}>Double Pana Value 2</h5>
-              <input
+              <Typography style={{ marginTop: '15px' }}>Double Pana Value 2</Typography>
+              <TextField
                 type='number'
                 defaultValue='0'
                 value={form.doublePanaValue2}
                 placeholder='Enter Instagram Link'
                 style={{
-                  width: '95%',
-                  padding: '8px 15px',
-                  borderRadius: '15px',
-                  outline: 'none',
-                  border: '1px solid lightGray',
-                  opacity: '0.7'
+                  width: '95%'
                 }}
                 onChange={e => {
                   setForm({ ...form, doublePanaValue2: e.target.value })
@@ -221,19 +182,14 @@ function GameRate() {
           </div>
           <div style={{ display: 'flex' }}>
             <div style={{ width: '50%' }}>
-              <h5 style={{ marginBottom: '5px' }}>Tripple Pana Value 1</h5>
-              <input
+              <Typography style={{ marginTop: '15px' }}>Tripple Pana Value 1</Typography>
+              <TextField
                 type='number'
                 defaultValue='0'
                 value={form.triplePanaValue1}
                 placeholder='Enter Instagram Link'
                 style={{
-                  width: '95%',
-                  padding: '8px 15px',
-                  borderRadius: '15px',
-                  outline: 'none',
-                  border: '1px solid lightGray',
-                  opacity: '0.7'
+                  width: '95%'
                 }}
                 onChange={e => {
                   setForm({ ...form, triplePanaValue1: e.target.value })
@@ -241,19 +197,14 @@ function GameRate() {
               />
             </div>
             <div style={{ width: '50%' }}>
-              <h5 style={{ marginBottom: '5px' }}>Tripple Pana Value 2</h5>
-              <input
+              <Typography style={{ marginTop: '15px' }}>Tripple Pana Value 2</Typography>
+              <TextField
                 type='number'
                 defaultValue='0'
                 value={form.triplePanaValue2}
                 placeholder='Enter Instagram Link'
                 style={{
-                  width: '95%',
-                  padding: '8px 15px',
-                  borderRadius: '15px',
-                  outline: 'none',
-                  border: '1px solid lightGray',
-                  opacity: '0.7'
+                  width: '95%'
                 }}
                 onChange={e => {
                   setForm({ ...form, triplePanaValue2: e.target.value })
@@ -263,19 +214,14 @@ function GameRate() {
           </div>
           <div style={{ display: 'flex' }}>
             <div style={{ width: '50%' }}>
-              <h5 style={{ marginBottom: '5px' }}>Half Sangam Value 1</h5>
-              <input
+              <Typography style={{ marginTop: '15px' }}>Half Sangam Value 1</Typography>
+              <TextField
                 type='number'
                 defaultValue='0'
                 value={form.halfSangamValue1}
                 placeholder='Enter Instagram Link'
                 style={{
-                  width: '95%',
-                  padding: '8px 15px',
-                  borderRadius: '15px',
-                  outline: 'none',
-                  border: '1px solid lightGray',
-                  opacity: '0.7'
+                  width: '95%'
                 }}
                 onChange={e => {
                   setForm({ ...form, halfSangamValue1: e.target.value })
@@ -283,19 +229,14 @@ function GameRate() {
               />
             </div>
             <div style={{ width: '50%' }}>
-              <h5 style={{ marginBottom: '5px' }}>Half Sangam Value 2</h5>
-              <input
+              <Typography style={{ marginTop: '15px' }}>Half Sangam Value 2</Typography>
+              <TextField
                 type='number'
                 defaultValue='0'
                 value={form.halfSangamValue2}
                 placeholder='Enter Instagram Link'
                 style={{
-                  width: '95%',
-                  padding: '8px 15px',
-                  borderRadius: '15px',
-                  outline: 'none',
-                  border: '1px solid lightGray',
-                  opacity: '0.7'
+                  width: '95%'
                 }}
                 onChange={e => {
                   setForm({ ...form, halfSangamValue2: e.target.value })
@@ -305,19 +246,14 @@ function GameRate() {
           </div>
           <div style={{ display: 'flex' }}>
             <div style={{ width: '50%' }}>
-              <h5 style={{ marginBottom: '5px' }}>Full Sangam Value 1</h5>
-              <input
+              <Typography style={{ marginTop: '15px' }}>Full Sangam Value 1</Typography>
+              <TextField
                 type='number'
                 defaultValue='0'
                 value={form.fullSangamValue1}
                 placeholder='Enter Instagram Link'
                 style={{
-                  width: '95%',
-                  padding: '8px 15px',
-                  borderRadius: '15px',
-                  outline: 'none',
-                  border: '1px solid lightGray',
-                  opacity: '0.7'
+                  width: '95%'
                 }}
                 onChange={e => {
                   setForm({ ...form, fullSangamValue1: e.target.value })
@@ -325,19 +261,14 @@ function GameRate() {
               />
             </div>
             <div style={{ width: '50%' }}>
-              <h5 style={{ marginBottom: '5px' }}>Full Sangam Value 2</h5>
-              <input
+              <Typography style={{ marginTop: '15px' }}>Full Sangam Value 2</Typography>
+              <TextField
                 type='number'
                 defaultValue='0'
                 value={form.fullSangamValue2}
                 placeholder='Enter Instagram Link'
                 style={{
-                  width: '95%',
-                  padding: '8px 15px',
-                  borderRadius: '15px',
-                  outline: 'none',
-                  border: '1px solid lightGray',
-                  opacity: '0.7'
+                  width: '95%'
                 }}
                 onChange={e => {
                   setForm({ ...form, fullSangamValue2: e.target.value })
@@ -346,7 +277,7 @@ function GameRate() {
             </div>
           </div>
 
-          <Button onClick={() => handleSubmit} type='submit' variant='contained' size='large' style={{ marginTop: 19 }}>
+          <Button onClick={() => handleSubmit} type='submit' variant='contained' size='large' style={{ marginTop: 25 }}>
             Submit
           </Button>
         </div>

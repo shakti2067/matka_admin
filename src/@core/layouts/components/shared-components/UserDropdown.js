@@ -52,11 +52,10 @@ const UserDropdown = () => {
   let [error, setError] = useState({
     oldPasswordErr: '',
     newPasswordErr: '',
-    confirmPasswordErr: ''
+    confirmPasswordErr: '',
+    passwordNotMatchErr: ''
   })
-
-  console.log('error', error)
-  console.log('form', form)
+  let [apiError, setApiError] = useState('')
 
   const togglePopupWithdrow = () => {
     setPopupOpenWithdrow(!isPopupOpenWithdrow)
@@ -76,6 +75,7 @@ const UserDropdown = () => {
     }
     setAnchorEl(null)
   }
+
   const validation = () => {
     let { oldPassword, newPassword, confirmPassword } = form
 
@@ -88,9 +88,24 @@ const UserDropdown = () => {
       setError({ ...error, newPasswordErr: 'Please enter new password' })
       return false
     }
+    if (newPassword.length < 8) {
+      setError({ ...error, newPasswordErr: 'new password length must be greater than 8 characters' })
+      return false
+    }
     if (confirmPassword.length === 0) {
       setError({ ...error, confirmPasswordErr: 'Please enter confirm password' })
       return false
+    }
+    if (confirmPassword.length < 8) {
+      setError({ ...error, confirmPasswordErr: 'confirm password length must be greater than 8 characters' })
+      return false
+    }
+    if (newPassword != confirmPassword) {
+      setError({ ...error, passwordNotMatchErr: 'new password and confirm password does not match' })
+      return false
+    }
+    if (newPassword == confirmPassword) {
+      setError({ ...error, passwordNotMatchErr: '' })
     }
 
     return true
@@ -113,13 +128,19 @@ const UserDropdown = () => {
   }
 
   const handlePasswordChange = () => {
+    let { oldPassword, newPassword } = form
+    let params = {
+      oldPassword: oldPassword,
+      newPassword: newPassword
+    }
     if (validation()) {
-      adminChangePassword()
+      adminChangePassword(params)
         .then(data => {
           if (data.success) {
             router.replace('/admin/login')
           } else {
-            console.log('error')
+            console.log('error', data.message)
+            setApiError(data.message)
           }
         })
         .catch(error => {
@@ -344,8 +365,13 @@ const UserDropdown = () => {
             {error.confirmPasswordErr ? (
               <Typography style={{ color: 'red' }}>{error.confirmPasswordErr}</Typography>
             ) : null}
+            {apiError ? <Typography style={{ color: 'red' }}>{apiError}</Typography> : null}
+            {error.passwordNotMatchErr ? (
+              <Typography style={{ color: 'red' }}>{error.passwordNotMatchErr}</Typography>
+            ) : null}
+
             <Button
-              style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px' }}
+              style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px', marginTop: '10px' }}
               onClick={handlePasswordChange}
             >
               update password
