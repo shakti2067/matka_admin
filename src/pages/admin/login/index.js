@@ -70,22 +70,33 @@ const LoginPage = () => {
     password: ''
   })
 
+  const [err, setErr] = useState({
+    emailErr: '',
+    passwordErr: '',
+    apiErr: ''
+  })
+
+  console.log('err', err)
+
   const validation = () => {
     let { email, password } = form
     let emailReg =
       /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
 
-    if (email.length === 0) {
-      // toast.error('Please enter email')
-      alert('enter pass')
+    if (email.length == 0) {
+      setErr({ emailErr: 'Please enter email' })
+
       return false
     }
     if (!emailReg.test(email)) {
-      toast.error('Please enter valid email')
+      // toast.error('Please enter valid email')
+      setErr({ emailErr: 'Please enter valid email' })
+
       return false
     }
-    if (password.length < 8) {
-      toast.error('Please enter password')
+    if (password.length == 0) {
+      // toast.error('Please enter password')
+      setErr({ passwordErr: 'Please enter password' })
       return false
     }
     return true
@@ -98,6 +109,9 @@ const LoginPage = () => {
   const handleChange = prop => event => {
     setValues({ ...values, [prop]: event.target.value })
     setForm({ ...form, password: event.target.value })
+    setErr({
+      passwordErr: ''
+    })
   }
 
   const handleClickShowPassword = () => {
@@ -109,30 +123,36 @@ const LoginPage = () => {
   }
 
   const adminLoginApi = () => {
-    // if (!validation()) {
-    let { email, password } = form
-    let params = {
-      email: email,
-      password: password
-    }
-    adminLogin(params)
-      .then(data => {
-        console.log('data inside fun', data)
-        if (data.success) {
-          if (window) {
-            window.localStorage.setItem('user', JSON.stringify(data.data))
-            router.replace('/')
+    if (validation()) {
+      let { email, password } = form
+      let params = {
+        email: email,
+        password: password
+      }
+      adminLogin(params)
+        .then(data => {
+          console.log('data inside fun', data)
+          if (data.success) {
+            if (window) {
+              window.localStorage.setItem('user', JSON.stringify(data.data))
+              router.replace('/')
+            }
+          } else {
+            console.log('error message', data.message)
+
+            setErr({
+              apiErr: data.message
+            })
           }
-        } else {
-          console.log('error message', data.message)
-          // toast.error(data.message)
-        }
-      })
-      .catch(err => {
-        console.log('error', err)
-        // toast.error(err)
-      })
-    // }
+        })
+        .catch(err => {
+          console.log('error', err)
+          setErr({
+            apiErr: err
+          })
+          // toast.error(err)
+        })
+    }
   }
 
   const handleLogin = () => {
@@ -227,15 +247,19 @@ const LoginPage = () => {
               fullWidth
               id='email'
               label='Email'
-              // value={form.email}
+              value={form.email}
               sx={{ marginBottom: 4 }}
               onChange={event => {
                 setForm({
                   ...form,
                   email: event.target.value
                 })
+                setErr({
+                  emailErr: ''
+                })
               }}
             />
+            {err.emailErr ? <Typography sx={{ color: 'red', marginBottom: '5px' }}>{err.emailErr}</Typography> : null}
             <FormControl fullWidth>
               <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
               <OutlinedInput
@@ -258,6 +282,10 @@ const LoginPage = () => {
                 }
               />
             </FormControl>
+            {err.passwordErr ? (
+              <Typography sx={{ color: 'red', marginBottom: '5px' }}>{err.passwordErr}</Typography>
+            ) : null}
+
             <Box
               sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
             >
@@ -266,6 +294,8 @@ const LoginPage = () => {
                 <LinkStyled onClick={e => e.preventDefault()}>Forgot Password?</LinkStyled>
               </Link> */}
             </Box>
+            {err.apiErr ? <Typography sx={{ color: 'red', marginBottom: '5px' }}>{err.apiErr}</Typography> : null}
+
             <Button
               fullWidth
               size='large'
