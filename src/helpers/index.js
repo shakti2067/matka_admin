@@ -21,7 +21,11 @@ import {
   updateSliderImage,
   updateUser,
   getUserById,
-  adminChangePassword
+  adminChangePassword,
+  getPaymentInfo,
+  userWalletHistory,
+  userGameHistory,
+  updateBatCategory
 } from './service'
 
 export {
@@ -47,5 +51,9 @@ export {
   updateSliderImage,
   updateUser,
   getUserById,
-  adminChangePassword
+  adminChangePassword,
+  getPaymentInfo,
+  userWalletHistory,
+  userGameHistory,
+  updateBatCategory
 }

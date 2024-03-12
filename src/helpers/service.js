@@ -277,3 +277,47 @@ export let adminChangePassword = data => {
       return error
     })
 }
+
+export let getPaymentInfo = userId => {
+  return apis
+    .get(`auth/getPaymentInfo?userId=${userId}`)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let userWalletHistory = userId => {
+  return apis
+    .get(`/game/getUserWalletHistory?pageNumber=1&pageSize=100&userId=${userId}`)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let userGameHistory = userId => {
+  return apis
+    .get(`/game/getGameHistory?pageNumber=1&pageSize=100&userId=${userId}`)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let updateBatCategory = data => {
+  return apis
+    .post('/game/updateBatCategory', data)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}

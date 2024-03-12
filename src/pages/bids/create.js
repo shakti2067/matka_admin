@@ -14,7 +14,7 @@ import {
 } from '@mui/material'
 import { useRouter } from 'next/router'
 import React, { useDebugValue, useEffect, useState } from 'react'
-import { createBids } from 'src/helpers'
+import { createBids, updateBatCategory } from 'src/helpers'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -111,6 +111,7 @@ export default function CreateBidPage() {
       }
     }
   }
+
   let resetBid = () => {
     console.log('reset call')
     setForm({

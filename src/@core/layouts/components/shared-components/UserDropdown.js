@@ -116,7 +116,7 @@ const UserDropdown = () => {
       .then(data => {
         if (data.success) {
           localStorage.removeItem('user')
-          alert(data.message)
+          // alert(data.message)
           router.replace('/admin/login')
         } else {
           console.log('error')
@@ -257,15 +257,16 @@ const UserDropdown = () => {
           </Box>
         </MenuItem>*/}
         {/* <Divider /> */}
-        <MenuItem sx={{ py: 2 }} onClick={handleLogout}>
-          <LogoutVariant sx={{ marginRight: 2, fontSize: '1.375rem', color: 'text.secondary' }} />
-          Logout
-        </MenuItem>
+
         <MenuItem sx={{ p: 0 }} onClick={togglePopupWithdrow}>
           <Box sx={styles}>
             <CogOutline sx={{ marginRight: 2 }} />
             Change password
           </Box>
+        </MenuItem>
+        <MenuItem sx={{ py: 2 }} onClick={handleLogout}>
+          <LogoutVariant sx={{ marginRight: 2, fontSize: '1.375rem', color: 'text.secondary' }} />
+          Logout
         </MenuItem>
       </Menu>
       {isPopupOpenWithdrow && (

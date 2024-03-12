@@ -11,6 +11,7 @@ import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TablePagination from '@mui/material/TablePagination'
 import InputBox from 'src/layouts/components/inputBox/InputBox'
+import { getBetCategory } from 'src/helpers'
 
 const columnFundRequest = [
   {
@@ -69,6 +70,9 @@ const rowFundRequest = [
 function DashBoardNew() {
   const [fundRequestPage, setFundRequestPage] = useState(0)
   const [rowsFundRequestPerPage, setRowsFundRequestPerPage] = useState(10)
+  let [bid, setBid] = useState([])
+
+  console.log('bid', bid)
 
   const handleChangePage = (event, newPage) => {
     setFundRequestPage(newPage)
@@ -78,6 +82,21 @@ function DashBoardNew() {
     setRowsFundRequestPerPage(+event.target.value)
     setFundRequestPage(0)
   }
+
+  let getAllBids = () => {
+    getBetCategory()
+      .then(data => {
+        setBid(data.data)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+  useEffect(() => {
+    getAllBids()
+  })
+
   return (
     <div>
       <div>
@@ -218,7 +237,7 @@ function DashBoardNew() {
             </div>
             <div>
               <Card style={{ padding: '20px', marginTop: '20px' }}>
-                <h4>Total Bids On Single Ank Of Date 26 Feb 2024</h4>
+                <h4>Total Bids On Single Ank Of Date 12 March 2024</h4>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', width: '40%' }}>
                     <h5 style={{ margin: '0', fontWeight: '500' }}>Game Name</h5>

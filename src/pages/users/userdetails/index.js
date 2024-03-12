@@ -22,35 +22,8 @@ import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { useRouter } from 'next/router'
-import { getUserById } from 'src/helpers'
+import { getPaymentInfo, getUserById, userGameHistory, userWalletHistory } from 'src/helpers'
 import moment from 'moment'
-
-const collumnPayment = [
-  {
-    id: 'Bank Name :',
-    userId: 'N/A',
-    data: 'Branch Address :',
-    userData: 'N/A',
-    newData: '',
-    newUserData: 'N/A'
-  },
-  {
-    id: 'A/c Holder Name :',
-    userId: 'N/A',
-    data: 'A/c Number :',
-    userData: 'N/A',
-    newData: 'IFSC Code :',
-    newUserData: 'N/A'
-  },
-  {
-    id: 'PhonePe No. :',
-    userId: 'N/A',
-    data: 'Google Pay No. :',
-    userData: 'N/A',
-    newData: 'Paytm No. :',
-    newUserData: 'N/A'
-  }
-]
 
 const columnAddFund = [
   {
@@ -179,7 +152,7 @@ const columnBid = [
     align: 'right'
   },
   {
-    id: 'openPaana',
+    id: 'openPana',
     label: 'Open Paana',
     minWidth: 170,
     align: 'right'
@@ -191,7 +164,7 @@ const columnBid = [
     align: 'right'
   },
   {
-    id: 'closePaana',
+    id: 'closePana',
     label: 'Close Paana',
     minWidth: 170,
     align: 'right'
@@ -206,6 +179,12 @@ const columnBid = [
     id: 'points',
     label: 'Points',
     minWidth: 170,
+    align: 'right'
+  },
+  {
+    id: 'date',
+    label: 'Date',
+    // minWidth: 170,
     align: 'right'
   }
 ]
@@ -260,7 +239,7 @@ const columnWalletSliderFirst = [
   {
     id: 'date',
     label: 'Date',
-    minWidth: 170,
+    minWidth: 200,
     align: 'right'
   },
   {
@@ -431,6 +410,14 @@ function UserDetails() {
   const [rowWinningHistoryPage, setroWinningHistoryPage] = useState(10)
   const [userDetails, setUserDetails] = useState([])
   const [isPopupOpen, setPopupOpen] = useState(false)
+  let [paymentInfo, setPaymentInfo] = useState([])
+  let [walletHistory, setWallerHistory] = useState([])
+  let [gameHistory, setGameHistory] = useState([])
+  let [gameHistoryTotalDoc, setGameHistoryTotalDoc] = useState(10)
+  let [walletHistoryTotalDoc, setWalletHistoryTotalDoc] = useState(10)
+
+  console.log('gameHistory', gameHistory)
+
   const togglePopup = () => {
     setPopupOpen(!isPopupOpen)
   }
@@ -455,6 +442,51 @@ function UserDetails() {
         if (data.success) {
           console.log('data', data)
           setUserDetails(data.data)
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(e => {
+        console.log('error', error)
+      })
+  }
+
+  const getPaymentInfoApi = () => {
+    getPaymentInfo(userId)
+      .then(data => {
+        if (data.success) {
+          console.log('data', data)
+          setPaymentInfo(data.data)
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(e => {
+        console.log('error', error)
+      })
+  }
+
+  const userWalletHistoryApi = () => {
+    userWalletHistory(userId)
+      .then(data => {
+        if (data.success) {
+          setWallerHistory(data.data)
+          setWalletHistoryTotalDoc(data.totalDocument)
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(e => {
+        console.log('error', error)
+      })
+  }
+
+  const userGameHistoryApi = () => {
+    userGameHistory(userId)
+      .then(data => {
+        if (data.success) {
+          setGameHistory(data.data)
+          setGameHistoryTotalDoc(data.totalDocument)
         } else {
           console.log('error')
         }
@@ -512,6 +544,12 @@ function UserDetails() {
   useEffect(() => {
     getUserApi()
   }, [userId])
+
+  useEffect(() => {
+    getPaymentInfoApi()
+    userWalletHistoryApi()
+    userGameHistoryApi()
+  }, [])
   const today = new Date().toISOString().split('T')[0]
 
   const [selectedDate, setSelectedDate] = useState(today)
@@ -571,6 +609,33 @@ function UserDetails() {
     setrowWalletSliderThirdPage(+event.target.value)
     setWalletsliderThirdPage(0)
   }
+
+  const collumnPayment = [
+    {
+      id: 'Bank Name :',
+      userId: 'N/A',
+      data: 'Branch Address :',
+      userData: 'N/A',
+      newData: '',
+      newUserData: 'N/A'
+    },
+    {
+      id: 'A/c Holder Name :',
+      userId: 'N/A',
+      data: 'A/c Number :',
+      userData: 'N/A',
+      newData: 'IFSC Code :',
+      newUserData: 'N/A'
+    },
+    {
+      id: 'PhonePe No. :',
+      userId: 'N/A',
+      data: 'Google Pay No. :',
+      userData: 'N/A',
+      newData: 'Paytm No. :',
+      newUserData: 'N/A'
+    }
+  ]
 
   return (
     <div>
@@ -994,28 +1059,58 @@ function UserDetails() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {rowBid.slice(bidPage * rowsBidPage, bidPage * rowsBidPage + rowsBidPage).map(row => {
-                    return (
-                      <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
-                        {columnBid.map(column => {
-                          const value = row[column.id]
+                  {gameHistory
+                    .slice(bidPage * rowsBidPage, bidPage * rowsBidPage + rowsBidPage)
+                    .map((row, rowIndex) => {
+                      return (
+                        <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
+                          {columnBid.map(column => {
+                            const value = row[column.id]
 
-                          return (
-                            <TableCell key={column.id} align={column.align}>
-                              {column.format && typeof value === 'number' ? column.format(value) : value}
-                            </TableCell>
-                          )
-                        })}
-                      </TableRow>
-                    )
-                  })}
+                            return (
+                              <TableCell key={column.id} align={column.align}>
+                                {column.id === 'name' ? (
+                                  <span>{rowIndex + 1}</span>
+                                ) : column.id === 'gameName' ? (
+                                  <span>{row.betCategoryId.name}</span>
+                                ) : column.id === 'session' ? (
+                                  <span>{row.state}</span>
+                                ) : column.id === 'gameType' ? (
+                                  <span>{row.betId.name}</span>
+                                ) : column.id === 'date' ? (
+                                  <span>{moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss')}</span>
+                                ) : column.id === 'points' ? (
+                                  <span>{row.amount}</span>
+                                ) : column.id === 'openPana' ? (
+                                  <span>
+                                    {row.betId.name == 'Single Pana' && row.state == 'OPEN' ? row.choiceNumber : 'N/A'}
+                                  </span>
+                                ) : column.id === 'closePana' ? (
+                                  <span>
+                                    {row.betId.name == 'Single Pana' && row.state == 'CLOSE' ? row.choiceNumber : 'N/A'}
+                                  </span>
+                                ) : column.id === 'openDigit' ? (
+                                  <span>{row.state == 'OPEN' ? row.choiceNumber : 'N/A'}</span>
+                                ) : column.id === 'closeDigit' ? (
+                                  <span>{row.state == 'CLOSE' ? row.choiceNumber : 'N/A'}</span>
+                                ) : column.format && typeof value === 'number' ? (
+                                  column.format(value)
+                                ) : (
+                                  value
+                                )}
+                              </TableCell>
+                            )
+                          })}
+                        </TableRow>
+                      )
+                    })}
                 </TableBody>
               </Table>
             </TableContainer>
             <TablePagination
               rowsPerPageOptions={[10, 25, 100]}
               component='div'
-              count={rowBid.length}
+              count={gameHistoryTotalDoc}
               rowsPerPage={rowsBidPage}
               page={bidPage}
               onPageChange={handleChangeBidPerPage}
@@ -1057,12 +1152,12 @@ function UserDetails() {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {rowWalletSliderFirst
+                          {walletHistory
                             .slice(
                               walletsliderFirstPage * rowWalletSliderFirstPage,
                               walletsliderFirstPage * rowWalletSliderFirstPage + rowWalletSliderFirstPage
                             )
-                            .map(row => {
+                            .map((row, rowIndex) => {
                               return (
                                 <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
                                   {columnWalletSliderFirst.map(column => {
@@ -1070,7 +1165,23 @@ function UserDetails() {
 
                                     return (
                                       <TableCell key={column.id} align={column.align}>
-                                        {column.format && typeof value === 'number' ? column.format(value) : value}
+                                        {column.id === 'name' ? (
+                                          <span>{rowIndex + 1}</span>
+                                        ) : column.id === 'transactionNote' ? (
+                                          <span>{row.transactionName}</span>
+                                        ) : column.id === 'date' ? (
+                                          <span>{moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss')}</span>
+                                        ) : column.id === 'txReqNo' ? (
+                                          <span>{row.transactionId}</span>
+                                        ) : column.id === 'amount' ? (
+                                          <span>
+                                            {row.transactionType == 'DEBIT' ? `${-row.amount} ₹ ` : `${row.amount} ₹`}
+                                          </span>
+                                        ) : column.format && typeof value === 'number' ? (
+                                          column.format(value)
+                                        ) : (
+                                          value
+                                        )}
                                       </TableCell>
                                     )
                                   })}
@@ -1083,7 +1194,7 @@ function UserDetails() {
                     <TablePagination
                       rowsPerPageOptions={[10, 25, 100]}
                       component='div'
-                      count={rowWalletSliderFirst.length}
+                      count={walletHistoryTotalDoc}
                       rowsPerPage={rowWalletSliderFirstPage}
                       page={walletsliderFirstPage}
                       onPageChange={handleChangewalletsliderFirstPage}
