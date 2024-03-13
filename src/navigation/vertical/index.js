@@ -11,7 +11,7 @@ import AlertCircleOutline from 'mdi-material-ui/AlertCircleOutline'
 import GoogleCirclesExtended from 'mdi-material-ui/GoogleCirclesExtended'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { Account, AccountArrowLeft, AccountCash, AccountCheckOutline } from 'mdi-material-ui'
+import { Account, AccountArrowLeft, AccountCash, AccountCheckOutline, AccountDetailsOutline } from 'mdi-material-ui'
 
 const navigation = () => {
   const router = useRouter()
@@ -29,7 +29,7 @@ const navigation = () => {
       path: '/'
     },
     {
-      title: 'Users',
+      title: 'Users Management',
       icon: Account,
       path: '/users'
     },
@@ -43,6 +43,49 @@ const navigation = () => {
       icon: AccountCheckOutline,
       path: '/winners'
     },
+    {
+      sectionTitle: 'Report management'
+    },
+
+    {
+      title: 'User Bid History',
+      icon: AccountDetailsOutline,
+      path: '/report-management/userbid-history'
+    },
+    {
+      title: 'Custom sell Report',
+      icon: AccountDetailsOutline,
+      path: '/report-management/customersell-report'
+    },
+    {
+      title: 'Winning Report',
+      icon: AccountDetailsOutline,
+      path: '/report-management/winning-report'
+    },
+
+    {
+      title: 'Transfer point report',
+      icon: AccountDetailsOutline,
+      path: '/report-management/transferpoint-report'
+    },
+    {
+      title: 'Bid win Report',
+      icon: AccountDetailsOutline,
+      path: '/report-management/bidwin-report'
+    },
+
+    {
+      title: 'Withdraw Report',
+      icon: AccountDetailsOutline,
+      path: '/report-management/withdraw-report'
+    },
+
+    {
+      title: 'Auto Deposit history',
+      icon: AccountDetailsOutline,
+      path: '/report-management/autodeposite'
+    },
+
     {
       sectionTitle: 'Games managment'
     },

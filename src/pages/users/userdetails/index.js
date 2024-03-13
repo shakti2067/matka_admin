@@ -22,7 +22,16 @@ import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { useRouter } from 'next/router'
-import { getPaymentInfo, getUserById, userGameHistory, userWalletHistory } from 'src/helpers'
+import {
+  adminAddBalance,
+  createPin,
+  getPaymentInfo,
+  getUserById,
+  getUserDebitOrCreditWalletHistory,
+  updateUser,
+  userGameHistory,
+  userWalletHistory
+} from 'src/helpers'
 import moment from 'moment'
 
 const columnAddFund = [
@@ -410,16 +419,29 @@ function UserDetails() {
   const [rowWinningHistoryPage, setroWinningHistoryPage] = useState(10)
   const [userDetails, setUserDetails] = useState([])
   const [isPopupOpen, setPopupOpen] = useState(false)
+  const [isPopupOpenChangePass, setPopupOpenChangePass] = useState(false)
+
   let [paymentInfo, setPaymentInfo] = useState([])
   let [walletHistory, setWallerHistory] = useState([])
+  let [creditWalletHistory, setCreditWallerHistory] = useState([])
+  let [debitWalletHistory, setDebitWallerHistory] = useState([])
   let [gameHistory, setGameHistory] = useState([])
   let [gameHistoryTotalDoc, setGameHistoryTotalDoc] = useState(10)
   let [walletHistoryTotalDoc, setWalletHistoryTotalDoc] = useState(10)
+  let [creditWalletHistoryTotalDoc, setCreditWalletHistoryTotalDoc] = useState(10)
+  let [debitWalletHistoryTotalDoc, setDebitWalletHistoryTotalDoc] = useState(10)
 
-  console.log('gameHistory', gameHistory)
+  let [pin, setPin] = useState('')
+  let [amount, setAmount] = useState('')
+  console.log('creditWalletHistory', creditWalletHistory)
+
+  // console.log('paymentInfo', paymentInfo.bankDetails != undefined ? paymentInfo.bankDetails : `NA`)
 
   const togglePopup = () => {
     setPopupOpen(!isPopupOpen)
+  }
+  const togglePopupChangePass = () => {
+    setPopupOpenChangePass(!isPopupOpenChangePass)
   }
 
   const [isPopupOpenAddFund, setPopupOpenAddFund] = useState(false)
@@ -447,7 +469,48 @@ function UserDetails() {
         }
       })
       .catch(e => {
-        console.log('error', error)
+        console.log('error', e)
+      })
+  }
+
+  const createPinApi = () => {
+    let params = {
+      pin: pin
+    }
+    createPin(userId, params)
+      .then(data => {
+        if (data.success) {
+          console.log('data', data)
+          getUserApi()
+          setPopupOpen(!isPopupOpen)
+          setPin('')
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(e => {
+        console.log('error', e)
+      })
+  }
+
+  const adminAddBalanceApi = () => {
+    let params = {
+      amount: parseInt(amount),
+      mobileNumber: userDetails.mobile
+    }
+    adminAddBalance(params)
+      .then(data => {
+        if (data.success) {
+          console.log('data', data)
+          getUserApi()
+          setPopupOpenAddFund(!isPopupOpenAddFund)
+          setAmount('')
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(e => {
+        console.log('error', e)
       })
   }
 
@@ -462,7 +525,7 @@ function UserDetails() {
         }
       })
       .catch(e => {
-        console.log('error', error)
+        console.log('error', e)
       })
   }
 
@@ -477,7 +540,37 @@ function UserDetails() {
         }
       })
       .catch(e => {
-        console.log('error', error)
+        console.log('e', e)
+      })
+  }
+
+  const getUserCreditWalletHistoryApi = () => {
+    getUserDebitOrCreditWalletHistory(userId, 'CREDIT')
+      .then(data => {
+        if (data.success) {
+          setCreditWallerHistory(data.data)
+          setDebitWalletHistoryTotalDoc(data.totalDocument)
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(e => {
+        console.log('e', e)
+      })
+  }
+
+  const getUserDebitWalletHistoryApi = () => {
+    getUserDebitOrCreditWalletHistory(userId, 'DEBIT')
+      .then(data => {
+        if (data.success) {
+          setDebitWallerHistory(data.data)
+          setCreditWalletHistoryTotalDoc(data.totalDocument)
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(e => {
+        console.log('e', e)
       })
   }
 
@@ -492,6 +585,67 @@ function UserDetails() {
         }
       })
       .catch(e => {
+        console.log('error', error)
+      })
+  }
+
+  const handleActiveChange = event => {
+    let params = {
+      userId: event.target.value,
+      isActive: event.target.checked
+    }
+
+    updateUser(params)
+      .then(data => {
+        if (data.success) {
+          console.log('data', data)
+
+          getUserApi()
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(error => {
+        console.log('error', error)
+      })
+  }
+
+  const handleBettingChange = event => {
+    let params = {
+      userId: event.target.value,
+      isBetting: event.target.checked
+    }
+
+    updateUser(params)
+      .then(data => {
+        if (data.success) {
+          console.log('data', data)
+          getUserApi()
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(error => {
+        console.log('error', error)
+      })
+  }
+
+  const handleTransferChange = event => {
+    let params = {
+      userId: event.target.value,
+      isTransfer: event.target.checked
+    }
+
+    updateUser(params)
+      .then(data => {
+        if (data.success) {
+          console.log('data', data)
+          getUserApi()
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(error => {
         console.log('error', error)
       })
   }
@@ -540,6 +694,45 @@ function UserDetails() {
       userData: moment(userDetails.updatedAt).format('YYYY-MM-DD HH:mm:ss')
     }
   ]
+  const collumnPayment = [
+    {
+      id: 'Bank Name :',
+      userId:
+        paymentInfo.bankDetails != null && paymentInfo.bankDetails.bankName !== ''
+          ? paymentInfo.bankDetails.bankName
+          : 'NA',
+      data: 'Branch Address :',
+      userData:
+        paymentInfo.bankDetails != null && paymentInfo.bankDetails.branchAddress !== ''
+          ? paymentInfo.bankDetails.branchAddress
+          : 'NA'
+      // newData: '',
+      // newUserData: 'N/A'
+    },
+    {
+      id: 'A/c Holder Name :',
+      userId:
+        paymentInfo.bankDetails != null && paymentInfo.bankDetails.accountHolderName !== ''
+          ? paymentInfo.bankDetails.accountHolderName
+          : 'NA',
+      data: 'A/c Number :',
+      userData:
+        paymentInfo.bankDetails != null && paymentInfo.bankDetails.accountNumber !== ''
+          ? paymentInfo.bankDetails.accountNumber
+          : 'NA',
+      newData: 'IFSC Code :',
+      newUserData:
+        paymentInfo.bankDetails != null && paymentInfo.bankDetails.ifsc !== '' ? paymentInfo.bankDetails.ifsc : 'NA'
+    },
+    {
+      id: 'PhonePe No. :',
+      userId: paymentInfo.phonePayNumber ? paymentInfo.phonePayNumber : `N/A`,
+      data: 'Google Pay No. :',
+      userData: paymentInfo.googlePayNumber ? paymentInfo.googlePayNumber : `N/A`,
+      newData: 'Paytm No. :',
+      newUserData: paymentInfo.paytmNumber ? paymentInfo.paytmNumber : `N/A`
+    }
+  ]
 
   useEffect(() => {
     getUserApi()
@@ -549,6 +742,8 @@ function UserDetails() {
     getPaymentInfoApi()
     userWalletHistoryApi()
     userGameHistoryApi()
+    getUserCreditWalletHistoryApi()
+    getUserDebitWalletHistoryApi()
   }, [])
   const today = new Date().toISOString().split('T')[0]
 
@@ -610,33 +805,6 @@ function UserDetails() {
     setWalletsliderThirdPage(0)
   }
 
-  const collumnPayment = [
-    {
-      id: 'Bank Name :',
-      userId: 'N/A',
-      data: 'Branch Address :',
-      userData: 'N/A',
-      newData: '',
-      newUserData: 'N/A'
-    },
-    {
-      id: 'A/c Holder Name :',
-      userId: 'N/A',
-      data: 'A/c Number :',
-      userData: 'N/A',
-      newData: 'IFSC Code :',
-      newUserData: 'N/A'
-    },
-    {
-      id: 'PhonePe No. :',
-      userId: 'N/A',
-      data: 'Google Pay No. :',
-      userData: 'N/A',
-      newData: 'Paytm No. :',
-      newUserData: 'N/A'
-    }
-  ]
-
   return (
     <div>
       <div>
@@ -669,22 +837,22 @@ function UserDetails() {
                   <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
                     <h5 style={{ margin: '0', marginRight: '5px' }}>Active:</h5>
                     {/* <AntSwitch /> */}
-                    <Switch value={userDetails._id} checked={userDetails.isActive} />
+                    <Switch value={userDetails._id} checked={userDetails.isActive} onClick={handleActiveChange} />
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
                     <h5 style={{ margin: '0', marginRight: '5px' }}>Batting:</h5>
-                    <Switch value={userDetails._id} checked={userDetails.isBetting} />
+                    <Switch value={userDetails._id} checked={userDetails.isBetting} onClick={handleBettingChange} />
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
                     <h5 style={{ margin: '0', marginRight: '5px' }}>TP:</h5>
-                    <Switch value={userDetails._id} checked={userDetails.isTransfer} />
+                    <Switch value={userDetails._id} checked={userDetails.isTransfer} onClick={handleTransferChange} />
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
                     <h5 style={{ margin: '0', marginRight: '5px' }}>Logout Status:</h5>
                     {/* <Button style={{ backgroundColor: '#f46a6a', color: 'white', padding: '5px', fontSize: '10px' }}>
                       Logout Now
                     </Button> */}
-                    <Switch value={userDetails._id} checked={userDetails.isActive} />
+                    <Switch value={userDetails._id} checked={userDetails.isActive} onClick={handleActiveChange} />
                     {userDetails.isActive ? 'Login' : 'Logout'}
                   </div>
                 </div>
@@ -762,8 +930,22 @@ function UserDetails() {
                               width: '95%',
                               marginBottom: '20px'
                             }}
+                            inputProps={{
+                              maxLength: 4,
+                              inputMode: 'numeric'
+                            }}
+                            value={pin}
+                            onChange={e => {
+                              const inputValue = e.target.value
+                              if (inputValue.length <= 4) {
+                                setPin(inputValue)
+                              }
+                            }}
                           />
-                          <Button style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px' }}>
+                          <Button
+                            style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px' }}
+                            onClick={createPinApi}
+                          >
                             Submit
                           </Button>
                         </div>
@@ -771,9 +953,60 @@ function UserDetails() {
                     )}
                   </div>
                   <div>
-                    <Button style={{ backgroundColor: '#D31FA4', color: 'white', fontSize: '13px' }}>
+                    <Button
+                      style={{ backgroundColor: '#D31FA4', color: 'white', fontSize: '13px' }}
+                      onClick={togglePopupChangePass}
+                    >
                       Change password
                     </Button>
+                    {isPopupOpenChangePass && (
+                      <div>
+                        <div
+                          className='overlay'
+                          onClick={togglePopupChangePass}
+                          style={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                            zIndex: 9998 // Ensure the overlay is below the popup but above the rest of the content
+                          }}
+                        />
+                        <div
+                          style={{
+                            borderRadius: '5px',
+                            width: '35%',
+                            position: 'fixed',
+                            top: '20%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            backgroundColor: '#F7F7F7',
+                            padding: '20px',
+                            zIndex: 9999 // Ensure the popup is above the overlay
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <Typography variant='h6'>Change Password</Typography>
+                            <div onClick={togglePopupChangePass} style={{ cursor: 'pointer' }}>
+                              &#10006;
+                            </div>
+                          </div>
+                          <Typography style={{ margin: '10px 0 5px 0' }}>Enter New password</Typography>
+                          <TextField
+                            type='text'
+                            style={{
+                              width: '95%',
+                              marginBottom: '20px'
+                            }}
+                          />
+                          <Button style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px' }}>
+                            Submit
+                          </Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <hr style={{ border: '1px solid #F2F1F1 ' }} />
@@ -830,8 +1063,16 @@ function UserDetails() {
                               width: '95%',
                               marginBottom: '20px'
                             }}
+                            value={amount}
+                            onChange={e => {
+                              const inputValue = e.target.value
+                              setAmount(inputValue)
+                            }}
                           />
-                          <Button style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px' }}>
+                          <Button
+                            style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px' }}
+                            onClick={adminAddBalanceApi}
+                          >
                             Submit
                           </Button>
                         </div>
@@ -1173,6 +1414,8 @@ function UserDetails() {
                                           <span>{moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss')}</span>
                                         ) : column.id === 'txReqNo' ? (
                                           <span>{row.transactionId}</span>
+                                        ) : column.id === 'transferNote' && row.transactionName.includes('Transfer') ? (
+                                          <span>{row.transactionName}</span>
                                         ) : column.id === 'amount' ? (
                                           <span>
                                             {row.transactionType == 'DEBIT' ? `${-row.amount} ₹ ` : `${row.amount} ₹`}
@@ -1229,12 +1472,12 @@ function UserDetails() {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {rowWalletSliderSecond
+                          {creditWalletHistory
                             .slice(
                               walletsliderSecondPage * rowWalletSliderSecondPage,
                               walletsliderSecondPage * rowWalletSliderSecondPage + rowWalletSliderSecondPage
                             )
-                            .map(row => {
+                            .map((row, rowIndex) => {
                               return (
                                 <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
                                   {columnWalletSliderSecond.map(column => {
@@ -1242,7 +1485,25 @@ function UserDetails() {
 
                                     return (
                                       <TableCell key={column.id} align={column.align}>
-                                        {column.format && typeof value === 'number' ? column.format(value) : value}
+                                        {column.id === 'name' ? (
+                                          <span>{rowIndex + 1}</span>
+                                        ) : column.id === 'transactionNote' ? (
+                                          <span>{row.transactionName}</span>
+                                        ) : column.id === 'date' ? (
+                                          <span>{moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss')}</span>
+                                        ) : column.id === 'txReqNo' ? (
+                                          <span>{row.transactionId}</span>
+                                        ) : column.id === 'transferNote' && row.transactionName.includes('Transfer') ? (
+                                          <span>{row.transactionName}</span>
+                                        ) : column.id === 'amount' ? (
+                                          <span>
+                                            {row.transactionType == 'DEBIT' ? `${-row.amount} ₹ ` : `${row.amount} ₹`}
+                                          </span>
+                                        ) : column.format && typeof value === 'number' ? (
+                                          column.format(value)
+                                        ) : (
+                                          value
+                                        )}
                                       </TableCell>
                                     )
                                   })}
@@ -1255,7 +1516,7 @@ function UserDetails() {
                     <TablePagination
                       rowsPerPageOptions={[10, 25, 100]}
                       component='div'
-                      count={rowWalletSliderSecond.length}
+                      count={creditWalletHistoryTotalDoc}
                       rowsPerPage={rowWalletSliderSecondPage}
                       page={walletsliderSecondPage}
                       onPageChange={handleChangewalletsliderSecondPage}
@@ -1290,12 +1551,12 @@ function UserDetails() {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {rowWalletSliderThird
+                          {debitWalletHistory
                             .slice(
                               walletsliderThirdPage * rowWalletSliderThirdPage,
                               walletsliderThirdPage * rowWalletSliderThirdPage + rowWalletSliderThirdPage
                             )
-                            .map(row => {
+                            .map((row, rowIndex) => {
                               return (
                                 <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
                                   {columnWalletSliderThird.map(column => {
@@ -1303,7 +1564,25 @@ function UserDetails() {
 
                                     return (
                                       <TableCell key={column.id} align={column.align}>
-                                        {column.format && typeof value === 'number' ? column.format(value) : value}
+                                        {column.id === 'name' ? (
+                                          <span>{rowIndex + 1}</span>
+                                        ) : column.id === 'transactionNote' ? (
+                                          <span>{row.transactionName}</span>
+                                        ) : column.id === 'date' ? (
+                                          <span>{moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss')}</span>
+                                        ) : column.id === 'txReqNo' ? (
+                                          <span>{row.transactionId}</span>
+                                        ) : column.id === 'transferNote' && row.transactionName.includes('Transfer') ? (
+                                          <span>{row.transactionName}</span>
+                                        ) : column.id === 'amount' ? (
+                                          <span>
+                                            {row.transactionType == 'DEBIT' ? `${-row.amount} ₹ ` : `${row.amount} ₹`}
+                                          </span>
+                                        ) : column.format && typeof value === 'number' ? (
+                                          column.format(value)
+                                        ) : (
+                                          value
+                                        )}
                                       </TableCell>
                                     )
                                   })}
@@ -1316,7 +1595,7 @@ function UserDetails() {
                     <TablePagination
                       rowsPerPageOptions={[10, 25, 100]}
                       component='div'
-                      count={rowWalletSliderThird.length}
+                      count={debitWalletHistoryTotalDoc}
                       rowsPerPage={rowWalletSliderThirdPage}
                       page={walletsliderThirdPage}
                       onPageChange={handleChangewalletsliderThirdPage}

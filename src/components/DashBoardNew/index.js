@@ -237,7 +237,7 @@ function DashBoardNew() {
             </div>
             <div>
               <Card style={{ padding: '20px', marginTop: '20px' }}>
-                <h4>Total Bids On Single Ank Of Date 12 March 2024</h4>
+                <h4>Total Bids On Single Ank Of Date 13 March 2024</h4>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', width: '40%' }}>
                     <h5 style={{ margin: '0', fontWeight: '500' }}>Game Name</h5>

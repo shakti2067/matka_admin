@@ -25,7 +25,11 @@ import {
   getPaymentInfo,
   userWalletHistory,
   userGameHistory,
-  updateBatCategory
+  updateBatCategory,
+  createPin,
+  adminAddBalance,
+  getUserCount,
+  getUserDebitOrCreditWalletHistory
 } from './service'
 
 export {
@@ -55,5 +59,9 @@ export {
   getPaymentInfo,
   userWalletHistory,
   userGameHistory,
-  updateBatCategory
+  updateBatCategory,
+  createPin,
+  adminAddBalance,
+  getUserCount,
+  getUserDebitOrCreditWalletHistory
 }

@@ -14,8 +14,9 @@ import Switch from '@mui/material/Switch'
 import { Button, FormControlLabel, FormGroup } from '@mui/material'
 import moment from 'moment'
 import { useRouter } from 'next/router'
+import { updateBatCategory } from 'src/helpers'
 
-const GameTable = ({ columns = [], rows = [] }) => {
+const GameTable = ({ columns = [], rows = [], refreshPage }) => {
   // ** States
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
@@ -29,6 +30,21 @@ const GameTable = ({ columns = [], rows = [] }) => {
   const handleChangeRowsPerPage = event => {
     setRowsPerPage(+event.target.value)
     setPage(0)
+  }
+
+  const handleActiveChange = event => {
+    let params = {
+      betCategoryId: event.target.value,
+      isActive: event.target.checked
+    }
+
+    updateBatCategory(params)
+      .then(data => {
+        refreshPage()
+      })
+      .catch(err => {
+        console.log(err, 'this is error')
+      })
   }
 
   return (
@@ -54,7 +70,8 @@ const GameTable = ({ columns = [], rows = [] }) => {
                     return (
                       <TableCell key={index} align={column.align} onClick={() => {}}>
                         {column.id === 'isActive' ? (
-                          <Switch checked={value} />
+                          // <Switch checked={value} />
+                          <Switch checked={row.isActive} value={row._id} onClick={handleActiveChange} />
                         ) : column.id === 'no' ? (
                           <span>{rowIndex + 1}</span>
                         ) : column.id === 'action' ? (

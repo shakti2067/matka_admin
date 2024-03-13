@@ -12,6 +12,8 @@ import TableContainer from '@mui/material/TableContainer'
 import TablePagination from '@mui/material/TablePagination'
 import InputBox from 'src/components/InputBox'
 import { useRouter } from 'next/router'
+import { getBetCategory, getUserCount } from 'src/helpers'
+import moment from 'moment'
 
 const columnFundRequest = [
   {
@@ -69,6 +71,13 @@ const rowFundRequest = [
 ]
 function DashBoardNew() {
   const router = useRouter()
+  let [bid, setBid] = useState([])
+  const [selectedGameValue, setSelectedGameValue] = useState(0)
+  const [selectedMarketTimeValue, setSelectedMarketTimeValue] = useState(0)
+  let [userCount, setUserCount] = useState('')
+
+  console.log('userCount', userCount)
+
   useEffect(() => {
     let data = window?.localStorage.getItem('user')
     if (data == null || data == '') {
@@ -86,6 +95,41 @@ function DashBoardNew() {
     setRowsFundRequestPerPage(+event.target.value)
     setFundRequestPage(0)
   }
+
+  const handleGameSelectChange = event => {
+    setSelectedGameValue(event.target.value)
+  }
+  const handleMarketTimeChange = event => {
+    setSelectedMarketTimeValue(event.target.value)
+  }
+
+  setSelectedMarketTimeValue
+
+  let getAllBids = () => {
+    getBetCategory()
+      .then(data => {
+        setBid(data.data)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+  let getUserCountApi = () => {
+    getUserCount()
+      .then(data => {
+        setUserCount(data.data)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+  useEffect(() => {
+    getAllBids()
+    getUserCountApi()
+  }, [])
+
   return (
     <div>
       <div>
@@ -131,11 +175,11 @@ function DashBoardNew() {
                   <h5 style={{ margin: '5px', fontWeight: '400' }}>Admin</h5>
                 </div>
                 <div style={{}}>
-                  <h4 style={{ margin: '5px' }}>6</h4>
+                  <h4 style={{ margin: '5px' }}>{userCount.unApproveUserCount}</h4>
                   <h5 style={{ margin: '5px', fontWeight: '400' }}>Unapproved Users</h5>
                 </div>
                 <div>
-                  <h4 style={{ margin: '5px' }}>64</h4>
+                  <h4 style={{ margin: '5px' }}>{userCount.approveUserCount}</h4>
                   <h5 style={{ margin: '5px', fontWeight: '400' }}>Approved Users</h5>
                 </div>
               </div>
@@ -154,7 +198,7 @@ function DashBoardNew() {
               >
                 <div>
                   <h5 style={{ margin: '5px' }}>Users</h5>
-                  <h3 style={{ margin: '5px' }}>70</h3>
+                  <h3 style={{ margin: '5px' }}>{userCount.totalUser}</h3>
                 </div>
                 <Icon
                   path={mdiAccountOutline}
@@ -179,7 +223,7 @@ function DashBoardNew() {
               >
                 <div>
                   <h5 style={{ margin: '5px' }}>Games</h5>
-                  <h3 style={{ margin: '5px' }}>33</h3>
+                  <h3 style={{ margin: '5px' }}>{userCount.totalGame}</h3>
                 </div>
                 <Icon
                   path={mdiPackageDown}
@@ -221,22 +265,30 @@ function DashBoardNew() {
             </div>
             <div>
               <Card style={{ padding: '20px', marginTop: '20px' }}>
-                <h4>Total Bids On Single Ank Of Date 12 March 2024</h4>
+                <h4>{`Total Bids On Single Ank Of Date ${moment(new Date()).format('LL')}`}</h4>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', width: '40%' }}>
                     <h5 style={{ margin: '0', fontWeight: '500' }}>Game Name</h5>
-                    <Select defaultValue='active' style={{ height: '40px' }}>
-                      <MenuItem value='active'>Active</MenuItem>
-                      <MenuItem value='inactive'>Inactive</MenuItem>
-                      <MenuItem value='pending'>Pending</MenuItem>
+                    <Select style={{ height: '40px' }} value={selectedGameValue} onChange={handleGameSelectChange}>
+                      <MenuItem value={0}>-- Select game name --</MenuItem>
+                      {bid &&
+                        bid.map(d => (
+                          <MenuItem key={d._id} value={d._id}>
+                            {d.name}
+                          </MenuItem>
+                        ))}
                     </Select>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', width: '40%' }}>
                     <h5 style={{ margin: '0', fontWeight: '500' }}>Market Time</h5>
-                    <Select defaultValue='active' style={{ height: '40px' }}>
-                      <MenuItem value='active'>Active</MenuItem>
-                      <MenuItem value='inactive'>Inactive</MenuItem>
-                      <MenuItem value='pending'>Pending</MenuItem>
+                    <Select
+                      style={{ height: '40px' }}
+                      value={selectedMarketTimeValue}
+                      onChange={handleMarketTimeChange}
+                    >
+                      <MenuItem value={0}>-- Select Market time --</MenuItem>
+                      <MenuItem value='active'>Open Market</MenuItem>
+                      <MenuItem value='inactive'>Close Market</MenuItem>
                     </Select>
                   </div>
                   <div>
@@ -252,10 +304,14 @@ function DashBoardNew() {
             <h4 style={{ marginTop: '0' }}>Market Bid Details</h4>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <h5 style={{ margin: '0', fontWeight: '500' }}>Game Name</h5>
-              <Select defaultValue='active' style={{ height: '40px' }}>
-                <MenuItem value='active'>Active</MenuItem>
-                <MenuItem value='inactive'>Inactive</MenuItem>
-                <MenuItem value='pending'>Pending</MenuItem>
+              <Select style={{ height: '40px' }} value={selectedGameValue} onChange={handleGameSelectChange}>
+                <MenuItem value={0}>-- Select game name --</MenuItem>
+                {bid &&
+                  bid.map(d => (
+                    <MenuItem key={d._id} value={d._id}>
+                      {d.name}
+                    </MenuItem>
+                  ))}
               </Select>
             </div>
             <h2 style={{ marginBottom: '5px' }}>125</h2>
@@ -277,7 +333,7 @@ function DashBoardNew() {
                   <h2 style={{ margin: '3px' }}>0</h2>
                   <h5 style={{ margin: '0', fontWeight: '500' }}>Total Bid Amount</h5>
                 </div>
-                <h5 style={{ margin: '0', backgroundColor: '#34c38f', color: 'white', fontWeight: '500' }}>Ank 0</h5>
+                <h5 style={{ margin: '0', backgroundColor: '#34c38f', color: 'white', fontWeight: '500' }}>Ank 1</h5>
               </div>
               <div style={{ textAlign: 'center', border: '1px solid #50a5f1', borderRadius: '5px' }}>
                 <div style={{ padding: '8px' }}>
@@ -285,7 +341,7 @@ function DashBoardNew() {
                   <h2 style={{ margin: '3px' }}>0</h2>
                   <h5 style={{ margin: '0', fontWeight: '500' }}>Total Bid Amount</h5>
                 </div>
-                <h5 style={{ margin: '0', backgroundColor: '#50a5f1', color: 'white', fontWeight: '500' }}>Ank 0</h5>
+                <h5 style={{ margin: '0', backgroundColor: '#50a5f1', color: 'white', fontWeight: '500' }}>Ank 2</h5>
               </div>
               <div style={{ textAlign: 'center', border: '1px solid #f1b44c', borderRadius: '5px' }}>
                 <div style={{ padding: '8px' }}>
@@ -293,7 +349,7 @@ function DashBoardNew() {
                   <h2 style={{ margin: '3px' }}>0</h2>
                   <h5 style={{ margin: '0', fontWeight: '500' }}>Total Bid Amount</h5>
                 </div>
-                <h5 style={{ margin: '0', backgroundColor: '#f1b44c', color: 'white', fontWeight: '500' }}>Ank 0</h5>
+                <h5 style={{ margin: '0', backgroundColor: '#f1b44c', color: 'white', fontWeight: '500' }}>Ank 3</h5>
               </div>
               <div style={{ textAlign: 'center', border: '1px solid #af3ede', borderRadius: '5px' }}>
                 <div style={{ padding: '8px' }}>
@@ -301,7 +357,7 @@ function DashBoardNew() {
                   <h2 style={{ margin: '3px' }}>0</h2>
                   <h5 style={{ margin: '0', fontWeight: '500' }}>Total Bid Amount</h5>
                 </div>
-                <h5 style={{ margin: '0', backgroundColor: '#af3ede', color: 'white', fontWeight: '500' }}>Ank 0</h5>
+                <h5 style={{ margin: '0', backgroundColor: '#af3ede', color: 'white', fontWeight: '500' }}>Ank 4</h5>
               </div>
             </div>
             <div style={{ display: 'flex', gap: '5px', justifyContent: 'space-around' }}>
@@ -311,7 +367,7 @@ function DashBoardNew() {
                   <h2 style={{ margin: '3px' }}>0</h2>
                   <h5 style={{ margin: '0', fontWeight: '500' }}>Total Bid Amount</h5>
                 </div>
-                <h5 style={{ margin: '0', backgroundColor: '#f1673e', color: 'white', fontWeight: '500' }}>Ank 0</h5>
+                <h5 style={{ margin: '0', backgroundColor: '#f1673e', color: 'white', fontWeight: '500' }}>Ank 5</h5>
               </div>
               <div style={{ textAlign: 'center', border: '1px solid #ea31ba', borderRadius: '5px' }}>
                 <div style={{ padding: '8px' }}>
@@ -319,7 +375,7 @@ function DashBoardNew() {
                   <h2 style={{ margin: '3px' }}>0</h2>
                   <h5 style={{ margin: '0', fontWeight: '500' }}>Total Bid Amount</h5>
                 </div>
-                <h5 style={{ margin: '0', backgroundColor: '#ea31ba', color: 'white', fontWeight: '500' }}>Ank 0</h5>
+                <h5 style={{ margin: '0', backgroundColor: '#ea31ba', color: 'white', fontWeight: '500' }}>Ank 6</h5>
               </div>
               <div style={{ textAlign: 'center', border: '1px solid #5a3cff', borderRadius: '5px' }}>
                 <div style={{ padding: '8px' }}>
@@ -327,7 +383,7 @@ function DashBoardNew() {
                   <h2 style={{ margin: '3px' }}>0</h2>
                   <h5 style={{ margin: '0', fontWeight: '500' }}>Total Bid Amount</h5>
                 </div>
-                <h5 style={{ margin: '0', backgroundColor: '#5a3cff', color: 'white', fontWeight: '500' }}>Ank 0</h5>
+                <h5 style={{ margin: '0', backgroundColor: '#5a3cff', color: 'white', fontWeight: '500' }}>Ank 7</h5>
               </div>
               <div style={{ textAlign: 'center', border: '1px solid #ff3c84', borderRadius: '5px' }}>
                 <div style={{ padding: '8px' }}>
@@ -335,7 +391,7 @@ function DashBoardNew() {
                   <h2 style={{ margin: '3px' }}>0</h2>
                   <h5 style={{ margin: '0', fontWeight: '500' }}>Total Bid Amount</h5>
                 </div>
-                <h5 style={{ margin: '0', backgroundColor: '#ff3c84', color: 'white', fontWeight: '500' }}>Ank 0</h5>
+                <h5 style={{ margin: '0', backgroundColor: '#ff3c84', color: 'white', fontWeight: '500' }}>Ank 8</h5>
               </div>
               <div style={{ textAlign: 'center', border: '1px solid #0dcebc', borderRadius: '5px' }}>
                 <div style={{ padding: '8px' }}>
@@ -343,7 +399,7 @@ function DashBoardNew() {
                   <h2 style={{ margin: '3px' }}>0</h2>
                   <h5 style={{ margin: '0', fontWeight: '500' }}>Total Bid Amount</h5>
                 </div>
-                <h5 style={{ margin: '0', backgroundColor: '#0dcebc', color: 'white', fontWeight: '500' }}>Ank 0</h5>
+                <h5 style={{ margin: '0', backgroundColor: '#0dcebc', color: 'white', fontWeight: '500' }}>Ank 9</h5>
               </div>
             </div>
           </Card>

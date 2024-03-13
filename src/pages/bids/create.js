@@ -92,6 +92,19 @@ export default function CreateBidPage() {
   let createBid = () => {
     if (data != null) {
       console.log('edit api')
+
+      let params = {
+        betCategoryId: data._id,
+        name: form.name
+      }
+
+      updateBatCategory(params)
+        .then(data => {
+          router.back()
+        })
+        .catch(err => {
+          console.log(err, 'this is error')
+        })
     } else {
       let { name, startTime, endTime } = form
 

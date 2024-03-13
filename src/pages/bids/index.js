@@ -44,6 +44,10 @@ export default function BidsPage() {
     getAllBids()
   }, [])
 
+  const isRefresh = () => {
+    getAllBids()
+  }
+
   let getAllBids = () => {
     getBetCategory()
       .then(data => {
@@ -72,7 +76,7 @@ export default function BidsPage() {
       </Grid>
       <Grid item xs={12}>
         <Card>
-          <GameTable columns={columns} rows={rows} />
+          <GameTable columns={columns} rows={rows} refreshPage={isRefresh} />
         </Card>
       </Grid>
     </Grid>

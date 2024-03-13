@@ -300,6 +300,17 @@ export let userWalletHistory = userId => {
     })
 }
 
+export let getUserDebitOrCreditWalletHistory = (userId, transactionType) => {
+  return apis
+    .get(`/game/getUserWalletHistory?pageNumber=1&pageSize=100&userId=${userId}&transactionType=${transactionType}`)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
 export let userGameHistory = userId => {
   return apis
     .get(`/game/getGameHistory?pageNumber=1&pageSize=100&userId=${userId}`)
@@ -314,6 +325,39 @@ export let userGameHistory = userId => {
 export let updateBatCategory = data => {
   return apis
     .post('/game/updateBatCategory', data)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let createPin = (userId, data) => {
+  return apis
+    .post(`/auth/createPin?userId=${userId}`, data)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let adminAddBalance = data => {
+  return apis
+    .post('/game/adminAddBalance', data)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let getUserCount = () => {
+  return apis
+    .get(`/master/getUserCount`)
     .then(res => {
       return res.data
     })
