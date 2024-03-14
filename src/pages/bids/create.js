@@ -15,7 +15,7 @@ import {
 import { useRouter } from 'next/router'
 import React, { useDebugValue, useEffect, useState } from 'react'
 import { createBids, updateBatCategory } from 'src/helpers'
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
+// import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { TimePicker } from '@mui/x-date-pickers/TimePicker'
@@ -199,7 +199,7 @@ export default function CreateBidPage() {
                   </FormControl> */}
                   {data != null ? null : (
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={['TimePicker']}>
+                      <Box components={['TimePicker']}>
                         <TimePicker
                           label={'Open time'}
                           value={form.startTime}
@@ -207,7 +207,7 @@ export default function CreateBidPage() {
                             setForm({ ...form, startTime: dayjs(newValue).format('h:mm A') })
                           }}
                         />
-                      </DemoContainer>
+                      </Box>
                     </LocalizationProvider>
                   )}
                 </Grid>
@@ -240,7 +240,7 @@ export default function CreateBidPage() {
 
                   {data != null ? null : (
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={['TimePicker']}>
+                      <Box components={['TimePicker']}>
                         <TimePicker
                           label={'Close time'}
                           value={form.endTime}
@@ -248,7 +248,7 @@ export default function CreateBidPage() {
                             setForm({ ...form, endTime: dayjs(newValue).format('h:mm A') })
                           }}
                         />
-                      </DemoContainer>
+                      </Box>
                     </LocalizationProvider>
                   )}
                 </Grid>

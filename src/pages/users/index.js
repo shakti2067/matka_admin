@@ -1,4 +1,4 @@
-import { Card, CardHeader, Grid, Input, Typography } from '@mui/material'
+import { Button, Card, CardHeader, Grid, Input, Typography } from '@mui/material'
 
 import React, { useEffect, useState } from 'react'
 import { getUser } from 'src/helpers'
@@ -52,7 +52,14 @@ export default function UsersPage() {
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
-        <Typography variant='h5'>Users</Typography>
+        <Grid container alignItems='center' justifyContent='space-between'>
+          <Grid item>
+            <Typography variant='h5'>Users</Typography>
+          </Grid>
+          {/* <Grid item>
+            <Button variant='outlined'>un approve users</Button>
+          </Grid> */}
+        </Grid>
       </Grid>
       <Grid item xs={12}>
         <Card>

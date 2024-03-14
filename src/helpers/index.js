@@ -29,7 +29,9 @@ import {
   createPin,
   adminAddBalance,
   getUserCount,
-  getUserDebitOrCreditWalletHistory
+  getUserDebitOrCreditWalletHistory,
+  getAllBets,
+  userChangePassword
 } from './service'
 
 export {
@@ -63,5 +65,7 @@ export {
   createPin,
   adminAddBalance,
   getUserCount,
-  getUserDebitOrCreditWalletHistory
+  getUserDebitOrCreditWalletHistory,
+  getAllBets,
+  userChangePassword
 }

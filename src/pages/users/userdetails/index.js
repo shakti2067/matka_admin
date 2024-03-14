@@ -29,6 +29,7 @@ import {
   getUserById,
   getUserDebitOrCreditWalletHistory,
   updateUser,
+  userChangePassword,
   userGameHistory,
   userWalletHistory
 } from 'src/helpers'
@@ -433,7 +434,8 @@ function UserDetails() {
 
   let [pin, setPin] = useState('')
   let [amount, setAmount] = useState('')
-  console.log('creditWalletHistory', creditWalletHistory)
+  let [userPassword, setUserPassword] = useState('')
+  console.log('userPassword', userPassword)
 
   // console.log('paymentInfo', paymentInfo.bankDetails != undefined ? paymentInfo.bankDetails : `NA`)
 
@@ -565,6 +567,28 @@ function UserDetails() {
         if (data.success) {
           setDebitWallerHistory(data.data)
           setCreditWalletHistoryTotalDoc(data.totalDocument)
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(e => {
+        console.log('e', e)
+      })
+  }
+
+  const userChangePasswordApi = () => {
+    let params = {
+      newPassword: userPassword
+    }
+
+    console.log('userId', userId)
+    userChangePassword(userId, params)
+      .then(data => {
+        if (data.success) {
+          console.log('data', data.data)
+          getUserApi()
+          setPopupOpenChangePass(!isPopupOpenChangePass)
+          setUserPassword('')
         } else {
           console.log('error')
         }
@@ -1000,8 +1024,16 @@ function UserDetails() {
                               width: '95%',
                               marginBottom: '20px'
                             }}
+                            value={userPassword}
+                            onChange={e => {
+                              const inputValue = e.target.value
+                              setUserPassword(inputValue)
+                            }}
                           />
-                          <Button style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px' }}>
+                          <Button
+                            style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px' }}
+                            onClick={userChangePasswordApi}
+                          >
                             Submit
                           </Button>
                         </div>

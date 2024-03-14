@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Typography,
   Card,
@@ -18,6 +18,8 @@ import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import InputBox from 'src/components/InputBox'
+import dayjs from 'dayjs'
+import { getAllBets, getBetCategory } from 'src/helpers'
 
 const data = [
   { id: 'Digit', age: 'Point' },
@@ -32,8 +34,58 @@ const data = [
   { id: 11, age: 28 }
 ]
 
-function index() {
+function CustomerSellReport() {
   const transposedData = data.length > 0 ? Object.keys(data[0]).map(colName => data.map(row => row[colName])) : []
+
+  const today = new Date()
+
+  let [bid, setBid] = useState([])
+  const [selectedGameValue, setSelectedGameValue] = useState(0)
+  const [selectedGameType, setSelectedGameType] = useState(0)
+  const [gameTypeData, setGameTypeData] = useState([])
+  const [selectedMarketTimeValue, setSelectedMarketTimeValue] = useState(0)
+
+  const handleGameSelectChange = event => {
+    setSelectedGameValue(event.target.value)
+  }
+
+  const handleGameTypeSelectChange = event => {
+    setSelectedGameType(event.target.value)
+  }
+
+  const handleMarketTimeChange = event => {
+    setSelectedMarketTimeValue(event.target.value)
+  }
+
+  let getAllBids = () => {
+    getBetCategory()
+      .then(data => {
+        setBid(data.data)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+  let getAllGames = () => {
+    getAllBets()
+      .then(data => {
+        if (data.success) {
+          setGameTypeData(data.data)
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+  useEffect(() => {
+    getAllBids()
+    getAllGames()
+  }, [])
+
   return (
     <>
       <Card style={{ padding: '20px' }}>
@@ -42,34 +94,41 @@ function index() {
           <FormControl style={{ width: '14rem' }}>
             <Typography>Date</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker />
+              <DatePicker maxDate={dayjs(today)} />
             </LocalizationProvider>
           </FormControl>
           <FormControl>
             <Typography>Game Name</Typography>
-            <Select style={{ width: '18rem' }} defaultValue='USA'>
-              <MenuItem value='USA'>USA</MenuItem>
-              <MenuItem value='UK'>UK</MenuItem>
-              <MenuItem value='Australia'>Australia</MenuItem>
-              <MenuItem value='Germany'>Germany</MenuItem>
+            <Select style={{ width: '18rem' }} value={selectedGameValue} onChange={handleGameSelectChange}>
+              <MenuItem value={0}>-- Select game name --</MenuItem>
+              {bid &&
+                bid.map(d => (
+                  <MenuItem key={d._id} value={d._id}>
+                    {d.name}
+                  </MenuItem>
+                ))}
             </Select>
           </FormControl>
           <FormControl>
             <Typography>Game Type</Typography>
-            <Select style={{ width: '15rem' }} defaultValue='USA'>
-              <MenuItem value='USA'>USA</MenuItem>
-              <MenuItem value='UK'>UK</MenuItem>
-              <MenuItem value='Australia'>Australia</MenuItem>
-              <MenuItem value='Germany'>Germany</MenuItem>
+            <Select style={{ width: '15rem' }} value={selectedGameType} onChange={handleGameTypeSelectChange}>
+              <MenuItem value={0}>-- Select game type --</MenuItem>
+              <MenuItem value={1}>All Type</MenuItem>
+              {gameTypeData &&
+                gameTypeData.map(d => (
+                  <MenuItem key={d._id} value={d._id}>
+                    {d.name}
+                  </MenuItem>
+                ))}
             </Select>
           </FormControl>
           <FormControl>
             <Typography>Session</Typography>
-            <Select style={{ width: '13rem' }} defaultValue='USA'>
-              <MenuItem value='USA'>USA</MenuItem>
-              <MenuItem value='UK'>UK</MenuItem>
-              <MenuItem value='Australia'>Australia</MenuItem>
-              <MenuItem value='Germany'>Germany</MenuItem>
+
+            <Select style={{ width: '13rem' }} value={selectedMarketTimeValue} onChange={handleMarketTimeChange}>
+              <MenuItem value={0}>-- Select Session --</MenuItem>
+              <MenuItem value='active'>Open Market</MenuItem>
+              <MenuItem value='inactive'>Close Market</MenuItem>
             </Select>
           </FormControl>
           <div style={{ display: 'flex', alignItems: 'center', paddingTop: '23px' }}>
@@ -103,4 +162,4 @@ function index() {
   )
 }
 
-export default index
+export default CustomerSellReport

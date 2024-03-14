@@ -103,8 +103,6 @@ function DashBoardNew() {
     setSelectedMarketTimeValue(event.target.value)
   }
 
-  setSelectedMarketTimeValue
-
   let getAllBids = () => {
     getBetCategory()
       .then(data => {

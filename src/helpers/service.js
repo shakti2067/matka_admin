@@ -365,3 +365,25 @@ export let getUserCount = () => {
       return error
     })
 }
+
+export let getAllBets = () => {
+  return apis
+    .get(`/game/getAllBets`)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let userChangePassword = (userId, password) => {
+  return apis
+    .post(`/auth/changePassword?userId=${userId}`, password)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
