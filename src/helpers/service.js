@@ -387,3 +387,25 @@ export let userChangePassword = (userId, password) => {
       return error
     })
 }
+
+export let getWithdrawRequest = userId => {
+  return apis
+    .get(`/game/getWithdrawRequest?pageNumber=1&pageSize=100&userId=${userId}`)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let createWithdrawRequest = user => {
+  return apis
+    .post(`/game/createWithdrawRequest`, user)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}

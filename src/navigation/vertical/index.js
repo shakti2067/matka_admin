@@ -29,7 +29,7 @@ const navigation = () => {
       path: '/'
     },
     {
-      title: 'Users Management',
+      title: 'User Management',
       icon: Account,
       path: '/users'
     },

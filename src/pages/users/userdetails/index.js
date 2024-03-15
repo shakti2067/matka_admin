@@ -25,9 +25,11 @@ import { useRouter } from 'next/router'
 import {
   adminAddBalance,
   createPin,
+  createWithdrawRequest,
   getPaymentInfo,
   getUserById,
   getUserDebitOrCreditWalletHistory,
+  getWithdrawRequest,
   updateUser,
   userChangePassword,
   userGameHistory,
@@ -108,8 +110,8 @@ const columnWithdrawFund = [
     align: 'right'
   },
   {
-    id: 'receiptImage',
-    label: 'Receipt Image',
+    id: 'requestDate',
+    label: 'Request Date',
     minWidth: 170,
     align: 'right'
   },
@@ -420,6 +422,8 @@ function UserDetails() {
   const [rowWinningHistoryPage, setroWinningHistoryPage] = useState(10)
   const [userDetails, setUserDetails] = useState([])
   const [isPopupOpen, setPopupOpen] = useState(false)
+  const [isPopupOpenView, setPopupOpenView] = useState(false)
+
   const [isPopupOpenChangePass, setPopupOpenChangePass] = useState(false)
 
   let [paymentInfo, setPaymentInfo] = useState([])
@@ -427,20 +431,23 @@ function UserDetails() {
   let [creditWalletHistory, setCreditWallerHistory] = useState([])
   let [debitWalletHistory, setDebitWallerHistory] = useState([])
   let [gameHistory, setGameHistory] = useState([])
+  let [withdrawHistory, setWithdrawHistory] = useState([])
   let [gameHistoryTotalDoc, setGameHistoryTotalDoc] = useState(10)
   let [walletHistoryTotalDoc, setWalletHistoryTotalDoc] = useState(10)
   let [creditWalletHistoryTotalDoc, setCreditWalletHistoryTotalDoc] = useState(10)
   let [debitWalletHistoryTotalDoc, setDebitWalletHistoryTotalDoc] = useState(10)
-
+  let [withdrawHistoryTotalDoc, setWithdrawHistoryTotalDoc] = useState(10)
   let [pin, setPin] = useState('')
+  let [withdrawAmount, setWithdrawAmount] = useState('')
   let [amount, setAmount] = useState('')
   let [userPassword, setUserPassword] = useState('')
-  console.log('userPassword', userPassword)
-
-  // console.log('paymentInfo', paymentInfo.bankDetails != undefined ? paymentInfo.bankDetails : `NA`)
+  let [withdrawAmountError, setWithdrawAmountError] = useState('')
 
   const togglePopup = () => {
     setPopupOpen(!isPopupOpen)
+  }
+  const togglePopupView = () => {
+    setPopupOpenView(!isPopupOpenView)
   }
   const togglePopupChangePass = () => {
     setPopupOpenChangePass(!isPopupOpenChangePass)
@@ -513,6 +520,36 @@ function UserDetails() {
       })
       .catch(e => {
         console.log('error', e)
+      })
+  }
+  const adminCreateWithdrawRequestApi = () => {
+    let mobile
+    if (paymentInfo.length > 0) {
+      mobile = paymentInfo.googlePayNumber || paymentInfo.phonePayNumber || paymentInfo.paytmNumber
+      console.log('paymentInfo', paymentInfo)
+      console.log('mobile', mobile)
+    } else {
+      mobile = userDetails.mobile
+      console.log('mobile', mobile)
+    }
+
+    let params = {
+      mobileNumber: mobile,
+      amount: withdrawAmount
+    }
+    createWithdrawRequest(params)
+      .then(data => {
+        if (data.success) {
+          getUserApi()
+          setPopupOpenWithdrow(!isPopupOpenWithdrow)
+          setWithdrawAmount('')
+        } else {
+          console.log('error', data.message)
+          setWithdrawAmountError(data.message)
+        }
+      })
+      .catch(e => {
+        setWithdrawAmountError(e.message)
       })
   }
 
@@ -603,6 +640,21 @@ function UserDetails() {
       .then(data => {
         if (data.success) {
           setGameHistory(data.data)
+          setWithdrawHistoryTotalDoc(data.totalDocument)
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(e => {
+        console.log('error', error)
+      })
+  }
+
+  const getWithdrawRequestApi = () => {
+    getWithdrawRequest(userId)
+      .then(data => {
+        if (data.success) {
+          setWithdrawHistory(data.data)
           setGameHistoryTotalDoc(data.totalDocument)
         } else {
           console.log('error')
@@ -768,6 +820,7 @@ function UserDetails() {
     userGameHistoryApi()
     getUserCreditWalletHistoryApi()
     getUserDebitWalletHistoryApi()
+    getWithdrawRequestApi()
   }, [])
   const today = new Date().toISOString().split('T')[0]
 
@@ -1114,7 +1167,7 @@ function UserDetails() {
                       onClick={togglePopupWithdrow}
                       style={{ backgroundColor: '#f46a6a', color: 'white', fontSize: '13px' }}
                     >
-                      Withdrow Fund
+                      withdraw Fund
                     </Button>
                     {isPopupOpenWithdrow && (
                       <div>
@@ -1157,8 +1210,19 @@ function UserDetails() {
                               width: '95%',
                               marginBottom: '20px'
                             }}
+                            value={withdrawAmount}
+                            onChange={e => {
+                              const inputValue = parseInt(e.target.value)
+                              setWithdrawAmount(inputValue)
+                            }}
                           />
-                          <Button style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px' }}>
+                          {withdrawAmountError ? (
+                            <Typography style={{ color: 'red' }}>{withdrawAmountError}</Typography>
+                          ) : null}
+                          <Button
+                            style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px' }}
+                            onClick={adminCreateWithdrawRequestApi}
+                          >
                             Submit
                           </Button>
                         </div>
@@ -1279,12 +1343,12 @@ function UserDetails() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {rowWithdrawFund
+                  {withdrawHistory
                     .slice(
                       withdrawFundPage * rowsWithdrawFundPage,
                       withdrawFundPage * rowsWithdrawFundPage + rowsWithdrawFundPage
                     )
-                    .map(row => {
+                    .map((row, rowIndex) => {
                       return (
                         <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
                           {columnWithdrawFund.map(column => {
@@ -1292,20 +1356,104 @@ function UserDetails() {
 
                             return (
                               <TableCell key={column.id} align={column.align}>
-                                {column.format && typeof value === 'number' ? column.format(value) : value}
+                                {column.id === 'name' ? (
+                                  <span>{rowIndex + 1}</span>
+                                ) : column.id === 'requestAmount' ? (
+                                  <span>{row.amount}</span>
+                                ) : column.id === 'requestDate' ? (
+                                  <span>{moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss')}</span>
+                                ) : column.id === 'status' ? (
+                                  row.status === 'ACCEPTED' ? (
+                                    <Button style={{ color: 'green', cursor: 'text' }}>{row.status}</Button>
+                                  ) : row.status === 'REJECTED' ? (
+                                    <Button style={{ color: 'red', cursor: 'text' }}>{row.status}</Button>
+                                  ) : (
+                                    <Button style={{ color: 'orange', cursor: 'text' }}>{row.status}</Button>
+                                  )
+                                ) : column.id === 'action' ? (
+                                  <Button variant='outlined' onClick={togglePopupView}>
+                                    view
+                                  </Button>
+                                ) : column.format && typeof value === 'number' ? (
+                                  column.format(value)
+                                ) : (
+                                  value
+                                )}
                               </TableCell>
                             )
                           })}
                         </TableRow>
                       )
                     })}
+                  {isPopupOpenView && (
+                    <div>
+                      <div
+                        className='overlay'
+                        onClick={togglePopupView}
+                        style={{
+                          position: 'fixed',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                          zIndex: 9998 // Ensure the overlay is below the popup but above the rest of the content
+                        }}
+                      />
+                      <div
+                        style={{
+                          borderRadius: '5px',
+                          width: '35%',
+                          position: 'fixed',
+                          top: '20%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          backgroundColor: '#F7F7F7',
+                          padding: '20px',
+                          zIndex: 9999 // Ensure the popup is above the overlay
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <Typography variant='h6'>Withdraw Request Detail</Typography>
+                          <div onClick={togglePopupView} style={{ cursor: 'pointer' }}>
+                            &#10006;
+                          </div>
+                        </div>
+                        <Typography style={{ margin: '10px 0 5px 0' }}>Enter New Pin</Typography>
+                        <TextField
+                          type='number'
+                          style={{
+                            width: '95%',
+                            marginBottom: '20px'
+                          }}
+                          inputProps={{
+                            maxLength: 4,
+                            inputMode: 'numeric'
+                          }}
+                          value={pin}
+                          onChange={e => {
+                            const inputValue = e.target.value
+                            if (inputValue.length <= 4) {
+                              setPin(inputValue)
+                            }
+                          }}
+                        />
+                        <Button
+                          style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px' }}
+                          onClick={() => {}}
+                        >
+                          Submit
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>
             <TablePagination
               rowsPerPageOptions={[10, 25, 100]}
               component='div'
-              count={rowWithdrawFund.length}
+              count={withdrawHistoryTotalDoc}
               rowsPerPage={rowsWithdrawFundPage}
               page={withdrawFundPage}
               onPageChange={handleChangewithdrawFundPerPage}

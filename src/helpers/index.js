@@ -31,7 +31,9 @@ import {
   getUserCount,
   getUserDebitOrCreditWalletHistory,
   getAllBets,
-  userChangePassword
+  userChangePassword,
+  getWithdrawRequest,
+  createWithdrawRequest
 } from './service'
 
 export {
@@ -67,5 +69,7 @@ export {
   getUserCount,
   getUserDebitOrCreditWalletHistory,
   getAllBets,
-  userChangePassword
+  userChangePassword,
+  getWithdrawRequest,
+  createWithdrawRequest
 }
