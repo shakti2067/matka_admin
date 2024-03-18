@@ -12,7 +12,7 @@ import TableContainer from '@mui/material/TableContainer'
 import TablePagination from '@mui/material/TablePagination'
 import InputBox from 'src/components/InputBox'
 import { useRouter } from 'next/router'
-import { getBetCategory, getUserCount } from 'src/helpers'
+import { getBetCategory, getTotalBidAnk, getUserCount } from 'src/helpers'
 import moment from 'moment'
 
 const columnFundRequest = [
@@ -71,12 +71,13 @@ const rowFundRequest = [
 ]
 function DashBoardNew() {
   const router = useRouter()
-  let [bid, setBid] = useState([])
+  const [bid, setBid] = useState([])
   const [selectedGameValue, setSelectedGameValue] = useState(0)
   const [selectedMarketTimeValue, setSelectedMarketTimeValue] = useState(0)
-  let [userCount, setUserCount] = useState('')
+  const [userCount, setUserCount] = useState('')
+  const [totalBidAnk, setTotalBidAnk] = useState('')
 
-  console.log('userCount', userCount)
+  console.log('totalBidAnk', totalBidAnk)
 
   useEffect(() => {
     let data = window?.localStorage.getItem('user')
@@ -117,6 +118,21 @@ function DashBoardNew() {
     getUserCount()
       .then(data => {
         setUserCount(data.data)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+  let getTotalBidAnkApi = () => {
+    let params = {
+      betCategoryId: selectedGameValue,
+      state: selectedMarketTimeValue,
+      date: '2024-03-18'
+    }
+    getTotalBidAnk(params)
+      .then(data => {
+        setTotalBidAnk(data.data)
       })
       .catch(err => {
         console.log(err)
@@ -285,12 +301,17 @@ function DashBoardNew() {
                       onChange={handleMarketTimeChange}
                     >
                       <MenuItem value={0}>-- Select Market time --</MenuItem>
-                      <MenuItem value='active'>Open Market</MenuItem>
-                      <MenuItem value='inactive'>Close Market</MenuItem>
+                      <MenuItem value='OPEN'>Open Market</MenuItem>
+                      <MenuItem value='CLOSE'>Close Market</MenuItem>
                     </Select>
                   </div>
                   <div>
-                    <Button style={{ backgroundColor: '#9155fd', color: 'white', width: '6rem' }}>Get</Button>
+                    <Button
+                      style={{ backgroundColor: '#9155fd', color: 'white', width: '6rem' }}
+                      onClick={getTotalBidAnkApi}
+                    >
+                      Get
+                    </Button>
                   </div>
                 </div>
               </Card>
@@ -315,12 +336,13 @@ function DashBoardNew() {
             <h2 style={{ marginBottom: '5px' }}>125</h2>
             <h5 style={{ margin: '0', fontWeight: '500' }}>Market Amount</h5>
           </Card>
+
           <Card style={{ marginTop: '20px', padding: '20px', marginLeft: '20px', width: '75%' }}>
             <div style={{ display: 'flex', justifyContent: 'space-around', marginBottom: '10px', width: '100%' }}>
               <div style={{ textAlign: 'center', border: '1px solid #556ee6', borderRadius: '5px' }}>
                 <div style={{ padding: '8px' }}>
-                  <h4 style={{ margin: '0', fontWeight: '500', color: '#556ee6' }}>Total Bids 0</h4>
-                  <h2 style={{ margin: '3px' }}>0</h2>
+                  <h4 style={{ margin: '0', fontWeight: '500', color: '#556ee6' }}>Total Bids 01</h4>
+                  <h2 style={{ margin: '3px' }}> 0</h2>
                   <h5 style={{ margin: '0', fontWeight: '500' }}>Total Bid Amount</h5>
                 </div>
                 <h5 style={{ margin: '0', backgroundColor: '#556ee6', color: 'white', fontWeight: '500' }}>Ank 0</h5>

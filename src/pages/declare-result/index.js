@@ -19,6 +19,8 @@ import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import InputBox from 'src/components/InputBox'
 import { useState } from 'react'
+import { getBetCategory } from 'src/helpers'
+import dayjs from 'dayjs'
 
 const columnGameResult = [
   {
@@ -80,10 +82,15 @@ const rowGameResult = [
 ]
 
 function DeclareResult() {
+  const today = new Date()
+
   const [gameResult, setGameResult] = React.useState(0)
   const [rowsGameResult, setRowsGameResult] = React.useState(10)
   const [isPopupOpenDelete, setPopupOpenDelete] = useState(false)
   const [sliderImageId, setSliderImageId] = useState('')
+  const [bid, setBid] = useState([])
+  const [selectedGameValue, setSelectedGameValue] = useState(0)
+  const [selectedMarketTimeValue, setSelectedMarketTimeValue] = useState(0)
 
   const togglePopupDelete = event => {
     setPopupOpenDelete(!isPopupOpenDelete)
@@ -97,6 +104,28 @@ function DeclareResult() {
     setRowsGameResult(+event.target.value)
     setGameResult(0)
   }
+
+  const handleGameSelectChange = event => {
+    setSelectedGameValue(event.target.value)
+  }
+  const handleMarketTimeChange = event => {
+    setSelectedMarketTimeValue(event.target.value)
+  }
+
+  let getAllBids = () => {
+    getBetCategory()
+      .then(data => {
+        setBid(data.data)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+  React.useEffect(() => {
+    getAllBids()
+  }, [])
+
   return (
     <div>
       <Card style={{ padding: '20px' }}>
@@ -105,25 +134,27 @@ function DeclareResult() {
           <div>
             <Typography>Result Date</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker />
+              <DatePicker maxDate={dayjs(today)} />
             </LocalizationProvider>
           </div>
           <FormControl>
             <Typography>Game Name</Typography>
-            <Select style={{ width: '25rem' }} defaultValue='USA'>
-              <MenuItem value='USA'>USA</MenuItem>
-              <MenuItem value='UK'>UK</MenuItem>
-              <MenuItem value='Australia'>Australia</MenuItem>
-              <MenuItem value='Germany'>Germany</MenuItem>
+            <Select style={{ width: '25rem' }} value={selectedGameValue} onChange={handleGameSelectChange}>
+              <MenuItem value={0}>-- Select game name --</MenuItem>
+              {bid &&
+                bid.map(d => (
+                  <MenuItem key={d._id} value={d._id}>
+                    {d.name}
+                  </MenuItem>
+                ))}
             </Select>
           </FormControl>
           <FormControl>
             <Typography>Session</Typography>
-            <Select style={{ width: '15rem' }} defaultValue='USA'>
-              <MenuItem value='USA'>USA</MenuItem>
-              <MenuItem value='UK'>UK</MenuItem>
-              <MenuItem value='Australia'>Australia</MenuItem>
-              <MenuItem value='Germany'>Germany</MenuItem>
+            <Select style={{ width: '15rem' }} value={selectedMarketTimeValue} onChange={handleMarketTimeChange}>
+              <MenuItem value={0}>-- Select Session --</MenuItem>
+              <MenuItem value='active'>Open Market</MenuItem>
+              <MenuItem value='inactive'>Close Market</MenuItem>
             </Select>
           </FormControl>
           <div style={{ alignItems: 'end', display: 'flex' }}>
@@ -148,7 +179,7 @@ function DeclareResult() {
           <div style={{ marginTop: '15px', marginBottom: '10px' }}>
             <Typography>Select Result Date</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker />
+              <DatePicker maxDate={dayjs(today)} />
             </LocalizationProvider>
           </div>
         </div>

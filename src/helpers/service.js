@@ -409,3 +409,26 @@ export let createWithdrawRequest = user => {
       return error
     })
 }
+
+export let getTotalBidAnk = bodyData => {
+  return apis
+    .post(`/game/getTotalBidAnk`, bodyData)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let transferReport = date => {
+  console.log('date', date)
+  return apis
+    .get(`/game/transferReport?pageNumber=1&pageSize=100&date=${date}`)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}

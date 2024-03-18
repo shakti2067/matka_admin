@@ -18,6 +18,8 @@ import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import InputBox from 'src/components/InputBox'
+import dayjs from 'dayjs'
+import { transferReport } from 'src/helpers'
 
 const columnBid = [
   {
@@ -57,9 +59,14 @@ function createBid(name, senderName, receiverName, amount, date) {
 }
 const rowBid = [createBid('India', 'IN', 1324171354, 3287263, 3287263)]
 
-function index() {
+function TransferReport() {
+  const today = new Date()
+
   const [bidPage, setBidPage] = useState(0)
   const [rowsBidPage, setRowsBidPage] = useState(10)
+  const [transferReportData, setTransferReportData] = useState([])
+
+  console.log('transferReportData', transferReportData)
 
   const handleChangeBidPerPage = newPage => {
     setBidPage(newPage)
@@ -67,6 +74,18 @@ function index() {
   const handleChangeRowsBidPerPage = event => {
     setRowsBidPage(+event.target.value)
     // setBidPage(0)
+  }
+
+  let transferReportApi = () => {
+    let date = '2024-03-18'
+
+    transferReport(date)
+      .then(data => {
+        setTransferReportData(data.data)
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
   return (
     <>
@@ -76,11 +95,14 @@ function index() {
           <FormControl style={{ width: '25rem' }}>
             <Typography>Date</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker />
+              <DatePicker maxDate={dayjs(today)} />
             </LocalizationProvider>
           </FormControl>
           <div style={{ display: 'flex', alignItems: 'center', paddingTop: '23px' }}>
-            <Button style={{ backgroundColor: '#9155FD', color: 'white', width: '10rem', height: '3rem' }}>
+            <Button
+              style={{ backgroundColor: '#9155FD', color: 'white', width: '10rem', height: '3rem' }}
+              onClick={transferReportApi}
+            >
               Submit
             </Button>
           </div>
@@ -139,4 +161,4 @@ function index() {
   )
 }
 
-export default index
+export default TransferReport

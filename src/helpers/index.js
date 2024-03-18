@@ -33,7 +33,9 @@ import {
   getAllBets,
   userChangePassword,
   getWithdrawRequest,
-  createWithdrawRequest
+  createWithdrawRequest,
+  getTotalBidAnk,
+  transferReport
 } from './service'
 
 export {
@@ -71,5 +73,7 @@ export {
   getAllBets,
   userChangePassword,
   getWithdrawRequest,
-  createWithdrawRequest
+  createWithdrawRequest,
+  getTotalBidAnk,
+  transferReport
 }
