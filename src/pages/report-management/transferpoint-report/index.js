@@ -20,6 +20,7 @@ import FormControl from '@mui/material/FormControl'
 import InputBox from 'src/components/InputBox'
 import dayjs from 'dayjs'
 import { transferReport } from 'src/helpers'
+import moment from 'moment'
 
 const columnBid = [
   {
@@ -61,13 +62,15 @@ const rowBid = [createBid('India', 'IN', 1324171354, 3287263, 3287263)]
 
 function TransferReport() {
   const today = new Date()
+  console.log('today', dayjs(today).format('YYYY-MM-DD'))
 
   const [bidPage, setBidPage] = useState(0)
   const [rowsBidPage, setRowsBidPage] = useState(10)
   const [transferReportData, setTransferReportData] = useState([])
+  const [totalTransferAmount, setTotalTransferAmount] = useState(0)
+  const [selectDate, setSelectDate] = useState(dayjs(today).format('YYYY-MM-DD'))
 
-  console.log('transferReportData', transferReportData)
-
+  console.log('selectDate', selectDate)
   const handleChangeBidPerPage = newPage => {
     setBidPage(newPage)
   }
@@ -77,11 +80,12 @@ function TransferReport() {
   }
 
   let transferReportApi = () => {
-    let date = '2024-03-18'
+    let date = selectDate
 
     transferReport(date)
       .then(data => {
         setTransferReportData(data.data)
+        setTotalTransferAmount(data.totalTransferAmount)
       })
       .catch(err => {
         console.log(err)
@@ -95,7 +99,13 @@ function TransferReport() {
           <FormControl style={{ width: '25rem' }}>
             <Typography>Date</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker maxDate={dayjs(today)} />
+              <DatePicker
+                maxDate={dayjs(today)}
+                // value={value}
+                onChange={newValue => {
+                  setSelectDate(newValue ? dayjs(newValue).format('YYYY-MM-DD') : null)
+                }}
+              />
             </LocalizationProvider>
           </FormControl>
           <div style={{ display: 'flex', alignItems: 'center', paddingTop: '23px' }}>
@@ -114,7 +124,7 @@ function TransferReport() {
             Transfer List
           </Typography>
           <Button style={{ backgroundColor: '#9155FD', color: 'white', height: '2.5rem', marginRight: '20px' }}>
-            Total Transfer Amount: ₹ 0{' '}
+            Total Transfer Amount: ₹ {totalTransferAmount ? totalTransferAmount : 0}
           </Button>
         </div>
         <TableContainer sx={{ maxHeight: 440 }}>
@@ -144,6 +154,32 @@ function TransferReport() {
                   </TableRow>
                 )
               })}
+
+              {/* {transferReportData
+                .slice(bidPage * rowsBidPage, bidPage * rowsBidPage + rowsBidPage)
+                .map((row, rowIndex) => {
+                  return (
+                    <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
+                      {columnBid.map(column => {
+                        const value = row[column.id]
+
+                        return (
+                          <TableCell key={column.id} align={column.align}>
+                            {column.id == 'name'
+                              ? rowIndex + 1
+                              : column.id == 'senderName'
+                              ? row.userId.name
+                              : column.id == 'date'
+                              ? row.createdAt
+                              : column.format && typeof value === 'number'
+                              ? column.format(value)
+                              : value}
+                          </TableCell>
+                        )
+                      })}
+                    </TableRow>
+                  )
+                })} */}
             </TableBody>
           </Table>
         </TableContainer>

@@ -78,7 +78,7 @@ const GameTable = ({ columns = [], rows = [], refreshPage }) => {
                           <div>
                             <Button
                               variant='contained'
-                              style={{ marginRight: 5 }}
+                              style={{ marginRight: 5, color: 'white' }}
                               //   onClick={() => {
                               //     router.push('/bids/create')
                               //   }}
@@ -93,6 +93,7 @@ const GameTable = ({ columns = [], rows = [], refreshPage }) => {
                             </Button>
                             <Button
                               variant='contained'
+                              style={{ color: 'white' }}
                               onClick={() => {
                                 router.push({
                                   pathname: '//bids/marketoffday',
