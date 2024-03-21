@@ -5,6 +5,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import {
   Button,
   Card,
+  Grid,
   Table,
   TableBody,
   TableCell,
@@ -12,6 +13,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  TextField,
   Typography
 } from '@mui/material'
 import FormControl from '@mui/material/FormControl'
@@ -19,7 +21,7 @@ import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import InputBox from 'src/components/InputBox'
 import { useState } from 'react'
-import { getBetCategory } from 'src/helpers'
+import { getBetCategory, getGlobalSettings } from 'src/helpers'
 import dayjs from 'dayjs'
 
 const columnGameResult = [
@@ -91,6 +93,12 @@ function DeclareResult() {
   const [bid, setBid] = useState([])
   const [selectedGameValue, setSelectedGameValue] = useState(0)
   const [selectedMarketTimeValue, setSelectedMarketTimeValue] = useState(0)
+  const [open, setOpen] = useState(false)
+  const [pana, setPana] = useState([])
+  const [selectedPana, setSelectedPana] = useState(0)
+  const [digit, setDigit] = useState(0)
+  const [save, setSave] = useState(false)
+  const [isPopupOpenChangePass, setPopupOpenChangePass] = useState(false)
 
   const togglePopupDelete = event => {
     setPopupOpenDelete(!isPopupOpenDelete)
@@ -108,8 +116,24 @@ function DeclareResult() {
   const handleGameSelectChange = event => {
     setSelectedGameValue(event.target.value)
   }
+  const handlePanaSelect = event => {
+    setSelectedPana(event.target.value)
+    let lastDigit = sumOfDigitsAndLastDigit(event.target.value)
+
+    setDigit(lastDigit)
+  }
   const handleMarketTimeChange = event => {
     setSelectedMarketTimeValue(event.target.value)
+  }
+
+  const togglePopupChangePass = () => {
+    setPopupOpenChangePass(!isPopupOpenChangePass)
+  }
+
+  let handleOpen = () => {
+    if (selectedGameValue != 0 && selectedMarketTimeValue != 0) {
+      setOpen(true)
+    }
   }
 
   let getAllBids = () => {
@@ -122,8 +146,39 @@ function DeclareResult() {
       })
   }
 
+  // Sum of digit function
+  function sumOfDigitsAndLastDigit(number) {
+    if (number) {
+      let sum = 0
+      let temp = number
+      while (temp > 0) {
+        sum += temp % 10
+        temp = Math.floor(temp / 10)
+      }
+
+      return sum % 10
+    } else {
+      return number
+    }
+  }
+
+  const globalSettingApi = () => {
+    getGlobalSettings()
+      .then(data => {
+        if (data.success) {
+          setPana(data.data.gameNumber.fullSangam.openAnk)
+        } else {
+          console.log('error', data.message)
+        }
+      })
+      .catch(error => {
+        console.log('error', error)
+      })
+  }
+
   React.useEffect(() => {
     getAllBids()
+    globalSettingApi()
   }, [])
 
   return (
@@ -134,7 +189,7 @@ function DeclareResult() {
           <div>
             <Typography>Result Date</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker maxDate={dayjs(today)} />
+              <DatePicker maxDate={dayjs(today)} value={dayjs(today)} />
             </LocalizationProvider>
           </div>
           <FormControl>
@@ -153,8 +208,8 @@ function DeclareResult() {
             <Typography>Session</Typography>
             <Select style={{ width: '15rem' }} value={selectedMarketTimeValue} onChange={handleMarketTimeChange}>
               <MenuItem value={0}>-- Select Session --</MenuItem>
-              <MenuItem value='active'>Open Market</MenuItem>
-              <MenuItem value='inactive'>Close Market</MenuItem>
+              <MenuItem value='OPEN'>Open Market</MenuItem>
+              <MenuItem value='CLOSE'>Close Market</MenuItem>
             </Select>
           </FormControl>
           <div style={{ alignItems: 'end', display: 'flex' }}>
@@ -166,12 +221,140 @@ function DeclareResult() {
                 width: '10rem',
                 marginBottom: '5px'
               }}
+              onClick={handleOpen}
             >
               Go
             </Button>
           </div>
         </div>
       </Card>
+      {open ? (
+        <Card style={{ padding: '20px', marginTop: '20px' }}>
+          <Typography variant='h6'>Declare Result</Typography>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '15px', marginBottom: '10px' }}>
+            <FormControl>
+              <Typography>Panna:</Typography>
+              <Select style={{ width: '25rem' }} value={selectedPana} onChange={handlePanaSelect}>
+                <MenuItem value={0}>-- Select pana --</MenuItem>
+                {pana &&
+                  pana.map(d => (
+                    <MenuItem key={d} value={d}>
+                      {d}
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
+            <FormControl>
+              <Typography>Digit</Typography>
+              <Grid item xs={12}>
+                <TextField fullWidth type='number' value={digit} />
+              </Grid>
+            </FormControl>
+            <div style={{ alignItems: 'end', display: 'flex' }}>
+              <Button
+                style={{
+                  backgroundColor: '#9155FD',
+                  color: 'white',
+                  height: '3rem',
+                  width: '10rem',
+                  marginBottom: '5px',
+                  marginRight: '10px'
+                }}
+                onClick={() => {
+                  setSave(true)
+                }}
+              >
+                save
+              </Button>
+              {save ? (
+                <div>
+                  <Button
+                    style={{
+                      backgroundColor: '#9155FD',
+                      color: 'white',
+                      height: '3rem',
+                      width: '10rem',
+                      marginBottom: '5px',
+                      marginRight: '10px'
+                    }}
+                    onClick={togglePopupChangePass}
+                  >
+                    show winner
+                  </Button>
+                  {isPopupOpenChangePass && (
+                    <div>
+                      <div
+                        className='overlay'
+                        onClick={togglePopupChangePass}
+                        style={{
+                          position: 'fixed',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                          zIndex: 9998 // Ensure the overlay is below the popup but above the rest of the content
+                        }}
+                      />
+                      <div
+                        style={{
+                          borderRadius: '5px',
+                          width: '35%',
+                          position: 'fixed',
+                          top: '20%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          backgroundColor: '#F7F7F7',
+                          padding: '20px',
+                          zIndex: 9999 // Ensure the popup is above the overlay
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <Typography variant='h6'>Change Password</Typography>
+                          <div onClick={togglePopupChangePass} style={{ cursor: 'pointer' }}>
+                            &#10006;
+                          </div>
+                        </div>
+                        <Typography style={{ margin: '10px 0 5px 0' }}>Enter New password</Typography>
+                        <TextField
+                          type='text'
+                          style={{
+                            width: '95%',
+                            marginBottom: '20px'
+                          }}
+                          // value={userPassword}
+                          onChange={e => {
+                            const inputValue = e.target.value
+                            setUserPassword(inputValue)
+                          }}
+                        />
+                        <Button
+                          style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px' }}
+                          // onClick={userChangePasswordApi}
+                        >
+                          Submit
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                  <Button
+                    style={{
+                      backgroundColor: '#9155FD',
+                      color: 'white',
+                      height: '3rem',
+                      width: '10rem',
+                      marginBottom: '5px',
+                      marginRight: '10px'
+                    }}
+                  >
+                    Declare
+                  </Button>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </Card>
+      ) : null}
 
       <Card sx={{ width: '100%', overflow: 'hidden', marginTop: '20px' }}>
         <div style={{ padding: '20px' }}>

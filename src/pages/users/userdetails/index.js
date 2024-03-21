@@ -1497,18 +1497,26 @@ function UserDetails() {
                                 ) : column.id === 'session' ? (
                                   <span>{row.state}</span>
                                 ) : column.id === 'gameType' ? (
-                                  <span>{row.betId.name}</span>
+                                  <span>{row.betId != null ? row.betId.name : 'test'}</span>
                                 ) : column.id === 'date' ? (
                                   <span>{moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss')}</span>
                                 ) : column.id === 'points' ? (
                                   <span>{row.amount}</span>
                                 ) : column.id === 'openPana' ? (
                                   <span>
-                                    {row.betId.name == 'Single Pana' && row.state == 'OPEN' ? row.choiceNumber : 'N/A'}
+                                    {row.betId != null
+                                      ? row.betId.name == 'Single Pana' && row.state == 'OPEN'
+                                        ? row.choiceNumber
+                                        : 'N/A'
+                                      : 'N/A'}
                                   </span>
                                 ) : column.id === 'closePana' ? (
                                   <span>
-                                    {row.betId.name == 'Single Pana' && row.state == 'CLOSE' ? row.choiceNumber : 'N/A'}
+                                    {row.betId != null
+                                      ? row.betId.name == 'Single Pana' && row.state == 'CLOSE'
+                                        ? row.choiceNumber
+                                        : 'N/A'
+                                      : 'N/A'}
                                   </span>
                                 ) : column.id === 'openDigit' ? (
                                   <span>{row.state == 'OPEN' ? row.choiceNumber : 'N/A'}</span>

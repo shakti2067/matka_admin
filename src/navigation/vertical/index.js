@@ -38,11 +38,11 @@ const navigation = () => {
       icon: AccountCash,
       path: '/declare-result'
     },
-    {
-      title: 'Winners',
-      icon: AccountCheckOutline,
-      path: '/winners'
-    },
+    // {
+    //   title: 'Winners',
+    //   icon: AccountCheckOutline,
+    //   path: '/winners'
+    // },
     {
       sectionTitle: 'Report management'
     },

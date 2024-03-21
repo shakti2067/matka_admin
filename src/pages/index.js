@@ -192,7 +192,12 @@ function DashBoardNew() {
                   <h4 style={{ margin: '5px' }}>{userCount.unApproveUserCount}</h4>
                   <h5 style={{ margin: '5px', fontWeight: '400' }}>Unapproved Users</h5>
                 </div>
-                <div>
+                <div
+                  onClick={() => {
+                    router.push('/users')
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
                   <h4 style={{ margin: '5px' }}>{userCount.approveUserCount}</h4>
                   <h5 style={{ margin: '5px', fontWeight: '400' }}>Approved Users</h5>
                 </div>
@@ -210,7 +215,12 @@ function DashBoardNew() {
                   justifyContent: 'space-around'
                 }}
               >
-                <div>
+                <div
+                  onClick={() => {
+                    router.push('/users')
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
                   <h5 style={{ margin: '5px' }}>Users</h5>
                   <h3 style={{ margin: '5px' }}>{userCount.totalUser}</h3>
                 </div>
@@ -235,7 +245,12 @@ function DashBoardNew() {
                   justifyContent: 'space-around'
                 }}
               >
-                <div>
+                <div
+                  onClick={() => {
+                    router.push('/bids')
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
                   <h5 style={{ margin: '5px' }}>Games</h5>
                   <h3 style={{ margin: '5px' }}>{userCount.totalGame}</h3>
                 </div>
