@@ -56,9 +56,7 @@ function MainSetting() {
     withdrawalStatus: false
   })
 
-  console.log('valueForm', valueForm)
-
-  const handleBankSubmit = () => {}
+  // console.log('valueForm', valueForm)
 
   let appFormValidation = () => {
     let { link, shareMessage, referralMessage, afterLoginMessage } = appForm
@@ -159,6 +157,10 @@ function MainSetting() {
       withdrawStatus: withdrawalStatus
     }
     console.log('params', params)
+
+    console.log('withdrawalOpenTime', valueForm.withdrawalOpenTime)
+    console.log('withdrawalCloseTime', withdrawalCloseTime)
+
     addAmountValue(params)
       .then(data => {
         if (data.success) {
@@ -173,41 +175,10 @@ function MainSetting() {
       })
   }
 
-  // const getAmountValueApi = () => {
-  //   getAmountValue()
-  //     .then(data => {
-  //       if (data.success) {
-  //         console.log('data', data)
-  //         setValueForm({
-  //           globalBatting: data.data.globalBatting,
-  //           maxBidAmount: data.data.maxBidAmount,
-  //           maxDeposite: data.data.maxDeposit,
-  //           maxTransfer: data.data.maxTransfer,
-  //           maxWithdrawal: data.data.maxWithdrawal,
-  //           minBidAmount: data.data.minBidAmount,
-  //           minDeposite: data.data.minDeposit,
-  //           minTransfer: data.data.minTransfer,
-  //           minWithdrawal: data.data.minWithdrawal,
-  //           referralPoint: data.data.referralPoint,
-  //           welcomeBounce: data.data.welcomeBounce,
-  //           withdrawalCloseTime: data.data.withdrawCloseTime,
-  //           withdrawalOpenTime: data.data.withdrawOpenTime,
-  //           withdrawalStatus: data.data.withdrawStatus
-  //         })
-  //       } else {
-  //         console.error('error')
-  //       }
-  //     })
-  //     .catch(error => {
-  //       console.log('error', error)
-  //     })
-  // }
-
   const getGlobalSettingsApi = () => {
     getGlobalSettings()
       .then(data => {
         if (data.success) {
-          console.log('getGlobalSettings', data.data.upiId)
           setUpiForm({
             googleUpi: data.data.upiId.googleUpi,
             phonePayUpi: data.data.upiId.phonePayUpi,
@@ -238,8 +209,10 @@ function MainSetting() {
             minWithdrawal: data.data.amountValue.minWithdrawal,
             referralPoint: data.data.amountValue.referralPoint,
             welcomeBounce: data.data.amountValue.welcomeBounce,
-            withdrawalCloseTime: dayjs(data.data.amountValue.withdrawCloseTime, 'h:mm A').format('HH:mm'),
-            withdrawalOpenTime: dayjs(data.data.amountValue.withdrawOpenTime, 'h:mm A').format('HH:mm'),
+            // withdrawalCloseTime: dayjs(data.data.amountValue.withdrawCloseTime, 'h:mm A').format('HH:mm'),
+            // withdrawalOpenTime: dayjs(data.data.amountValue.withdrawOpenTime, 'h:mm A').format('HH:mm'),
+            withdrawalCloseTime: dayjs(data.data.amountValue.withdrawCloseTime, 'h:mm A').format('h:mm A'),
+            withdrawalOpenTime: dayjs(data.data.amountValue.withdrawOpenTime, 'h:mm A').format('h:mm A'),
             withdrawalStatus: data.data.amountValue.withdrawStatus
           })
         } else {
@@ -651,8 +624,8 @@ function MainSetting() {
                     <TimePicker
                       // value={valueForm.withdrawalCloseTime}
                       value={dayjs()
-                        .set('hour', valueForm.withdrawalCloseTime.split(':')[0])
-                        .set('minute', valueForm.withdrawalCloseTime.split(':')[1])}
+                        .set('hour', parseInt(valueForm.withdrawalCloseTime.split(':')[0]))
+                        .set('minute', parseInt(valueForm.withdrawalCloseTime.split(':')[1]))}
                       onChange={newValue =>
                         setValueForm({ ...valueForm, withdrawalCloseTime: dayjs(newValue).format('h:mm A') })
                       }

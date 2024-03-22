@@ -148,7 +148,11 @@ function BidHistoryReport() {
   let getAllBids = () => {
     getBetCategory()
       .then(data => {
-        setBid(data.data)
+        if (data.success) {
+          setBid(data.data)
+        } else {
+          console.log('Error while fetching bids')
+        }
       })
       .catch(err => {
         console.log(err)

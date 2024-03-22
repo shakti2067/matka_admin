@@ -35,7 +35,8 @@ import {
   getWithdrawRequest,
   createWithdrawRequest,
   getTotalBidAnk,
-  transferReport
+  transferReport,
+  createGameWinner
 } from './service'
 
 export {
@@ -75,5 +76,6 @@ export {
   getWithdrawRequest,
   createWithdrawRequest,
   getTotalBidAnk,
-  transferReport
+  transferReport,
+  createGameWinner
 }

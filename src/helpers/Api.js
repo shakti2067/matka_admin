@@ -1,7 +1,7 @@
 import axios from 'axios'
 // export const URL = 'http://alphadevinfotech.com:5000/api/v1/'
 // export const URL = 'https://api.kalyandpboss.co.in/api/v1/'
-export const URL = 'http://192.168.1.7:5000/api/v1/'
+export const URL = 'http://localhost:5000/api/v1/'
 
 let authToken = ''
 
@@ -33,7 +33,7 @@ axiosInstance.interceptors.request.use(
 
     // console.log('window.location.href1', window.location.pathname)
     if (window.location.pathname != '/admin/login/') {
-      console.log('inside token expired')
+      // console.log('inside token expired')
       const tokenExpired = isTokenExpired(authToken)
       if (tokenExpired) {
         // Handle token expiration (e.g., log out the user)

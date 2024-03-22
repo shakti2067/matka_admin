@@ -107,20 +107,34 @@ function DashBoardNew() {
   let getAllBids = () => {
     getBetCategory()
       .then(data => {
-        setBid(data.data)
+        if (data.success) {
+          setBid(data.data)
+        } else {
+          if (data.message == 'Unauthorized User') {
+            router.push('/admin/login')
+          }
+          console.log(' getBetCategory err', data.message)
+        }
       })
       .catch(err => {
-        console.log(err)
+        console.log('  err', err)
       })
   }
 
   let getUserCountApi = () => {
     getUserCount()
       .then(data => {
-        setUserCount(data.data)
+        if (data.success) {
+          setUserCount(data.data)
+        } else {
+          if (data.message == 'Unauthorized User') {
+            router.push('/admin/login')
+          }
+          console.log(' getUserCountApi err', data.message)
+        }
       })
       .catch(err => {
-        console.log(err)
+        console.log('getUserCount err', err)
       })
   }
 

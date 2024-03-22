@@ -432,3 +432,14 @@ export let transferReport = date => {
       return error
     })
 }
+
+export let createGameWinner = parameter => {
+  return apis
+    .post(`/game/createWinner`, parameter)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
