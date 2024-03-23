@@ -442,6 +442,20 @@ function UserDetails() {
   let [amount, setAmount] = useState('')
   let [userPassword, setUserPassword] = useState('')
   let [withdrawAmountError, setWithdrawAmountError] = useState('')
+  let [rowWalletPage, setRowWalletPage] = useState(10)
+  let [walletsPage, setWalletsPage] = useState(0)
+  let [withdrawRequestData, setWithdrawRequestData] = useState({
+    withdrawReqId: '',
+    name: '',
+    mobileNumber: '',
+    requestNo: '',
+    amount: '',
+    requestDate: '',
+    requestAcceptDate: '',
+    requestRejectedDate: '',
+    receiptImage: '',
+    remark: ''
+  })
 
   const togglePopup = () => {
     setPopupOpen(!isPopupOpen)
@@ -640,7 +654,7 @@ function UserDetails() {
       .then(data => {
         if (data.success) {
           setGameHistory(data.data)
-          setWithdrawHistoryTotalDoc(data.totalDocument)
+          setGameHistoryTotalDoc(data.totalDocument)
         } else {
           console.log('error')
         }
@@ -655,7 +669,7 @@ function UserDetails() {
       .then(data => {
         if (data.success) {
           setWithdrawHistory(data.data)
-          setGameHistoryTotalDoc(data.totalDocument)
+          setWithdrawHistoryTotalDoc(data.totalDocument)
         } else {
           console.log('error')
         }
@@ -821,14 +835,8 @@ function UserDetails() {
     getUserCreditWalletHistoryApi()
     getUserDebitWalletHistoryApi()
     getWithdrawRequestApi()
-  }, [])
+  }, [userId])
   const today = new Date().toISOString().split('T')[0]
-
-  const [selectedDate, setSelectedDate] = useState(today)
-
-  const handleDateChange = e => {
-    setSelectedDate(e.target.value)
-  }
 
   const handleChangeAddFundPage = (event, newPage) => {
     setAddFundPage(newPage)
@@ -838,14 +846,14 @@ function UserDetails() {
     setAddFundPage(0)
   }
 
-  const handleChangewithdrawFundPerPage = (event, newPage) => {
-    setwithdrawFundPage(newPage)
-  }
-  const handleChangeRowswithdrawFundPerPage = event => {
-    setRowsWithdrawFundPage(+event.target.value)
-    setwithdrawFundPage(0)
+  const handleChangeWalletsPage = (event, newPage) => {
+    setWalletsPage(newPage)
   }
 
+  const handleChangeRowsWalletsPage = event => {
+    setWalletsPage(+event.target.value)
+    setRowWalletPage(0)
+  }
   const handleChangeBidPerPage = (event, newPage) => {
     setBidPage(newPage)
   }
@@ -1281,7 +1289,7 @@ function UserDetails() {
                 <InputBox />
               </div>
             </div>
-            <TableContainer sx={{ maxHeight: 440 }}>
+            <TableContainer sx={{ maxHeight: 950 }}>
               <Table stickyHeader aria-label='sticky table'>
                 <TableHead>
                   <TableRow>
@@ -1331,7 +1339,7 @@ function UserDetails() {
                 <InputBox />
               </div>
             </div>
-            <TableContainer sx={{ maxHeight: 440 }}>
+            <TableContainer sx={{ maxHeight: 950 }}>
               <Table stickyHeader aria-label='sticky table'>
                 <TableHead>
                   <TableRow>
@@ -1344,10 +1352,7 @@ function UserDetails() {
                 </TableHead>
                 <TableBody>
                   {withdrawHistory
-                    .slice(
-                      withdrawFundPage * rowsWithdrawFundPage,
-                      withdrawFundPage * rowsWithdrawFundPage + rowsWithdrawFundPage
-                    )
+                    .slice(walletsPage * rowWalletPage, walletsPage * rowWalletPage + rowWalletPage)
                     .map((row, rowIndex) => {
                       return (
                         <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
@@ -1371,7 +1376,28 @@ function UserDetails() {
                                     <Button style={{ color: 'orange', cursor: 'text' }}>{row.status}</Button>
                                   )
                                 ) : column.id === 'action' ? (
-                                  <Button variant='outlined' onClick={togglePopupView}>
+                                  <Button
+                                    variant='outlined'
+                                    // onClick={togglePopupView}
+                                    onClick={() => {
+                                      setWithdrawRequestData({
+                                        ...withdrawRequestData,
+                                        withdrawReqId: row._id,
+                                        requestNo: row.requestNo,
+                                        name: row.userId.name,
+                                        mobileNumber: row.mobileNumber,
+                                        amount: row.amount,
+                                        requestDate: moment(row.createdAt).format('YYYY-MM-DD'),
+                                        requestAcceptDate: row.requestAcceptDate
+                                          ? moment(row.requestAcceptDate).format('YYYY-MM-DD')
+                                          : 'N/A',
+                                        receiptImage: row.paymentReceipt ? row.paymentReceipt : '',
+                                        remark: row.remark,
+                                        requestRejectedDate: moment(row.requestRejectedDate).format('YYYY-MM-DD')
+                                      })
+                                      setPopupOpenView(!isPopupOpenView)
+                                    }}
+                                  >
                                     view
                                   </Button>
                                 ) : column.format && typeof value === 'number' ? (
@@ -1386,6 +1412,66 @@ function UserDetails() {
                       )
                     })}
                   {isPopupOpenView && (
+                    // <div>
+                    //   <div
+                    //     className='overlay'
+                    //     onClick={togglePopupView}
+                    //     style={{
+                    //       position: 'fixed',
+                    //       top: 0,
+                    //       left: 0,
+                    //       width: '100%',
+                    //       height: '100%',
+                    //       backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    //       zIndex: 9998 // Ensure the overlay is below the popup but above the rest of the content
+                    //     }}
+                    //   />
+                    //   <div
+                    //     style={{
+                    //       borderRadius: '5px',
+                    //       width: '35%',
+                    //       position: 'fixed',
+                    //       top: '20%',
+                    //       left: '50%',
+                    //       transform: 'translate(-50%, -50%)',
+                    //       backgroundColor: '#F7F7F7',
+                    //       padding: '20px',
+                    //       zIndex: 9999 // Ensure the popup is above the overlay
+                    //     }}
+                    //   >
+                    //     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    //       <Typography variant='h6'>Withdraw Request Detail</Typography>
+                    //       <div onClick={togglePopupView} style={{ cursor: 'pointer' }}>
+                    //         &#10006;
+                    //       </div>
+                    //     </div>
+                    //     <Typography style={{ margin: '10px 0 5px 0' }}>Enter New Pin</Typography>
+                    //     <TextField
+                    //       type='number'
+                    //       style={{
+                    //         width: '95%',
+                    //         marginBottom: '20px'
+                    //       }}
+                    //       inputProps={{
+                    //         maxLength: 4,
+                    //         inputMode: 'numeric'
+                    //       }}
+                    //       value={pin}
+                    //       onChange={e => {
+                    //         const inputValue = e.target.value
+                    //         if (inputValue.length <= 4) {
+                    //           setPin(inputValue)
+                    //         }
+                    //       }}
+                    //     />
+                    //     <Button
+                    //       style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px' }}
+                    //       onClick={() => {}}
+                    //     >
+                    //       Submit
+                    //     </Button>
+                    //   </div>
+                    // </div>
                     <div>
                       <div
                         className='overlay'
@@ -1395,8 +1481,8 @@ function UserDetails() {
                           top: 0,
                           left: 0,
                           width: '100%',
-                          height: '100%',
-                          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                          height: '80%',
+                          // backgroundColor: 'rgba(0, 0, 0, 0.5)',
                           zIndex: 9998 // Ensure the overlay is below the popup but above the rest of the content
                         }}
                       />
@@ -1405,7 +1491,7 @@ function UserDetails() {
                           borderRadius: '5px',
                           width: '35%',
                           position: 'fixed',
-                          top: '20%',
+                          top: '50%',
                           left: '50%',
                           transform: 'translate(-50%, -50%)',
                           backgroundColor: '#F7F7F7',
@@ -1419,38 +1505,48 @@ function UserDetails() {
                             &#10006;
                           </div>
                         </div>
-                        <Typography style={{ margin: '10px 0 5px 0' }}>Enter New Pin</Typography>
-                        <TextField
-                          type='number'
-                          style={{
-                            width: '95%',
-                            marginBottom: '20px'
-                          }}
-                          inputProps={{
-                            maxLength: 4,
-                            inputMode: 'numeric'
-                          }}
-                          value={pin}
-                          onChange={e => {
-                            const inputValue = e.target.value
-                            if (inputValue.length <= 4) {
-                              setPin(inputValue)
-                            }
-                          }}
-                        />
-                        <Button
-                          style={{ backgroundColor: '#9155FD', color: 'white', fontSize: '13px' }}
-                          onClick={() => {}}
-                        >
-                          Submit
-                        </Button>
+
+                        <Card sx={{ padding: '20px' }}>
+                          <Typography style={{ margin: '10px 0 5px 0' }}>
+                            User Name : {withdrawRequestData.name}
+                          </Typography>
+                          <Typography style={{ margin: '10px 0 5px 0' }}>
+                            Mobile : {withdrawRequestData.mobileNumber}
+                          </Typography>
+                          <Typography style={{ margin: '10px 0 5px 0' }}>
+                            Request Number :{withdrawRequestData.requestNo}
+                          </Typography>
+                          <Typography style={{ margin: '10px 0 5px 0' }}>
+                            Request Amount :{withdrawRequestData.amount}
+                          </Typography>
+                          <Typography style={{ margin: '10px 0 5px 0' }}>
+                            Request Date :{withdrawRequestData.requestDate} requestRejectedDate
+                          </Typography>
+                          <Typography style={{ margin: '10px 0 5px 0' }}>
+                            Request Accept Date : {withdrawRequestData.requestAcceptDate}
+                          </Typography>
+                          <Typography style={{ margin: '10px 0 5px 0' }}>
+                            Request Rejected Date : {withdrawRequestData.requestRejectedDate}
+                          </Typography>
+                          <Typography style={{ margin: '10px 0 5px 0' }}>
+                            Remark :{withdrawRequestData.remark}
+                          </Typography>
+                          <Typography style={{ margin: '10px 0 5px 0' }}> Payment Receipt :</Typography>
+                          <img
+                            src={withdrawRequestData.receiptImage}
+                            // src='http://localhost:5000/uploads/withdrawImage/65def3a4081523e4376b5486-1711196867489.jpeg'
+                            width={150}
+                            height={150}
+                            alt='payment receipt'
+                          />
+                        </Card>
                       </div>
                     </div>
                   )}
                 </TableBody>
               </Table>
             </TableContainer>
-            <TablePagination
+            {/* <TablePagination
               rowsPerPageOptions={[10, 25, 100]}
               component='div'
               count={withdrawHistoryTotalDoc}
@@ -1458,6 +1554,15 @@ function UserDetails() {
               page={withdrawFundPage}
               onPageChange={handleChangewithdrawFundPerPage}
               onRowsPerPageChange={handleChangeRowswithdrawFundPerPage}
+            /> */}
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 100]}
+              component='div'
+              count={withdrawHistoryTotalDoc}
+              rowsPerPage={rowWalletPage}
+              page={walletsPage}
+              onPageChange={handleChangeWalletsPage}
+              onRowsPerPageChange={handleChangeRowsWalletsPage}
             />
           </Card>
           <Card sx={{ width: '100%', overflow: 'hidden', marginTop: '20px' }}>
@@ -1468,7 +1573,7 @@ function UserDetails() {
                 <InputBox />
               </div>
             </div>
-            <TableContainer sx={{ maxHeight: 440 }}>
+            <TableContainer sx={{ maxHeight: 950 }}>
               <Table stickyHeader aria-label='sticky table'>
                 <TableHead>
                   <TableRow>
@@ -1484,7 +1589,7 @@ function UserDetails() {
                     .slice(bidPage * rowsBidPage, bidPage * rowsBidPage + rowsBidPage)
                     .map((row, rowIndex) => {
                       return (
-                        <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
+                        <TableRow hover role='checkbox' tabIndex={-1} key={rowIndex}>
                           {columnBid.map(column => {
                             const value = row[column.id]
 
@@ -1507,6 +1612,14 @@ function UserDetails() {
                                     {row.betId != null
                                       ? row.betId.name == 'Single Pana' && row.state == 'OPEN'
                                         ? row.choiceNumber
+                                        : row.betId.name == 'Full Sangam'
+                                        ? row.openPana
+                                        : row.betId.name == 'Half Sangam' && row.state == 'CLOSE'
+                                        ? row.openPana
+                                        : row.betId.name == 'Tripple Pana' && row.state == 'OPEN'
+                                        ? row.choiceNumber
+                                        : row.betId.name == 'Double Pana' && row.state == 'OPEN'
+                                        ? row.choiceNumber
                                         : 'N/A'
                                       : 'N/A'}
                                   </span>
@@ -1515,13 +1628,53 @@ function UserDetails() {
                                     {row.betId != null
                                       ? row.betId.name == 'Single Pana' && row.state == 'CLOSE'
                                         ? row.choiceNumber
+                                        : row.betId.name == 'Full Sangam'
+                                        ? row.closePana
+                                        : row.betId.name == 'Half Sangam' && row.state == 'OPEN'
+                                        ? row.closePana
+                                        : row.betId.name == 'Tripple Pana' && row.state == 'CLOSE'
+                                        ? row.choiceNumber
+                                        : row.betId.name == 'Double Pana' && row.state == 'CLOSE'
+                                        ? row.choiceNumber
                                         : 'N/A'
                                       : 'N/A'}
                                   </span>
                                 ) : column.id === 'openDigit' ? (
-                                  <span>{row.state == 'OPEN' ? row.choiceNumber : 'N/A'}</span>
+                                  <span>
+                                    {row.state == 'OPEN' && row.betId.name == 'Single Digit'
+                                      ? row.choiceNumber
+                                      : row.betId.name == 'Jodi Digit'
+                                      ? row.choiceNumber?.split('')[0]
+                                      : row.betId != null
+                                      ? row.betId.name == 'Single Pana' && row.state == 'OPEN'
+                                        ? row.choiceNumber
+                                        : row.betId.name == 'Full Sangam'
+                                        ? row.ank
+                                        : row.betId.name == 'Half Sangam'
+                                        ? row.ank
+                                        : row.betId.name == 'Tripple Pana' && row.state == 'OPEN'
+                                        ? row.ank
+                                        : row.betId.name == 'Double Pana' && row.state == 'OPEN'
+                                        ? row.ank
+                                        : 'N/A'
+                                      : 'N/A'}
+                                  </span>
                                 ) : column.id === 'closeDigit' ? (
-                                  <span>{row.state == 'CLOSE' ? row.choiceNumber : 'N/A'}</span>
+                                  <span>
+                                    {row.state == 'CLOSE' && row.betId.name == 'Single Digit'
+                                      ? row.choiceNumber
+                                      : row.state == 'CLOSE' && row.betId.name == 'Jodi Digit'
+                                      ? row.choiceNumber?.split('')[1]
+                                      : row.betId != null
+                                      ? row.betId.name == 'Full Sangam'
+                                        ? row.ankClose
+                                        : row.betId.name == 'Tripple Pana' && row.state == 'CLOSE'
+                                        ? row.ank
+                                        : row.betId.name == 'Double Pana' && row.state == 'CLOSE'
+                                        ? row.ank
+                                        : 'N/A'
+                                      : 'N/A'}
+                                  </span>
                                 ) : column.format && typeof value === 'number' ? (
                                   column.format(value)
                                 ) : (
@@ -1569,7 +1722,7 @@ function UserDetails() {
                       <label>Search :</label>
                       <InputBox />
                     </div>
-                    <TableContainer sx={{ maxHeight: 440 }}>
+                    <TableContainer sx={{ maxHeight: 950 }}>
                       <Table stickyHeader aria-label='sticky table'>
                         <TableHead>
                           <TableRow>
@@ -1812,7 +1965,7 @@ function UserDetails() {
                 </Button>
               </div>
               <div sx={{ width: '100%', overflow: 'hidden' }}>
-                <TableContainer sx={{ maxHeight: 440 }}>
+                <TableContainer sx={{ maxHeight: 950 }}>
                   <Table stickyHeader aria-label='sticky table'>
                     <TableHead>
                       <TableRow>

@@ -85,9 +85,22 @@ const navigation = () => {
       icon: AccountDetailsOutline,
       path: '/report-management/autodeposite'
     },
+    {
+      sectionTitle: 'Wallet management'
+    },
+    {
+      title: 'Withdraw Request',
+      icon: CubeOutline,
+      path: '/wallet/withdrawRequest'
+    },
+    {
+      title: 'Add fund',
+      icon: CubeOutline,
+      path: '/wallet/addfund'
+    },
 
     {
-      sectionTitle: 'Games managment'
+      sectionTitle: 'Games management'
     },
 
     {

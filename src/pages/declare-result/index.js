@@ -139,7 +139,7 @@ function DeclareResult() {
   const [createWinner, setCreateWinner] = useState([])
   const [selectResultDate, setSelectResultDate] = useState(today)
 
-  console.log('selectResultDate', selectResultDate)
+  console.log('createWinner', createWinner)
 
   const togglePopupDelete = event => {
     setPopupOpenDelete(!isPopupOpenDelete)
@@ -373,7 +373,7 @@ function DeclareResult() {
                           width: '70%',
                           position: 'fixed',
                           // top: '20%',
-                          height: '80%',
+                          height: '50%',
                           left: '50%',
                           transform: 'translate(-50%, -50%)',
                           backgroundColor: '#F7F7F7',
@@ -402,7 +402,7 @@ function DeclareResult() {
                               </TableRow>
                             </TableHead>
                             <TableBody>
-                              {rowGameResult
+                              {createWinner
                                 .slice(gameResult * rowsGameResult, gameResult * rowsGameResult + rowsGameResult)
                                 .map(row => {
                                   return (

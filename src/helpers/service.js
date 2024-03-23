@@ -37,9 +37,9 @@ export function adminLogout() {
     })
 }
 
-export let getUser = () => {
+export let getUser = isBetting => {
   return apis
-    .get(`/master/getAllUsers?page=1&limit=20`)
+    .get(`/master/getAllUsers?page=1&limit=1000&isBetting=${isBetting}`)
     .then(res => {
       console.log(res)
       return res.data
@@ -377,6 +377,17 @@ export let getAllBets = () => {
     })
 }
 
+export let updateAllBets = bodyData => {
+  return apis
+    .post(`/game/updateAllBet`, bodyData)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
 export let userChangePassword = (userId, password) => {
   return apis
     .post(`/auth/changePassword?userId=${userId}`, password)
@@ -421,6 +432,17 @@ export let getTotalBidAnk = bodyData => {
     })
 }
 
+export let getOverAllBid = bodyData => {
+  return apis
+    .post(`/game/getBidAmountByBid`, bodyData)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
 export let transferReport = date => {
   console.log('date', date)
   return apis
@@ -436,6 +458,37 @@ export let transferReport = date => {
 export let createGameWinner = parameter => {
   return apis
     .post(`/game/createWinner`, parameter)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let getAllWithdrawRequest = () => {
+  return apis
+    .get(`/game/getWithdrawRequest?pageNumber=1&pageSize=1000`)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let updateWithdrawRequest = sliderData => {
+  let formData = new FormData()
+  for (let key in sliderData) {
+    formData.append(key, sliderData[key])
+  }
+
+  return apis
+    .post('game/updateWithdrawRequest', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
     .then(res => {
       return res.data
     })

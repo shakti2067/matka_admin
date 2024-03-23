@@ -12,7 +12,7 @@ import TableContainer from '@mui/material/TableContainer'
 import TablePagination from '@mui/material/TablePagination'
 import InputBox from 'src/components/InputBox'
 import { useRouter } from 'next/router'
-import { getBetCategory, getTotalBidAnk, getUserCount } from 'src/helpers'
+import { getBetCategory, getTotalBidAnk, getUserCount, getOverAllBid } from 'src/helpers'
 import moment from 'moment'
 
 const columnFundRequest = [
@@ -62,6 +62,30 @@ const columnFundRequest = [
     minWidth: 170
   }
 ]
+const localAnks = [
+  { amount: 0, bids: 0, color: '#556ee6' },
+  {
+    amount: 0,
+    bids: 0,
+    color: '#34c38f'
+  },
+  {
+    amount: 0,
+    bids: 0,
+    color: '#50a5f1'
+  },
+  {
+    amount: 0,
+    bids: 0,
+    color: '#f1b44c'
+  },
+  { amount: 0, bids: 0, color: '#af3ede' },
+  { amount: 0, bids: 0, color: '#f1673e' },
+  { amount: 0, bids: 0, color: '#ea31ba' },
+  { amount: 0, bids: 0, color: '#5a3cff' },
+  { amount: 0, bids: 0, color: '#ff3c84' },
+  { amount: 0, bids: 0, color: '#0dcebc' }
+]
 function createFundRequestData(name, userName, amount, requestNo, txnId, rejectRemark, date, status, action) {
   return { name, userName, amount, requestNo, txnId, rejectRemark, date, status, action }
 }
@@ -75,9 +99,12 @@ function DashBoardNew() {
   const [selectedGameValue, setSelectedGameValue] = useState(0)
   const [selectedMarketTimeValue, setSelectedMarketTimeValue] = useState(0)
   const [userCount, setUserCount] = useState('')
-  const [totalBidAnk, setTotalBidAnk] = useState('')
-
-  console.log('totalBidAnk', totalBidAnk)
+  const [totalBidAnk, setTotalBidAnk] = useState([])
+  let [selectedMarket, setSelectedMarket] = useState(0)
+  const [bidCount, setBidCount] = useState({
+    bidAmount: 0,
+    marketAmount: 0
+  })
 
   useEffect(() => {
     let data = window?.localStorage.getItem('user')
@@ -85,6 +112,22 @@ function DashBoardNew() {
       router.replace('/admin/login')
     }
   }, [])
+  let serverOverAllBisCount = () => {
+    let params = {
+      betCategoryId: selectedMarket,
+      date: moment().format('YYYY-MM-DD')
+    }
+    getOverAllBid(params)
+      .then(({ data }) => {
+        setBidCount({
+          bidAmount: data?.getOverAllTotal[0]?.amount || 0,
+          marketAmount: data?.getTotalBidAnk == null ? 0 : data?.getTotalBidAnk[0]?.amount || 0
+        })
+      })
+      .catch(err => {
+        console.log(err, 'this is error')
+      })
+  }
   const [fundRequestPage, setFundRequestPage] = useState(0)
   const [rowsFundRequestPerPage, setRowsFundRequestPerPage] = useState(10)
 
@@ -99,6 +142,9 @@ function DashBoardNew() {
 
   const handleGameSelectChange = event => {
     setSelectedGameValue(event.target.value)
+  }
+  const handleMarketSelectChange = event => {
+    setSelectedMarket(event.target.value)
   }
   const handleMarketTimeChange = event => {
     setSelectedMarketTimeValue(event.target.value)
@@ -142,7 +188,7 @@ function DashBoardNew() {
     let params = {
       betCategoryId: selectedGameValue,
       state: selectedMarketTimeValue,
-      date: '2024-03-18'
+      date: moment().format('YYYY-MM-DD')
     }
     getTotalBidAnk(params)
       .then(data => {
@@ -152,7 +198,9 @@ function DashBoardNew() {
         console.log(err)
       })
   }
-
+  useEffect(() => {
+    serverOverAllBisCount()
+  }, [selectedMarket])
   useEffect(() => {
     getAllBids()
     getUserCountApi()
@@ -202,7 +250,7 @@ function DashBoardNew() {
                   <h4 style={{ margin: '5px' }}>Admin</h4>
                   <h5 style={{ margin: '5px', fontWeight: '400' }}>Admin</h5>
                 </div>
-                <div style={{}}>
+                <div style={{ cursor: 'pointer' }} onClick={() => router.push('/users/unapproveuser')}>
                   <h4 style={{ margin: '5px' }}>{userCount.unApproveUserCount}</h4>
                   <h5 style={{ margin: '5px', fontWeight: '400' }}>Unapproved Users</h5>
                 </div>
@@ -291,7 +339,7 @@ function DashBoardNew() {
               >
                 <div>
                   <h5 style={{ margin: '5px' }}>Bid Amount</h5>
-                  <h3 style={{ margin: '5px' }}> 0</h3>
+                  <h3 style={{ margin: '5px' }}>{bidCount.bidAmount}</h3>
                 </div>
                 <Icon
                   path={mdiTagOutline}
@@ -352,7 +400,7 @@ function DashBoardNew() {
             <h4 style={{ marginTop: '0' }}>Market Bid Details</h4>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <h5 style={{ margin: '0', fontWeight: '500' }}>Game Name</h5>
-              <Select style={{ height: '40px' }} value={selectedGameValue} onChange={handleGameSelectChange}>
+              <Select style={{ height: '40px' }} value={selectedMarket} onChange={handleMarketSelectChange}>
                 <MenuItem value={0}>-- Select game name --</MenuItem>
                 {bid &&
                   bid.map(d => (
@@ -362,94 +410,45 @@ function DashBoardNew() {
                   ))}
               </Select>
             </div>
-            <h2 style={{ marginBottom: '5px' }}>125</h2>
+            <h2 style={{ marginBottom: '5px' }}>{bidCount.marketAmount}</h2>
             <h5 style={{ margin: '0', fontWeight: '500' }}>Market Amount</h5>
           </Card>
 
           <Card style={{ marginTop: '20px', padding: '20px', marginLeft: '20px', width: '75%' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-around', marginBottom: '10px', width: '100%' }}>
-              <div style={{ textAlign: 'center', border: '1px solid #556ee6', borderRadius: '5px' }}>
-                <div style={{ padding: '8px' }}>
-                  <h4 style={{ margin: '0', fontWeight: '500', color: '#556ee6' }}>Total Bids 01</h4>
-                  <h2 style={{ margin: '3px' }}> 0</h2>
-                  <h5 style={{ margin: '0', fontWeight: '500' }}>Total Bid Amount</h5>
-                </div>
-                <h5 style={{ margin: '0', backgroundColor: '#556ee6', color: 'white', fontWeight: '500' }}>Ank 0</h5>
-              </div>
-              <div style={{ textAlign: 'center', border: '1px solid #34c38f', borderRadius: '5px' }}>
-                <div style={{ padding: '8px' }}>
-                  <h4 style={{ margin: '0', fontWeight: '500', color: '#556ee6' }}>Total Bids 0</h4>
-                  <h2 style={{ margin: '3px' }}>0</h2>
-                  <h5 style={{ margin: '0', fontWeight: '500' }}>Total Bid Amount</h5>
-                </div>
-                <h5 style={{ margin: '0', backgroundColor: '#34c38f', color: 'white', fontWeight: '500' }}>Ank 1</h5>
-              </div>
-              <div style={{ textAlign: 'center', border: '1px solid #50a5f1', borderRadius: '5px' }}>
-                <div style={{ padding: '8px' }}>
-                  <h4 style={{ margin: '0', fontWeight: '500', color: '#556ee6' }}>Total Bids 0</h4>
-                  <h2 style={{ margin: '3px' }}>0</h2>
-                  <h5 style={{ margin: '0', fontWeight: '500' }}>Total Bid Amount</h5>
-                </div>
-                <h5 style={{ margin: '0', backgroundColor: '#50a5f1', color: 'white', fontWeight: '500' }}>Ank 2</h5>
-              </div>
-              <div style={{ textAlign: 'center', border: '1px solid #f1b44c', borderRadius: '5px' }}>
-                <div style={{ padding: '8px' }}>
-                  <h4 style={{ margin: '0', fontWeight: '500', color: '#556ee6' }}>Total Bids 0</h4>
-                  <h2 style={{ margin: '3px' }}>0</h2>
-                  <h5 style={{ margin: '0', fontWeight: '500' }}>Total Bid Amount</h5>
-                </div>
-                <h5 style={{ margin: '0', backgroundColor: '#f1b44c', color: 'white', fontWeight: '500' }}>Ank 3</h5>
-              </div>
-              <div style={{ textAlign: 'center', border: '1px solid #af3ede', borderRadius: '5px' }}>
-                <div style={{ padding: '8px' }}>
-                  <h4 style={{ margin: '0', fontWeight: '500', color: '#556ee6' }}>Total Bids 0</h4>
-                  <h2 style={{ margin: '3px' }}>0</h2>
-                  <h5 style={{ margin: '0', fontWeight: '500' }}>Total Bid Amount</h5>
-                </div>
-                <h5 style={{ margin: '0', backgroundColor: '#af3ede', color: 'white', fontWeight: '500' }}>Ank 4</h5>
-              </div>
-            </div>
-            <div style={{ display: 'flex', gap: '5px', justifyContent: 'space-around' }}>
-              <div style={{ textAlign: 'center', border: '1px solid #f1673e', borderRadius: '5px' }}>
-                <div style={{ padding: '8px' }}>
-                  <h4 style={{ margin: '0', fontWeight: '500', color: '#556ee6' }}>Total Bids 0</h4>
-                  <h2 style={{ margin: '3px' }}>0</h2>
-                  <h5 style={{ margin: '0', fontWeight: '500' }}>Total Bid Amount</h5>
-                </div>
-                <h5 style={{ margin: '0', backgroundColor: '#f1673e', color: 'white', fontWeight: '500' }}>Ank 5</h5>
-              </div>
-              <div style={{ textAlign: 'center', border: '1px solid #ea31ba', borderRadius: '5px' }}>
-                <div style={{ padding: '8px' }}>
-                  <h4 style={{ margin: '0', fontWeight: '500', color: '#556ee6' }}>Total Bids 0</h4>
-                  <h2 style={{ margin: '3px' }}>0</h2>
-                  <h5 style={{ margin: '0', fontWeight: '500' }}>Total Bid Amount</h5>
-                </div>
-                <h5 style={{ margin: '0', backgroundColor: '#ea31ba', color: 'white', fontWeight: '500' }}>Ank 6</h5>
-              </div>
-              <div style={{ textAlign: 'center', border: '1px solid #5a3cff', borderRadius: '5px' }}>
-                <div style={{ padding: '8px' }}>
-                  <h4 style={{ margin: '0', fontWeight: '500', color: '#556ee6' }}>Total Bids 0</h4>
-                  <h2 style={{ margin: '3px' }}>0</h2>
-                  <h5 style={{ margin: '0', fontWeight: '500' }}>Total Bid Amount</h5>
-                </div>
-                <h5 style={{ margin: '0', backgroundColor: '#5a3cff', color: 'white', fontWeight: '500' }}>Ank 7</h5>
-              </div>
-              <div style={{ textAlign: 'center', border: '1px solid #ff3c84', borderRadius: '5px' }}>
-                <div style={{ padding: '8px' }}>
-                  <h4 style={{ margin: '0', fontWeight: '500', color: '#556ee6' }}>Total Bids 0</h4>
-                  <h2 style={{ margin: '3px' }}>0</h2>
-                  <h5 style={{ margin: '0', fontWeight: '500' }}>Total Bid Amount</h5>
-                </div>
-                <h5 style={{ margin: '0', backgroundColor: '#ff3c84', color: 'white', fontWeight: '500' }}>Ank 8</h5>
-              </div>
-              <div style={{ textAlign: 'center', border: '1px solid #0dcebc', borderRadius: '5px' }}>
-                <div style={{ padding: '8px' }}>
-                  <h4 style={{ margin: '0', fontWeight: '500', color: '#556ee6' }}>Total Bids 0</h4>
-                  <h2 style={{ margin: '3px' }}>0</h2>
-                  <h5 style={{ margin: '0', fontWeight: '500' }}>Total Bid Amount</h5>
-                </div>
-                <h5 style={{ margin: '0', backgroundColor: '#0dcebc', color: 'white', fontWeight: '500' }}>Ank 9</h5>
-              </div>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-around',
+                marginBottom: '10px',
+                width: '100%',
+                flexWrap: 'wrap'
+              }}
+            >
+              {localAnks?.map((data, i) => {
+                let serverVal = totalBidAnk?.filter(d => d.ank == i + '')[0]
+                return (
+                  <div
+                    style={{
+                      textAlign: 'center',
+                      border: `1px solid ${data.color}`,
+                      borderRadius: '5px',
+                      marginBottom: 10,
+                      width: 'calc(20% - 20px)'
+                    }}
+                  >
+                    <div style={{ padding: '8px' }}>
+                      <h4 style={{ margin: '0', fontWeight: '500', color: '#556ee6' }}>
+                        Total Bids {serverVal?.totalBidCount || data.bids}
+                      </h4>
+                      <h2 style={{ margin: '3px' }}>{serverVal?.amount || data.amount}</h2>
+                      <h5 style={{ margin: '0', fontWeight: '500' }}>Total Bid Amount</h5>
+                    </div>
+                    <h5 style={{ margin: '0', backgroundColor: data.color, color: 'white', fontWeight: '500' }}>
+                      Ank {i}
+                    </h5>
+                  </div>
+                )
+              })}
             </div>
           </Card>
         </div>

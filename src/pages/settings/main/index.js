@@ -50,8 +50,8 @@ function MainSetting() {
     maxBidAmount: '',
     welcomeBounce: '',
     referralPoint: '',
-    withdrawalOpenTime: '',
-    withdrawalCloseTime: '',
+    withdrawalOpenTime: dayjs(new Date()),
+    withdrawalCloseTime: dayjs(new Date()),
     globalBatting: true,
     withdrawalStatus: false
   })
@@ -152,8 +152,8 @@ function MainSetting() {
       minWithdrawal,
       referralPoint,
       welcomeBounce,
-      withdrawCloseTime: withdrawalCloseTime,
-      withdrawOpenTime: withdrawalOpenTime,
+      withdrawCloseTime: dayjs(withdrawalCloseTime).format('hh:mm a'),
+      withdrawOpenTime: dayjs(withdrawalOpenTime).format('hh:mm a'),
       withdrawStatus: withdrawalStatus
     }
     console.log('params', params)
@@ -211,8 +211,8 @@ function MainSetting() {
             welcomeBounce: data.data.amountValue.welcomeBounce,
             // withdrawalCloseTime: dayjs(data.data.amountValue.withdrawCloseTime, 'h:mm A').format('HH:mm'),
             // withdrawalOpenTime: dayjs(data.data.amountValue.withdrawOpenTime, 'h:mm A').format('HH:mm'),
-            withdrawalCloseTime: dayjs(data.data.amountValue.withdrawCloseTime, 'h:mm A').format('h:mm A'),
-            withdrawalOpenTime: dayjs(data.data.amountValue.withdrawOpenTime, 'h:mm A').format('h:mm A'),
+            withdrawalCloseTime: dayjs(data.data.amountValue.withdrawCloseTime, 'h:mm a'),
+            withdrawalOpenTime: dayjs(data.data.amountValue.withdrawOpenTime, 'h:mm a'),
             withdrawalStatus: data.data.amountValue.withdrawStatus
           })
         } else {
@@ -594,13 +594,9 @@ function MainSetting() {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <Box components={['TimePicker']}>
                     <TimePicker
-                      value={dayjs()
-                        .set('hour', parseInt(valueForm.withdrawalOpenTime.split(':')[0]))
-                        .set('minute', parseInt(valueForm.withdrawalOpenTime.split(':')[1]))}
+                      value={valueForm.withdrawalOpenTime}
                       // value={todayOpenTime}
-                      onChange={newValue =>
-                        setValueForm({ ...valueForm, withdrawalOpenTime: dayjs(newValue).format('h:mm A') })
-                      }
+                      onChange={newValue => setValueForm({ ...valueForm, withdrawalOpenTime: newValue })}
                     />
                   </Box>
                 </LocalizationProvider>
@@ -623,12 +619,8 @@ function MainSetting() {
                   <Box components={['TimePicker']}>
                     <TimePicker
                       // value={valueForm.withdrawalCloseTime}
-                      value={dayjs()
-                        .set('hour', parseInt(valueForm.withdrawalCloseTime.split(':')[0]))
-                        .set('minute', parseInt(valueForm.withdrawalCloseTime.split(':')[1]))}
-                      onChange={newValue =>
-                        setValueForm({ ...valueForm, withdrawalCloseTime: dayjs(newValue).format('h:mm A') })
-                      }
+                      value={valueForm.withdrawalCloseTime}
+                      onChange={newValue => setValueForm({ ...valueForm, withdrawalCloseTime: newValue })}
                     />
                   </Box>
                 </LocalizationProvider>

@@ -30,10 +30,11 @@ const columns = [
   }
 ]
 
-export default function UsersPage() {
-  let router = useRouter()
-
+export default function UnapprovedUsersPage() {
   let [rows, setRows] = useState([])
+  console.log('rows', rows)
+
+  let router = useRouter()
 
   const isRefresh = () => {
     getAllUsers()
@@ -43,9 +44,11 @@ export default function UsersPage() {
   }, [])
 
   let getAllUsers = () => {
-    getUser()
+    getUser(false)
       .then(data => {
-        setRows(data.data)
+        if (data.success) {
+          setRows(data.data)
+        }
       })
       .catch(err => {
         console.log(err)
@@ -57,17 +60,7 @@ export default function UsersPage() {
       <Grid item xs={12}>
         <Grid container alignItems='center' justifyContent='space-between'>
           <Grid item>
-            <Typography variant='h5'>Users</Typography>
-          </Grid>
-          <Grid item>
-            <Button
-              variant='outlined'
-              onClick={() => {
-                router.replace('/users/unapproveuser')
-              }}
-            >
-              unapprove users
-            </Button>
+            <Typography variant='h5'>Un-Approved Users List</Typography>
           </Grid>
         </Grid>
       </Grid>

@@ -36,7 +36,11 @@ import {
   createWithdrawRequest,
   getTotalBidAnk,
   transferReport,
-  createGameWinner
+  createGameWinner,
+  getAllWithdrawRequest,
+  updateWithdrawRequest,
+  getOverAllBid,
+  updateAllBets
 } from './service'
 
 export {
@@ -77,5 +81,9 @@ export {
   createWithdrawRequest,
   getTotalBidAnk,
   transferReport,
-  createGameWinner
+  createGameWinner,
+  getAllWithdrawRequest,
+  updateWithdrawRequest,
+  getOverAllBid,
+  updateAllBets
 }
