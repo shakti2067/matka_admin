@@ -20,26 +20,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { TimePicker } from '@mui/x-date-pickers/TimePicker'
 import dayjs from 'dayjs'
 
-const MarketOffDayTable = ({ columns = [], rows = [] }) => {
+const MarketOffDayTable = ({ columns = [], rows = [], onChange = () => {} }) => {
   // ** States
-  const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(10)
-  const [todayOpenTime, setTodayOpenTime] = useState(dayjs(Date.now()))
-  const [todayCloseTime, setTodayCloseTime] = useState(dayjs('2022-04-17T11:59'))
-
-  console.log('todayOpenTime', todayOpenTime)
-
-  const router = useRouter()
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage)
-  }
-
-  const handleChangeRowsPerPage = event => {
-    setRowsPerPage(+event.target.value)
-    setPage(0)
-  }
-
   return (
     <>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -55,24 +37,31 @@ const MarketOffDayTable = ({ columns = [], rows = [] }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, rowIndex) => {
+              {rows.map((row, rowIndex) => {
                 return (
                   <TableRow hover role='checkbox' tabIndex={-1} key={rowIndex}>
                     {columns.map((column, index) => {
                       const value = row[column.id]
-
                       return (
                         <TableCell key={index} align={column.align} onClick={() => {}}>
                           {column.id === 'no' ? (
-                            <Checkbox value={true} />
+                            <Checkbox
+                              checked={row?.isActive}
+                              value={row?.isActive}
+                              onChange={() => {
+                                onChange('isActive', !row.isActive, rowIndex)
+                              }}
+                            />
                           ) : column.id === 'day' ? (
                             row.day
                           ) : column.id === 'todayOpen' ? (
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                               <Box components={['TimePicker']}>
                                 <TimePicker
-                                  value={todayOpenTime}
-                                  onChange={newValue => setTodayOpenTime(dayjs(newValue).format('h:mm A'))}
+                                  value={dayjs(row.startTime, 'HH:mm A')}
+                                  onChange={newValue => {
+                                    onChange('startTime', dayjs(newValue).format('HH:mm A'), rowIndex)
+                                  }}
                                 />
                               </Box>
                             </LocalizationProvider>
@@ -80,8 +69,10 @@ const MarketOffDayTable = ({ columns = [], rows = [] }) => {
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                               <Box components={['TimePicker']}>
                                 <TimePicker
-                                  value={todayCloseTime}
-                                  onChange={newValue => setTodayCloseTime(dayjs(newValue).format('h:mm A'))}
+                                  value={dayjs(row.endTime, 'HH:mm A')}
+                                  onChange={newValue => {
+                                    onChange('endTime', dayjs(newValue).format('HH:mm A'), rowIndex)
+                                  }}
                                 />
                               </Box>
                             </LocalizationProvider>
@@ -98,10 +89,6 @@ const MarketOffDayTable = ({ columns = [], rows = [] }) => {
           </Table>
         </TableContainer>
       </Paper>
-
-      <Button onClick={() => {}} type='submit' variant='contained' size='large' style={{ marginTop: 13 }}>
-        Submit
-      </Button>
     </>
   )
 }

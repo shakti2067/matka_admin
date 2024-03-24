@@ -40,7 +40,16 @@ import {
   getAllWithdrawRequest,
   updateWithdrawRequest,
   getOverAllBid,
-  updateAllBets
+  updateAllBets,
+  createOpenWinner,
+  createCloseWinner,
+  createHowToPlay,
+  declareCloseWinner,
+  declareOpenWinner,
+  getWinnerResultChart,
+  getBatCategoryByToday,
+  getDaysByCategoryId,
+  updateDays
 } from './service'
 
 export {
@@ -85,5 +94,14 @@ export {
   getAllWithdrawRequest,
   updateWithdrawRequest,
   getOverAllBid,
-  updateAllBets
+  updateAllBets,
+  createOpenWinner,
+  createCloseWinner,
+  createHowToPlay,
+  declareCloseWinner,
+  declareOpenWinner,
+  getWinnerResultChart,
+  getBatCategoryByToday,
+  getDaysByCategoryId,
+  updateDays
 }

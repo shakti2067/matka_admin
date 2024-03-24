@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // ** MUI Imports
 import Paper from '@mui/material/Paper'
@@ -14,7 +14,7 @@ import Switch from '@mui/material/Switch'
 import { Button, FormControlLabel, FormGroup } from '@mui/material'
 import moment from 'moment'
 import { useRouter } from 'next/router'
-import { updateBatCategory } from 'src/helpers'
+import { getDaysByCategoryId, updateBatCategory } from 'src/helpers'
 
 const GameTable = ({ columns = [], rows = [], refreshPage }) => {
   // ** States
@@ -61,7 +61,7 @@ const GameTable = ({ columns = [], rows = [], refreshPage }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, rowIndex) => {
+            {rows.map((row, rowIndex) => {
               return (
                 <TableRow hover role='checkbox' tabIndex={-1} key={rowIndex}>
                   {columns.map((column, index) => {
@@ -71,7 +71,7 @@ const GameTable = ({ columns = [], rows = [], refreshPage }) => {
                       <TableCell key={index} align={column.align} onClick={() => {}}>
                         {column.id === 'isActive' ? (
                           // <Switch checked={value} />
-                          <Switch checked={row.isActive} value={row._id} onClick={handleActiveChange} />
+                          <Switch checked={row.isActive} value={row.isActive} onClick={handleActiveChange} />
                         ) : column.id === 'no' ? (
                           <span>{rowIndex + 1}</span>
                         ) : column.id === 'action' ? (
@@ -96,8 +96,8 @@ const GameTable = ({ columns = [], rows = [], refreshPage }) => {
                               style={{ color: 'white' }}
                               onClick={() => {
                                 router.push({
-                                  pathname: '//bids/marketoffday',
-                                  query: { gameId: 'gameid' }
+                                  pathname: '/bids/marketoffday',
+                                  query: { id: row?._id }
                                 })
                               }}
                             >
@@ -108,6 +108,12 @@ const GameTable = ({ columns = [], rows = [], refreshPage }) => {
                           <Switch checked={value} />
                         ) : column.id === 'createdAt' ? (
                           moment(value).format('YYYY-MM-DD')
+                        ) : column.id === 'startTime' ? (
+                          row?.getCat?.startTime || 'N/A'
+                        ) : column.id === 'endTime' ? (
+                          row?.getCat?.endTime || 'N/A'
+                        ) : column.id === 'markerStatus' ? (
+                          <Switch checked={row?.getCat?.isActive} value={row?.getCat?.isActive} />
                         ) : column.format && typeof value === 'number' ? (
                           column.format(value)
                         ) : (

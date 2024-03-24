@@ -2,7 +2,7 @@ import { Card, CardHeader, Grid, Typography, Button } from '@mui/material'
 import { useRouter } from 'next/router'
 
 import React, { useEffect, useState } from 'react'
-import { getBetCategory } from 'src/helpers'
+import { getBetCategory, getDaysByCategoryId, updateDays } from 'src/helpers'
 import MarketOffDayTable from 'src/views/tables/MarketOffDayTable'
 
 const columns = [
@@ -32,34 +32,61 @@ const row = [
 export default function MarketOffDay() {
   let [rows, setRows] = useState([])
   const router = useRouter()
-  useEffect(() => {
-    getAllBids()
-  }, [])
 
-  let getAllBids = () => {
-    getBetCategory()
+  let getMarketTimes = () => {
+    getDaysByCategoryId(router.query.id)
       .then(data => {
+        console.log(data, 'this is data')
         setRows(data.data)
       })
       .catch(err => {
-        console.log(err)
+        console.log(err, 'this is err')
+      })
+  }
+  useEffect(() => {
+    getMarketTimes()
+  }, [router.query])
+  let submit = () => {
+    updateDays(rows)
+      .then(data => {
+        console.log(data, 'this is data')
+        router.back()
+      })
+      .catch(err => {
+        console.log(err, 'this is error')
       })
   }
   return (
     <Grid container spacing={6}>
       <Grid item xs={12} md={10}>
-        <Typography variant='h5'>Market Off Day</Typography>
+        <Typography variant='h5'>Market Day Settings</Typography>
       </Grid>
 
       <Grid item xs={12}>
         <Card>
-          <MarketOffDayTable columns={columns} rows={row} />
+          <MarketOffDayTable
+            columns={columns}
+            rows={rows}
+            onChange={(key, value, index) => {
+              rows[index][key] = value
+              setRows([...rows])
+            }}
+          />
         </Card>
-        {/* <Grid item xs={12} md={2}>
-          <Button onClick={() => {}} type='submit' variant='contained' size='large' style={{ marginTop: 13 }}>
+
+        <Grid item xs={12} md={2}>
+          <Button
+            onClick={() => {
+              submit()
+            }}
+            type='submit'
+            variant='contained'
+            size='large'
+            style={{ marginTop: 13 }}
+          >
             Submit
           </Button>
-        </Grid> */}
+        </Grid>
       </Grid>
     </Grid>
   )

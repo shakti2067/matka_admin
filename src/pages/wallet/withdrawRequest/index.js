@@ -15,6 +15,7 @@ import {
 
 import { getAllWithdrawRequest, updateWithdrawRequest } from 'src/helpers'
 import moment from 'moment'
+import { useRouter } from 'next/router'
 
 const columnBid = [
   {
@@ -70,6 +71,8 @@ function createBid(name, senderName, receiverName, amount, date) {
 const rowBid = [createBid('India', 'IN', 1324171354, 3287263, 3287263)]
 
 function WithdrawRequest() {
+  let router = useRouter()
+
   const [allWithdrawRequest, setAllWithdrawRequest] = useState([])
   const [withdrawHistoryTotalDoc, setWithdrawHistoryTotalDoc] = useState(10)
   const [isPopupOpenView, setPopupOpenView] = useState(false)
@@ -200,7 +203,14 @@ function WithdrawRequest() {
                             ) : column.id === 'mobile' ? (
                               <span>{row.mobileNumber}</span>
                             ) : column.id === 'userName' ? (
-                              <span>{row.userId.name}</span>
+                              <span
+                                style={{ color: 'blue', cursor: 'pointer' }}
+                                onClick={() => {
+                                  router.replace('/users')
+                                }}
+                              >
+                                {row.userId.name}
+                              </span>
                             ) : column.id === 'date' ? (
                               <span>{moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss')}</span>
                             ) : column.id === 'status' ? (

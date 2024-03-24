@@ -59,7 +59,76 @@ export let getBetCategory = () => {
       return error
     })
 }
-
+export let getDaysByCategoryId = id => {
+  return apis
+    .get(`game/getDaysByCategoryId?id=${id}`)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+export let updateDays = data => {
+  return apis
+    .post(`/game/updateDays`, { data })
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+export let getBatCategoryByToday = () => {
+  return apis
+    .get(`game/getBatCategoryByToday`)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+export let createOpenWinner = data => {
+  return apis
+    .post('game/createOpenWinner', data)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+export let declareOpenWinner = data => {
+  return apis
+    .post('game/declareOpenWinner', data)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+export let createCloseWinner = data => {
+  return apis
+    .post('game/createCloseWinner', data)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+export let declareCloseWinner = data => {
+  return apis
+    .post('game/declareCloseWinner', data)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
 export let createBids = data => {
   return apis
     .post('game/createBatCategory', data)
@@ -70,7 +139,16 @@ export let createBids = data => {
       return error
     })
 }
-
+export let getWinnerResultChart = (sDate, eDate) => {
+  return apis
+    .get(`game/getWinnerResultChart?startDate=${sDate}&endDate=${eDate}`)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
 export let getAllWinner = data => {
   return apis
     .get('game/getAllWinnerUser', data)
@@ -313,7 +391,7 @@ export let getUserDebitOrCreditWalletHistory = (userId, transactionType) => {
 
 export let userGameHistory = userId => {
   return apis
-    .get(`/game/getGameHistory?pageNumber=1&pageSize=100&userId=${userId}`)
+    .get(`/game/getGameHistory?pageNumber=1&pageSize=1000&userId=${userId}`)
     .then(res => {
       return res.data
     })

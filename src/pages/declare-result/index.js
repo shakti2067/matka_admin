@@ -20,10 +20,19 @@ import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import InputBox from 'src/components/InputBox'
-import { useState } from 'react'
-import { createGameWinner, getBetCategory, getGlobalSettings } from 'src/helpers'
+import { useState, useEffect } from 'react'
+import {
+  createGameWinner,
+  getBetCategory,
+  getGlobalSettings,
+  createOpenWinner,
+  declareOpenWinner,
+  createCloseWinner,
+  declareCloseWinner,
+  getWinnerHistory,
+  getWinnerResultChart
+} from 'src/helpers'
 import dayjs from 'dayjs'
-import moment from 'moment'
 
 const columnGameResult = [
   {
@@ -123,8 +132,8 @@ const rowGameResult = [
 function DeclareResult() {
   const today = new Date()
 
-  const [gameResult, setGameResult] = React.useState(0)
-  const [rowsGameResult, setRowsGameResult] = React.useState(10)
+  const [gameResult, setGameResult] = useState(0)
+  const [rowsGameResult, setRowsGameResult] = useState(10)
   const [isPopupOpenDelete, setPopupOpenDelete] = useState(false)
   const [sliderImageId, setSliderImageId] = useState('')
   const [bid, setBid] = useState([])
@@ -138,9 +147,11 @@ function DeclareResult() {
   const [isPopupOpenChangePass, setPopupOpenChangePass] = useState(false)
   const [createWinner, setCreateWinner] = useState([])
   const [selectResultDate, setSelectResultDate] = useState(today)
-
-  console.log('createWinner', createWinner)
-
+  const [amounts, setAmounts] = useState({
+    totalBidAmount: 0,
+    totalWinAmount: 0
+  })
+  const [gameResultHistory, setGameResultHistory] = useState([])
   const togglePopupDelete = event => {
     setPopupOpenDelete(!isPopupOpenDelete)
     setSliderImageId(event.target.value)
@@ -168,8 +179,15 @@ function DeclareResult() {
   }
 
   const togglePopupChangePass = () => {
-    setPopupOpenChangePass(!isPopupOpenChangePass)
-    createWinnerApi()
+    if (createWinner.length == 0) {
+      if (selectedMarketTimeValue == 'OPEN') {
+        createOpenWinnerWithData()
+      } else {
+        createCloseWinnerWithData()
+      }
+    } else {
+      setPopupOpenChangePass(!isPopupOpenChangePass)
+    }
   }
 
   let handleOpen = () => {
@@ -185,27 +203,6 @@ function DeclareResult() {
           setBid(data.data)
         } else {
           console.log('Error while fetching bids')
-        }
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  }
-
-  let createWinnerApi = () => {
-    let param = {
-      date: dayjs(selectResultDate).format('YYYY-MM-DD'),
-      betCategoryId: selectedGameValue,
-      state: selectedMarketTimeValue,
-      digit: digit,
-      pana: selectedPana
-    }
-    createGameWinner(param)
-      .then(data => {
-        if (data.success) {
-          setCreateWinner(data.data)
-        } else {
-          console.log('Error while fetching create Winner')
         }
       })
       .catch(err => {
@@ -243,11 +240,106 @@ function DeclareResult() {
       })
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     getAllBids()
     globalSettingApi()
+    getWinnerHistoryFromServer(dayjs().format('YYYY-MM-DD'))
   }, [])
+  let createOpenWinnerWithData = () => {
+    let params = {
+      date: dayjs().format('YYYY-MM-DD'),
+      betCategoryId: selectedGameValue,
+      state: 'OPEN',
+      digit: digit,
+      pana: selectedPana
+    }
+    createOpenWinner(params)
+      .then(data => {
+        console.log(data, 'this is data')
+        setCreateWinner(data.data)
+        setAmounts({
+          totalBidAmount: data.totalBidAmount,
+          totalWinAmount: data.totalWinAmount
+        })
+        setPopupOpenChangePass(!isPopupOpenChangePass)
+      })
+      .catch(err => {
+        console.log(err, 'this is error')
+      })
+  }
+  let declareResult = () => {
+    let params = {
+      date: dayjs().format('YYYY-MM-DD'),
+      betCategoryId: selectedGameValue,
+      state: 'OPEN',
+      digit: digit,
+      pana: selectedPana
+    }
+    declareOpenWinner(params)
+      .then(data => {
+        console.log(data.data, 'this is data')
+        setSelectedPana(0)
+        setDigit(0)
+        setCreateWinner([])
+        setSave(false)
+      })
+      .catch(err => {
+        console.log(err, 'this is error')
+      })
+  }
 
+  let createCloseWinnerWithData = () => {
+    let params = {
+      date: dayjs().format('YYYY-MM-DD'),
+      betCategoryId: selectedGameValue,
+      state: 'CLOSE',
+      digit: digit,
+      pana: selectedPana
+    }
+    createCloseWinner(params)
+      .then(data => {
+        console.log(data, 'this is data')
+        setCreateWinner(data.data)
+        setAmounts({
+          totalBidAmount: data.totalBidAmount,
+          totalWinAmount: data.totalWinAmount
+        })
+        setPopupOpenChangePass(!isPopupOpenChangePass)
+      })
+      .catch(err => {
+        console.log(err, 'this is error')
+      })
+  }
+  let declareCloseResult = () => {
+    let params = {
+      date: dayjs().format('YYYY-MM-DD'),
+      betCategoryId: selectedGameValue,
+      state: 'CLOSE',
+      digit: digit,
+      pana: selectedPana
+    }
+    declareCloseWinner(params)
+      .then(data => {
+        console.log(data.data, 'this is data')
+        setSelectedPana(0)
+        setDigit(0)
+        setCreateWinner([])
+        setSave(false)
+      })
+      .catch(err => {
+        console.log(err, 'this is error')
+      })
+  }
+  let getWinnerHistoryFromServer = date => {
+    getWinnerResultChart(date, dayjs().format('YYYY-MM-DD'))
+      .then(data => {
+        console.log(data, 'this is data')
+        setGameResultHistory(data.data)
+      })
+      .catch(err => {
+        console.log(err, 'this is error')
+      })
+  }
   return (
     <div>
       <Card style={{ padding: '20px' }}>
@@ -322,21 +414,23 @@ function DeclareResult() {
               </Grid>
             </FormControl>
             <div style={{ alignItems: 'end', display: 'flex' }}>
-              <Button
-                style={{
-                  backgroundColor: '#9155FD',
-                  color: 'white',
-                  height: '3rem',
-                  width: '10rem',
-                  marginBottom: '5px',
-                  marginRight: '10px'
-                }}
-                onClick={() => {
-                  setSave(true)
-                }}
-              >
-                save
-              </Button>
+              {createWinner.length == 0 && (
+                <Button
+                  style={{
+                    backgroundColor: '#9155FD',
+                    color: 'white',
+                    height: '3rem',
+                    width: '10rem',
+                    marginBottom: '5px',
+                    marginRight: '10px'
+                  }}
+                  onClick={() => {
+                    setSave(true)
+                  }}
+                >
+                  save
+                </Button>
+              )}
               {save ? (
                 <div>
                   <Button
@@ -383,8 +477,8 @@ function DeclareResult() {
                       >
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                           <Typography variant='h6'>Winner List</Typography>
-                          <Typography variant='h6'>Total Bid Amount : 0</Typography>
-                          <Typography variant='h6'>Total Winning Amount : 0</Typography>
+                          <Typography variant='h6'>Total Bid Amount : {amounts.totalBidAmount}</Typography>
+                          <Typography variant='h6'>Total Winning Amount : {amounts.totalWinAmount}</Typography>
 
                           <div onClick={togglePopupChangePass} style={{ cursor: 'pointer' }}>
                             &#10006;
@@ -394,31 +488,26 @@ function DeclareResult() {
                           <Table stickyHeader aria-label='sticky table'>
                             <TableHead>
                               <TableRow>
-                                {showWinner.map(column => (
-                                  <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
+                                {showWinner.map((column, i) => (
+                                  <TableCell key={i} align={column.align} sx={{ minWidth: column.minWidth }}>
                                     {column.label}
                                   </TableCell>
                                 ))}
                               </TableRow>
                             </TableHead>
                             <TableBody>
-                              {createWinner
-                                .slice(gameResult * rowsGameResult, gameResult * rowsGameResult + rowsGameResult)
-                                .map(row => {
-                                  return (
-                                    <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
-                                      {showWinner.map(column => {
-                                        const value = row[column.id]
-
-                                        return (
-                                          <TableCell key={column.id} align={column.align}>
-                                            {value}
-                                          </TableCell>
-                                        )
-                                      })}
-                                    </TableRow>
-                                  )
-                                })}
+                              {createWinner.map((row, index) => {
+                                return (
+                                  <TableRow hover role='checkbox' tabIndex={-1} key={index}>
+                                    <TableCell>{index + 1}</TableCell>
+                                    <TableCell>{row?.player?.name}</TableCell>
+                                    <TableCell>{row?.amount}</TableCell>
+                                    <TableCell>{row?.userWinAmount || row?.winAmount}</TableCell>
+                                    <TableCell>{row?.bet?.name}</TableCell>
+                                    <TableCell>TNX_{row?.bet?._id}</TableCell>
+                                  </TableRow>
+                                )
+                              })}
                             </TableBody>
                           </Table>
                         </TableContainer>
@@ -427,12 +516,19 @@ function DeclareResult() {
                   )}
                   <Button
                     style={{
-                      backgroundColor: '#9155FD',
+                      backgroundColor: '#56CA00',
                       color: 'white',
                       height: '3rem',
                       width: '10rem',
                       marginBottom: '5px',
                       marginRight: '10px'
+                    }}
+                    onClick={() => {
+                      if (selectedMarketTimeValue == 'OPEN') {
+                        declareResult()
+                      } else {
+                        declareCloseResult()
+                      }
                     }}
                   >
                     Declare
@@ -458,20 +554,30 @@ function DeclareResult() {
           <Table stickyHeader aria-label='sticky table'>
             <TableHead>
               <TableRow>
-                {columnGameResult.map(column => (
-                  <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
+                {columnGameResult.map((column, key) => (
+                  <TableCell key={key} align={column.align} sx={{ minWidth: column.minWidth }}>
                     {column.label}
                   </TableCell>
                 ))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {rowGameResult
-                .slice(gameResult * rowsGameResult, gameResult * rowsGameResult + rowsGameResult)
-                .map(row => {
-                  return (
-                    <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
-                      {columnGameResult.map(column => {
+              {gameResultHistory.map((row, index) => {
+                return (
+                  <TableRow hover role='checkbox' tabIndex={-1} key={index}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{row?.betCategoryId?.name}</TableCell>
+                    <TableCell>{dayjs(row?.betCategoryId?.resultDate).format('DD MMM YYYY')}</TableCell>
+                    <TableCell>{dayjs(row?.createdAt).format('DD MM YYYY, HH:mm a')}</TableCell>
+
+                    <TableCell>{dayjs(row?.updatedAt).format('DD MM YYYY, HH:mm a')}</TableCell>
+                    <TableCell>
+                      {row?.openPana}-{row?.openPanaDigit}
+                    </TableCell>
+                    <TableCell>
+                      {row?.closePanaDigit}-{row?.closePana}
+                    </TableCell>
+                    {/* {columnGameResult.map(column => {
                         const value = row[column.id]
 
                         return (
@@ -511,10 +617,10 @@ function DeclareResult() {
                             )}
                           </TableCell>
                         )
-                      })}
-                    </TableRow>
-                  )
-                })}
+                      })} */}
+                  </TableRow>
+                )
+              })}
             </TableBody>
           </Table>
         </TableContainer>
