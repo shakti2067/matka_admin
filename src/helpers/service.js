@@ -574,3 +574,16 @@ export let updateWithdrawRequest = sliderData => {
       return error
     })
 }
+
+export let userGameHistoryReport = (startDate, endDate, betId, betCategoryId) => {
+  return apis
+    .get(
+      `/game/getGameHistory?pageSize=100&pageNumber=1&startDate=${startDate}&endDate=${endDate}&betId=${betId}&betCategoryId=${betCategoryId}`
+    )
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}

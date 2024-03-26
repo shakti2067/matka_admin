@@ -496,18 +496,19 @@ function DeclareResult() {
                               </TableRow>
                             </TableHead>
                             <TableBody>
-                              {createWinner.map((row, index) => {
-                                return (
-                                  <TableRow hover role='checkbox' tabIndex={-1} key={index}>
-                                    <TableCell>{index + 1}</TableCell>
-                                    <TableCell>{row?.player?.name}</TableCell>
-                                    <TableCell>{row?.amount}</TableCell>
-                                    <TableCell>{row?.userWinAmount || row?.winAmount}</TableCell>
-                                    <TableCell>{row?.bet?.name}</TableCell>
-                                    <TableCell>TNX_{row?.bet?._id}</TableCell>
-                                  </TableRow>
-                                )
-                              })}
+                              {createWinner &&
+                                createWinner.map((row, index) => {
+                                  return (
+                                    <TableRow hover role='checkbox' tabIndex={-1} key={index}>
+                                      <TableCell>{index + 1}</TableCell>
+                                      <TableCell>{row?.player?.name}</TableCell>
+                                      <TableCell>{row?.amount}</TableCell>
+                                      <TableCell>{row?.userWinAmount || row?.winAmount}</TableCell>
+                                      <TableCell>{row?.bet?.name}</TableCell>
+                                      <TableCell>TNX_{row?.bet?._id}</TableCell>
+                                    </TableRow>
+                                  )
+                                })}
                             </TableBody>
                           </Table>
                         </TableContainer>

@@ -205,9 +205,12 @@ function WithdrawRequest() {
                             ) : column.id === 'userName' ? (
                               <span
                                 style={{ color: 'blue', cursor: 'pointer' }}
-                                onClick={() => {
-                                  router.replace('/users')
-                                }}
+                                onClick={() =>
+                                  router.push({
+                                    pathname: '/users/userdetails',
+                                    query: { userId: row.userId._id }
+                                  })
+                                }
                               >
                                 {row.userId.name}
                               </span>

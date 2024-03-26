@@ -152,8 +152,8 @@ function MainSetting() {
       minWithdrawal,
       referralPoint,
       welcomeBounce,
-      withdrawCloseTime: dayjs(withdrawalCloseTime).format('hh:mm a'),
-      withdrawOpenTime: dayjs(withdrawalOpenTime).format('hh:mm a'),
+      withdrawCloseTime: dayjs(withdrawalCloseTime).format('hh:mm A'),
+      withdrawOpenTime: dayjs(withdrawalOpenTime).format('hh:mm A'),
       withdrawStatus: withdrawalStatus
     }
     console.log('params', params)
@@ -211,8 +211,8 @@ function MainSetting() {
             welcomeBounce: data.data.amountValue.welcomeBounce,
             // withdrawalCloseTime: dayjs(data.data.amountValue.withdrawCloseTime, 'h:mm A').format('HH:mm'),
             // withdrawalOpenTime: dayjs(data.data.amountValue.withdrawOpenTime, 'h:mm A').format('HH:mm'),
-            withdrawalCloseTime: dayjs(data.data.amountValue.withdrawCloseTime, 'h:mm a'),
-            withdrawalOpenTime: dayjs(data.data.amountValue.withdrawOpenTime, 'h:mm a'),
+            withdrawalCloseTime: dayjs(data.data.amountValue.withdrawCloseTime, 'hh:mm A'),
+            withdrawalOpenTime: dayjs(data.data.amountValue.withdrawOpenTime, 'hh:mm A'),
             withdrawalStatus: data.data.amountValue.withdrawStatus
           })
         } else {

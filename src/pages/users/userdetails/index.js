@@ -457,6 +457,8 @@ function UserDetails() {
     remark: ''
   })
 
+  console.log('userDetails', userDetails)
+
   const togglePopup = () => {
     setPopupOpen(!isPopupOpen)
   }
@@ -1206,7 +1208,7 @@ function UserDetails() {
                           }}
                         >
                           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <Typography variant='h6'>Withdrow Fund</Typography>
+                            <Typography variant='h6'>Withdraw Fund</Typography>
                             <div onClick={togglePopupWithdrow} style={{ cursor: 'pointer' }}>
                               &#10006;
                             </div>

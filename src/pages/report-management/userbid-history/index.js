@@ -18,7 +18,7 @@ import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import InputBox from 'src/components/InputBox'
-import { getAllBets, getBetCategory } from 'src/helpers'
+import { getAllBets, getBetCategory, userGameHistory, userGameHistoryReport } from 'src/helpers'
 import dayjs from 'dayjs'
 
 const columnBid = [
@@ -52,7 +52,7 @@ const columnBid = [
     align: 'right'
   },
   {
-    id: 'openPaana',
+    id: 'openPana',
     label: 'Open Paana',
     minWidth: 170,
     align: 'right'
@@ -64,7 +64,7 @@ const columnBid = [
     align: 'right'
   },
   {
-    id: 'closePaana',
+    id: 'closePana',
     label: 'Close Paana',
     minWidth: 170,
     align: 'right'
@@ -122,10 +122,13 @@ const rowBid = [
 function BidHistoryReport() {
   const [bidPage, setBidPage] = useState(0)
   const [rowsBidPage, setRowsBidPage] = useState(10)
-  let [bid, setBid] = useState([])
+  const [bid, setBid] = useState([])
   const [selectedGameValue, setSelectedGameValue] = useState(0)
   const [selectedGameType, setSelectedGameType] = useState(0)
   const [gameTypeData, setGameTypeData] = useState([])
+  const [game, setGame] = useState([])
+
+  console.log('selectedGameType', selectedGameType)
 
   const today = new Date()
 
@@ -172,10 +175,35 @@ function BidHistoryReport() {
         console.log(err)
       })
   }
+  let userGameHistoryApi = () => {
+    let startDate = '2024-03-24'
+    let endDate = '2024-03-24'
+    let betId
+    if (selectedGameType == 1) {
+      betId = ''
+    } else {
+      betId = selectedGameType
+    }
 
+    let betCategoryId = selectedGameValue
+
+    userGameHistoryReport(startDate, endDate, betId, betCategoryId)
+      .then(data => {
+        if (data.success) {
+          setGame(data.data)
+        } else {
+          console.log('error')
+          setGame([])
+        }
+      })
+      .catch(e => {
+        console.log('error', e)
+      })
+  }
   useEffect(() => {
     getAllBids()
     getAllGames()
+    // userGameHistoryApi()
   }, [])
 
   return (
@@ -186,7 +214,7 @@ function BidHistoryReport() {
           <FormControl style={{ width: '14rem' }}>
             <Typography>Date</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker maxDate={dayjs(today)} />
+              <DatePicker maxDate={dayjs(today)} value={dayjs(today)} />
             </LocalizationProvider>
           </FormControl>
           <FormControl>
@@ -216,7 +244,10 @@ function BidHistoryReport() {
             </Select>
           </FormControl>
           <div style={{ display: 'flex', alignItems: 'center', paddingTop: '23px' }}>
-            <Button style={{ backgroundColor: '#9155FD', color: 'white', width: '10rem', height: '3rem' }}>
+            <Button
+              style={{ backgroundColor: '#9155FD', color: 'white', width: '10rem', height: '3rem' }}
+              onClick={userGameHistoryApi}
+            >
               Submit
             </Button>
           </div>
@@ -238,15 +269,103 @@ function BidHistoryReport() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rowBid.slice(bidPage * rowsBidPage, bidPage * rowsBidPage + rowsBidPage).map(row => {
+              {game.slice(bidPage * rowsBidPage, bidPage * rowsBidPage + rowsBidPage).map((row, rowIndex) => {
                 return (
-                  <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
+                  <TableRow hover role='checkbox' tabIndex={-1} key={rowIndex}>
                     {columnBid.map(column => {
                       const value = row[column.id]
 
                       return (
                         <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === 'number' ? column.format(value) : value}
+                          {column.id === 'name' ? (
+                            <span>{rowIndex + 1}</span>
+                          ) : column.id === 'gameName' ? (
+                            <span>{row.betCategoryId.name}</span>
+                          ) : column.id === 'userName' ? (
+                            <span>{row.playerId.name}</span>
+                          ) : column.id === 'session' ? (
+                            <span>{row.state}</span>
+                          ) : column.id === 'bidTXID' ? (
+                            <span>{row.gameId}</span>
+                          ) : column.id === 'gameType' ? (
+                            <span>{row.betId != null ? row.betId.name : 'test'}</span>
+                          ) : column.id === 'date' ? (
+                            <span>{moment(row.createdAt).format('YYYY-MM-DD HH:mm:ss')}</span>
+                          ) : column.id === 'points' ? (
+                            <span>{row.amount}</span>
+                          ) : column.id === 'openPana' ? (
+                            <span>
+                              {row.betId != null
+                                ? row.betId.name == 'Single Pana' && row.state == 'OPEN'
+                                  ? row.choiceNumber
+                                  : row.betId.name == 'Full Sangam'
+                                  ? row.openPana
+                                  : row.betId.name == 'Half Sangam' && row.state == 'CLOSE'
+                                  ? row.openPana
+                                  : row.betId.name == 'Tripple Pana' && row.state == 'OPEN'
+                                  ? row.choiceNumber
+                                  : row.betId.name == 'Double Pana' && row.state == 'OPEN'
+                                  ? row.choiceNumber
+                                  : 'N/A'
+                                : 'N/A'}
+                            </span>
+                          ) : column.id === 'closePana' ? (
+                            <span>
+                              {row.betId != null
+                                ? row.betId.name == 'Single Pana' && row.state == 'CLOSE'
+                                  ? row.choiceNumber
+                                  : row.betId.name == 'Full Sangam'
+                                  ? row.closePana
+                                  : row.betId.name == 'Half Sangam' && row.state == 'OPEN'
+                                  ? row.closePana
+                                  : row.betId.name == 'Tripple Pana' && row.state == 'CLOSE'
+                                  ? row.choiceNumber
+                                  : row.betId.name == 'Double Pana' && row.state == 'CLOSE'
+                                  ? row.choiceNumber
+                                  : 'N/A'
+                                : 'N/A'}
+                            </span>
+                          ) : column.id === 'openDigit' ? (
+                            <span>
+                              {row.state == 'OPEN' && row.betId.name == 'Single Digit'
+                                ? row.choiceNumber
+                                : row.betId.name == 'Jodi Digit'
+                                ? row.choiceNumber?.split('')[0]
+                                : row.betId != null
+                                ? row.betId.name == 'Single Pana' && row.state == 'OPEN'
+                                  ? row.choiceNumber
+                                  : row.betId.name == 'Full Sangam'
+                                  ? row.ank
+                                  : row.betId.name == 'Half Sangam'
+                                  ? row.ank
+                                  : row.betId.name == 'Tripple Pana' && row.state == 'OPEN'
+                                  ? row.ank
+                                  : row.betId.name == 'Double Pana' && row.state == 'OPEN'
+                                  ? row.ank
+                                  : 'N/A'
+                                : 'N/A'}
+                            </span>
+                          ) : column.id === 'closeDigit' ? (
+                            <span>
+                              {row.state == 'CLOSE' && row.betId.name == 'Single Digit'
+                                ? row.choiceNumber
+                                : row.state == 'CLOSE' && row.betId.name == 'Jodi Digit'
+                                ? row.choiceNumber?.split('')[1]
+                                : row.betId != null
+                                ? row.betId.name == 'Full Sangam'
+                                  ? row.ankClose
+                                  : row.betId.name == 'Tripple Pana' && row.state == 'CLOSE'
+                                  ? row.ank
+                                  : row.betId.name == 'Double Pana' && row.state == 'CLOSE'
+                                  ? row.ank
+                                  : 'N/A'
+                                : 'N/A'}
+                            </span>
+                          ) : column.format && typeof value === 'number' ? (
+                            column.format(value)
+                          ) : (
+                            value
+                          )}
                         </TableCell>
                       )
                     })}

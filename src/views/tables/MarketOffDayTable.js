@@ -58,9 +58,9 @@ const MarketOffDayTable = ({ columns = [], rows = [], onChange = () => {} }) => 
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                               <Box components={['TimePicker']}>
                                 <TimePicker
-                                  value={dayjs(row.startTime, 'HH:mm A')}
+                                  value={dayjs(row.startTime, 'hh:mm A')}
                                   onChange={newValue => {
-                                    onChange('startTime', dayjs(newValue).format('HH:mm A'), rowIndex)
+                                    onChange('startTime', dayjs(newValue).format('hh:mm A'), rowIndex)
                                   }}
                                 />
                               </Box>
@@ -69,9 +69,9 @@ const MarketOffDayTable = ({ columns = [], rows = [], onChange = () => {} }) => 
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                               <Box components={['TimePicker']}>
                                 <TimePicker
-                                  value={dayjs(row.endTime, 'HH:mm A')}
+                                  value={dayjs(row.endTime, 'hh:mm A')}
                                   onChange={newValue => {
-                                    onChange('endTime', dayjs(newValue).format('HH:mm A'), rowIndex)
+                                    onChange('endTime', dayjs(newValue).format('hh:mm A'), rowIndex)
                                   }}
                                 />
                               </Box>

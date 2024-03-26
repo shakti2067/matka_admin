@@ -49,7 +49,8 @@ import {
   getWinnerResultChart,
   getBatCategoryByToday,
   getDaysByCategoryId,
-  updateDays
+  updateDays,
+  userGameHistoryReport
 } from './service'
 
 export {
@@ -103,5 +104,6 @@ export {
   getWinnerResultChart,
   getBatCategoryByToday,
   getDaysByCategoryId,
-  updateDays
+  updateDays,
+  userGameHistoryReport
 }
