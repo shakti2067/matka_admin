@@ -148,6 +148,8 @@ function DeclareResult() {
   const [isPopupOpenChangePass, setPopupOpenChangePass] = useState(false)
   const [createWinner, setCreateWinner] = useState([])
   const [selectResultDate, setSelectResultDate] = useState(today)
+  const [selectResultHistoryDate, setSelectResultHistoryDate] = useState(today)
+
   const [amounts, setAmounts] = useState({
     totalBidAmount: 0,
     totalWinAmount: 0
@@ -352,9 +354,11 @@ function DeclareResult() {
           setDigit(0)
           setCreateWinner([])
           setSave(false)
+          getWinnerHistoryFromServer(dayjs(new Date()).format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD'))
         } else {
           console.log('error')
           setError(data.message)
+          getWinnerHistoryFromServer(dayjs(new Date()).format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD'))
         }
       })
       .catch(err => {
@@ -378,6 +382,12 @@ function DeclareResult() {
         setError(err)
       })
   }
+
+  let handleDateChange = newValue => {
+    setSelectResultHistoryDate(newValue)
+    getWinnerHistoryFromServer(dayjs(newValue).format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD'))
+  }
+
   return (
     <div>
       <Card style={{ padding: '20px' }}>
@@ -588,7 +598,11 @@ function DeclareResult() {
           <div style={{ marginTop: '15px', marginBottom: '10px' }}>
             <Typography>Select Result Date</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker maxDate={dayjs(today)} />
+              <DatePicker
+                maxDate={dayjs(today)}
+                value={dayjs(selectResultHistoryDate)}
+                onChange={newValue => handleDateChange(newValue)}
+              />
             </LocalizationProvider>
           </div>
         </div>
@@ -609,10 +623,10 @@ function DeclareResult() {
                   <TableRow hover role='checkbox' tabIndex={-1} key={index}>
                     <TableCell>{index + 1}</TableCell>
                     <TableCell>{row?.betCategoryId?.name}</TableCell>
-                    <TableCell>{dayjs(row?.betCategoryId?.resultDate).format('DD MMM YYYY')}</TableCell>
-                    <TableCell>{dayjs(row?.createdAt).format('DD MM YYYY, HH:mm a')}</TableCell>
+                    <TableCell>{dayjs(row?.resultDate).format('DD MMM YYYY')}</TableCell>
+                    <TableCell>{dayjs(row?.createdAt).format('DD MM YYYY, HH:mm ')}</TableCell>
 
-                    <TableCell>{dayjs(row?.updatedAt).format('DD MM YYYY, HH:mm a')}</TableCell>
+                    <TableCell>{dayjs(row?.updatedAt).format('DD MM YYYY, HH:mm ')}</TableCell>
                     <TableCell>
                       {row?.openPana}-{row?.openPanaDigit}
                     </TableCell>

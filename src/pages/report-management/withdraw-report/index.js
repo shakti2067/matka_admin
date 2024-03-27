@@ -83,6 +83,7 @@ function createWithdraw(userName, mobile, amount, paymentMethod, requestNo, date
 const rowWithdraw = [createWithdraw('India', 'IN', 1324171354, 3287263, 3287263, 'data1', 'data2', 'data3', 'data4')]
 
 function index() {
+  const today = new Date()
   const [WithdrawPage, setWithdrawPage] = useState(0)
   const [rowsWithdrawPage, setrowsWithdrawPage] = useState(10)
   let [date, setDate] = useState(dayjs())
@@ -110,7 +111,13 @@ function index() {
           <FormControl style={{ width: '25rem' }}>
             <Typography>Date</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker />
+              <DatePicker
+                maxDate={dayjs(today)}
+                value={date}
+                onChange={date => {
+                  setDate(date)
+                }}
+              />
             </LocalizationProvider>
           </FormControl>
           <div style={{ display: 'flex', alignItems: 'center', paddingTop: '23px' }}>
