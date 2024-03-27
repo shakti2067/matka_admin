@@ -69,6 +69,7 @@ function TransferReport() {
   const [transferReportData, setTransferReportData] = useState([])
   const [totalTransferAmount, setTotalTransferAmount] = useState(0)
   const [selectDate, setSelectDate] = useState(dayjs(today).format('YYYY-MM-DD'))
+  const [count, setCount] = useState(0)
 
   console.log('selectDate', selectDate)
   const handleChangeBidPerPage = newPage => {
@@ -86,6 +87,7 @@ function TransferReport() {
       .then(data => {
         setTransferReportData(data.data)
         setTotalTransferAmount(data.totalTransferAmount)
+        setCount(data.totalDocument)
       })
       .catch(err => {
         console.log(err)
@@ -139,23 +141,7 @@ function TransferReport() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rowBid.slice(bidPage * rowsBidPage, bidPage * rowsBidPage + rowsBidPage).map(row => {
-                return (
-                  <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
-                    {columnBid.map(column => {
-                      const value = row[column.id]
-
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === 'number' ? column.format(value) : value}
-                        </TableCell>
-                      )
-                    })}
-                  </TableRow>
-                )
-              })}
-
-              {/* {transferReportData
+              {transferReportData
                 .slice(bidPage * rowsBidPage, bidPage * rowsBidPage + rowsBidPage)
                 .map((row, rowIndex) => {
                   return (
@@ -169,8 +155,10 @@ function TransferReport() {
                               ? rowIndex + 1
                               : column.id == 'senderName'
                               ? row.userId.name
+                              : column.id == 'receiverName'
+                              ? row.receiverUserId.name
                               : column.id == 'date'
-                              ? row.createdAt
+                              ? moment(row.createdAt).format('YYYY-DD-MM')
                               : column.format && typeof value === 'number'
                               ? column.format(value)
                               : value}
@@ -179,14 +167,14 @@ function TransferReport() {
                       })}
                     </TableRow>
                   )
-                })} */}
+                })}
             </TableBody>
           </Table>
         </TableContainer>
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component='div'
-          count={rowsBidPage.length}
+          count={count}
           rowsPerPage={rowsBidPage}
           page={bidPage}
           onPageChange={handleChangeBidPerPage}

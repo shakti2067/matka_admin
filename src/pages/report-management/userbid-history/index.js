@@ -127,7 +127,7 @@ function BidHistoryReport() {
   const [selectedGameType, setSelectedGameType] = useState(0)
   const [gameTypeData, setGameTypeData] = useState([])
   const [game, setGame] = useState([])
-
+  const [date, setDate] = useState(dayjs())
   console.log('selectedGameType', selectedGameType)
 
   const today = new Date()
@@ -175,17 +175,20 @@ function BidHistoryReport() {
         console.log(err)
       })
   }
-  let userGameHistoryApi = () => {
-    let startDate = '2024-03-24'
-    let endDate = '2024-03-24'
+  let userGameHistoryApi = (startDate = dayjs().format('YYYY-MM-DD')) => {
+    let endDate = dayjs().format('YYYY-MM-DD')
     let betId
-    if (selectedGameType == 1) {
+    let betCategoryId
+    if (selectedGameType == 0 || selectedGameType == 1) {
       betId = ''
     } else {
       betId = selectedGameType
     }
-
-    let betCategoryId = selectedGameValue
+    if (selectedGameValue == 0) {
+      betCategoryId = ''
+    } else {
+      betCategoryId = selectedGameValue
+    }
 
     userGameHistoryReport(startDate, endDate, betId, betCategoryId)
       .then(data => {
@@ -210,16 +213,22 @@ function BidHistoryReport() {
     <>
       <Card style={{ padding: '20px' }}>
         <Typography variant='h6'>Bid History Report</Typography>
-        <div style={{ display: 'flex', justifyContent: 'space-between', margin: '10px 0' }}>
-          <FormControl style={{ width: '14rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', margin: '10px 0', alignItems: 'center' }}>
+          <FormControl>
             <Typography>Date</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker maxDate={dayjs(today)} value={dayjs(today)} />
+              <DatePicker
+                maxDate={dayjs(today)}
+                value={date}
+                onChange={date => {
+                  setDate(date)
+                }}
+              />
             </LocalizationProvider>
           </FormControl>
           <FormControl>
             <Typography>Game Name</Typography>
-            <Select style={{ width: '23rem' }} value={selectedGameValue} onChange={handleGameSelectChange}>
+            <Select value={selectedGameValue} onChange={handleGameSelectChange}>
               <MenuItem value={0}>-- Select game name --</MenuItem>
               {bid &&
                 bid.map(d => (
@@ -231,7 +240,7 @@ function BidHistoryReport() {
           </FormControl>
           <FormControl>
             <Typography>Game Type</Typography>
-            <Select style={{ width: '23rem' }} value={selectedGameType} onChange={handleGameTypeSelectChange}>
+            <Select value={selectedGameType} onChange={handleGameTypeSelectChange}>
               <MenuItem value={0}>-- Select game type --</MenuItem>
               <MenuItem value={1}>All Type</MenuItem>
 
@@ -243,14 +252,13 @@ function BidHistoryReport() {
                 ))}
             </Select>
           </FormControl>
-          <div style={{ display: 'flex', alignItems: 'center', paddingTop: '23px' }}>
-            <Button
-              style={{ backgroundColor: '#9155FD', color: 'white', width: '10rem', height: '3rem' }}
-              onClick={userGameHistoryApi}
-            >
-              Submit
-            </Button>
-          </div>
+
+          <Button
+            style={{ backgroundColor: '#9155FD', color: 'white' }}
+            onClick={() => userGameHistoryApi(dayjs(date).format('YYYY-MM-DD'))}
+          >
+            Submit
+          </Button>
         </div>
       </Card>
       <Card sx={{ width: '100%', overflow: 'hidden', marginTop: '20px' }}>

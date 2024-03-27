@@ -19,7 +19,7 @@ import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import InputBox from 'src/components/InputBox'
 import dayjs from 'dayjs'
-import { getAllBets, getBetCategory } from 'src/helpers'
+import { getAllBets, getBetCategory, winningReport } from 'src/helpers'
 
 const columnBid = [
   {
@@ -129,7 +129,8 @@ function WinningReport() {
   const [selectedGameType, setSelectedGameType] = useState(0)
   const [gameTypeData, setGameTypeData] = useState([])
   const [selectedMarketTimeValue, setSelectedMarketTimeValue] = useState(0)
-
+  const [date, setDate] = useState(dayjs())
+  const [rows, setRows] = useState([])
   const handleChangeBidPerPage = (event, newPage) => {
     setBidPage(newPage)
   }
@@ -173,7 +174,23 @@ function WinningReport() {
         console.log(err)
       })
   }
-
+  let getWinners = () => {
+    winningReport(
+      dayjs(date).format('YYYY-MM-DD'),
+      dayjs().format('YYYY-MM-DD'),
+      selectedGameValue,
+      selectedMarketTimeValue
+    )
+      .then(data => {
+        if (data.data != null) {
+          console.log(data, 'this is data')
+          setRows(data.data)
+        }
+      })
+      .catch(err => {
+        console.log(err, 'this is error')
+      })
+  }
   useEffect(() => {
     getAllBids()
     getAllGames()
@@ -183,11 +200,17 @@ function WinningReport() {
     <>
       <Card style={{ padding: '20px' }}>
         <Typography variant='h6'>Winning History Report</Typography>
-        <div style={{ display: 'flex', justifyContent: 'space-between', margin: '10px 0' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', margin: '10px 0', flexWrap: 'wrap' }}>
           <FormControl style={{ width: '14rem' }}>
             <Typography>Date</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker maxDate={dayjs(today)} />
+              <DatePicker
+                maxDate={dayjs(today)}
+                value={date}
+                onChange={date => {
+                  setDate(date)
+                }}
+              />
             </LocalizationProvider>
           </FormControl>
           <FormControl>
@@ -206,12 +229,15 @@ function WinningReport() {
             <Typography>Market Time</Typography>
             <Select style={{ width: '23rem' }} value={selectedMarketTimeValue} onChange={handleMarketTimeChange}>
               <MenuItem value={0}>-- Select Session --</MenuItem>
-              <MenuItem value='active'>Open Market</MenuItem>
-              <MenuItem value='inactive'>Close Market</MenuItem>
+              <MenuItem value='OPEN'>Open Market</MenuItem>
+              <MenuItem value='CLOSE'>Close Market</MenuItem>
             </Select>
           </FormControl>
           <div style={{ display: 'flex', alignItems: 'center', paddingTop: '23px' }}>
-            <Button style={{ backgroundColor: '#9155FD', color: 'white', width: '10rem', height: '3rem' }}>
+            <Button
+              onClick={getWinners}
+              style={{ backgroundColor: '#9155FD', color: 'white', width: '10rem', height: '3rem' }}
+            >
               Submit
             </Button>
           </div>
@@ -233,15 +259,23 @@ function WinningReport() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rowBid.slice(bidPage * rowsBidPage, bidPage * rowsBidPage + rowsBidPage).map(row => {
+              {rows?.map((row, index) => {
                 return (
-                  <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
-                    {columnBid.map(column => {
-                      const value = row[column.id]
-
+                  <TableRow hover role='checkbox' tabIndex={-1} key={index}>
+                    {columnBid.map((column, index) => {
                       return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === 'number' ? column.format(value) : value}
+                        <TableCell key={index} align={column.align}>
+                          {column.id == 'userName'
+                            ? row?.playerId?.name
+                            : column.id == 'gameName'
+                            ? row?.betCategoryId?.name
+                            : column.id == 'gameType'
+                            ? row?.betId?.name
+                            : column.id == 'amount'
+                            ? row?.winAmount
+                            : column.id == 'points'
+                            ? row?.bidAmount
+                            : 'N/A'}
                         </TableCell>
                       )
                     })}

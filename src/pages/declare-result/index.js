@@ -33,6 +33,7 @@ import {
   getWinnerResultChart
 } from 'src/helpers'
 import dayjs from 'dayjs'
+import { EmailNewsletter } from 'mdi-material-ui'
 
 const columnGameResult = [
   {
@@ -151,11 +152,13 @@ function DeclareResult() {
     totalBidAmount: 0,
     totalWinAmount: 0
   })
+
   const [gameResultHistory, setGameResultHistory] = useState([])
   const togglePopupDelete = event => {
     setPopupOpenDelete(!isPopupOpenDelete)
     setSliderImageId(event.target.value)
   }
+  const [error, setError] = useState('')
 
   const handleChangeGameResultPage = (event, newPage) => {
     setGameResult(newPage)
@@ -172,7 +175,7 @@ function DeclareResult() {
     setSelectedPana(event.target.value)
     let lastDigit = sumOfDigitsAndLastDigit(event.target.value)
 
-    setDigit(lastDigit)
+    setDigit(sumOfDigitsAndLastDigit(event.target.value))
   }
   const handleMarketTimeChange = event => {
     setSelectedMarketTimeValue(event.target.value)
@@ -245,6 +248,7 @@ function DeclareResult() {
     globalSettingApi()
     getWinnerHistoryFromServer(dayjs().format('YYYY-MM-DD'))
   }, [])
+
   let createOpenWinnerWithData = () => {
     let params = {
       date: dayjs().format('YYYY-MM-DD'),
@@ -255,16 +259,22 @@ function DeclareResult() {
     }
     createOpenWinner(params)
       .then(data => {
-        console.log(data, 'this is data')
-        setCreateWinner(data.data)
-        setAmounts({
-          totalBidAmount: data.totalBidAmount,
-          totalWinAmount: data.totalWinAmount
-        })
-        setPopupOpenChangePass(!isPopupOpenChangePass)
+        if (data.success) {
+          console.log(data, 'this is data')
+          setCreateWinner(data.data)
+          setAmounts({
+            totalBidAmount: data.totalBidAmount,
+            totalWinAmount: data.totalWinAmount
+          })
+          setPopupOpenChangePass(!isPopupOpenChangePass)
+        } else {
+          console.log('error', data.message)
+          setError(data.message)
+        }
       })
       .catch(err => {
         console.log(err, 'this is error')
+        setError(err)
       })
   }
   let declareResult = () => {
@@ -277,14 +287,22 @@ function DeclareResult() {
     }
     declareOpenWinner(params)
       .then(data => {
-        console.log(data.data, 'this is data')
-        setSelectedPana(0)
-        setDigit(0)
-        setCreateWinner([])
-        setSave(false)
+        if (data.success) {
+          console.log(data.data, 'this is data')
+          setSelectedPana(0)
+          setDigit(0)
+          setCreateWinner([])
+          setSave(false)
+          getWinnerHistoryFromServer(dayjs(new Date()).format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD'))
+        } else {
+          console.log('error')
+          getWinnerHistoryFromServer(dayjs(new Date()).format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD'))
+          setError(data.message)
+        }
       })
       .catch(err => {
         console.log(err, 'this is error')
+        setError(err)
       })
   }
 
@@ -298,16 +316,24 @@ function DeclareResult() {
     }
     createCloseWinner(params)
       .then(data => {
-        console.log(data, 'this is data')
-        setCreateWinner(data.data)
-        setAmounts({
-          totalBidAmount: data.totalBidAmount,
-          totalWinAmount: data.totalWinAmount
-        })
-        setPopupOpenChangePass(!isPopupOpenChangePass)
+        if (data.success) {
+          console.log(data, 'this is data')
+          setCreateWinner(data.data)
+          setAmounts({
+            totalBidAmount: data.totalBidAmount,
+            totalWinAmount: data.totalWinAmount
+          })
+          setPopupOpenChangePass(!isPopupOpenChangePass)
+          getWinnerHistoryFromServer(dayjs(new Date()).format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD'))
+        } else {
+          console.log('error')
+          getWinnerHistoryFromServer(dayjs(new Date()).format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD'))
+          setError(data.message)
+        }
       })
       .catch(err => {
         console.log(err, 'this is error')
+        setError(err)
       })
   }
   let declareCloseResult = () => {
@@ -320,24 +346,36 @@ function DeclareResult() {
     }
     declareCloseWinner(params)
       .then(data => {
-        console.log(data.data, 'this is data')
-        setSelectedPana(0)
-        setDigit(0)
-        setCreateWinner([])
-        setSave(false)
+        if (data.success) {
+          console.log(data.data, 'this is data')
+          setSelectedPana(0)
+          setDigit(0)
+          setCreateWinner([])
+          setSave(false)
+        } else {
+          console.log('error')
+          setError(data.message)
+        }
       })
       .catch(err => {
         console.log(err, 'this is error')
+        setError(err)
       })
   }
   let getWinnerHistoryFromServer = date => {
     getWinnerResultChart(date, dayjs().format('YYYY-MM-DD'))
       .then(data => {
-        console.log(data, 'this is data')
-        setGameResultHistory(data.data)
+        if (data.success) {
+          console.log(data, 'this is data')
+          setGameResultHistory(data.data)
+        } else {
+          console.log('error')
+          setError(data.message)
+        }
       })
       .catch(err => {
         console.log(err, 'this is error')
+        setError(err)
       })
   }
   return (
@@ -527,8 +565,10 @@ function DeclareResult() {
                     onClick={() => {
                       if (selectedMarketTimeValue == 'OPEN') {
                         declareResult()
+                        setError('')
                       } else {
                         declareCloseResult()
+                        setError('')
                       }
                     }}
                   >
@@ -538,6 +578,7 @@ function DeclareResult() {
               ) : null}
             </div>
           </div>
+          {error ? <Typography color='red'>{error}</Typography> : null}
         </Card>
       ) : null}
 

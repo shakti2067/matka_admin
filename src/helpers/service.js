@@ -454,7 +454,26 @@ export let getAllBets = () => {
       return error
     })
 }
-
+export let winningReport = (startDate, endDate, betCategoryId, state) => {
+  return apis
+    .get(`/game/winnerHistory?startDate=${startDate}&endDate=${endDate}&betCategoryId=${betCategoryId}&state=${state}`)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+export let withdrawRequestAdmin = (startDate, endDate) => {
+  return apis
+    .get(`/game/getWithdrawRequest?pageNumber=1&pageSize=1000&startDate=${startDate}&endDate=${endDate}`)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
 export let updateAllBets = bodyData => {
   return apis
     .post(`/game/updateAllBet`, bodyData)
@@ -524,7 +543,7 @@ export let getOverAllBid = bodyData => {
 export let transferReport = date => {
   console.log('date', date)
   return apis
-    .get(`/game/transferReport?pageNumber=1&pageSize=100&date=${date}`)
+    .get(`/game/transferReport?pageNumber=1&pageSize=1000&date=${date}`)
     .then(res => {
       return res.data
     })

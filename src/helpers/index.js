@@ -50,7 +50,9 @@ import {
   getBatCategoryByToday,
   getDaysByCategoryId,
   updateDays,
-  userGameHistoryReport
+  userGameHistoryReport,
+  winningReport,
+  withdrawRequestAdmin
 } from './service'
 
 export {
@@ -105,5 +107,7 @@ export {
   getBatCategoryByToday,
   getDaysByCategoryId,
   updateDays,
-  userGameHistoryReport
+  userGameHistoryReport,
+  winningReport,
+  withdrawRequestAdmin
 }

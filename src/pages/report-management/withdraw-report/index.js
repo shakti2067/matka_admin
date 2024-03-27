@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Typography,
   Card,
@@ -18,7 +18,8 @@ import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import InputBox from 'src/components/InputBox'
-
+import { withdrawRequestAdmin } from 'src/helpers'
+import dayjs from 'dayjs'
 const columnWithdraw = [
   {
     id: 'userName',
@@ -84,7 +85,23 @@ const rowWithdraw = [createWithdraw('India', 'IN', 1324171354, 3287263, 3287263,
 function index() {
   const [WithdrawPage, setWithdrawPage] = useState(0)
   const [rowsWithdrawPage, setrowsWithdrawPage] = useState(10)
-
+  let [date, setDate] = useState(dayjs())
+  let [rows, setRows] = useState([])
+  let getWithdrawRequestAdmin = () => {
+    withdrawRequestAdmin(dayjs(date).format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD'))
+      .then(data => {
+        console.log(data, 'this is data')
+        if (data.data != null) {
+          setRows(data.data)
+        }
+      })
+      .catch(err => {
+        console.log(err, 'this is error')
+      })
+  }
+  useEffect(() => {
+    getWithdrawRequestAdmin()
+  }, [])
   return (
     <>
       <Card style={{ padding: '20px' }}>
@@ -97,7 +114,12 @@ function index() {
             </LocalizationProvider>
           </FormControl>
           <div style={{ display: 'flex', alignItems: 'center', paddingTop: '23px' }}>
-            <Button style={{ backgroundColor: '#9155FD', color: 'white', width: '10rem', height: '3rem' }}>
+            <Button
+              onClick={() => {
+                getWithdrawRequestAdmin()
+              }}
+              style={{ backgroundColor: '#9155FD', color: 'white', width: '10rem', height: '3rem' }}
+            >
               Submit
             </Button>
           </div>
@@ -114,30 +136,38 @@ function index() {
             <TableHead>
               <TableRow>
                 {columnWithdraw.map(column => (
-                  <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
+                  <TableCell key={column.id} sx={{ minWidth: column.minWidth }}>
                     {column.label}
                   </TableCell>
                 ))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {rowWithdraw
-                .slice(WithdrawPage * rowsWithdrawPage, WithdrawPage * rowsWithdrawPage + rowsWithdrawPage)
-                .map(row => {
-                  return (
-                    <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
-                      {columnWithdraw.map(column => {
-                        const value = row[column.id]
-
-                        return (
-                          <TableCell key={column.id} align={column.align}>
-                            {column.format && typeof value === 'number' ? column.format(value) : value}
-                          </TableCell>
-                        )
-                      })}
-                    </TableRow>
-                  )
-                })}
+              {rows.map((row, index) => {
+                return (
+                  <TableRow hover role='checkbox' tabIndex={-1} key={index}>
+                    {columnWithdraw.map((column, index) => {
+                      return (
+                        <TableCell key={index}>
+                          {column.id == 'userName'
+                            ? row?.userId?.name
+                            : column.id == 'mobile'
+                            ? row?.userId?.mobile
+                            : column.id == 'amount'
+                            ? row?.amount
+                            : column.id == 'requestNo'
+                            ? row?.requestNo
+                            : column.id == 'date'
+                            ? dayjs(row?.createdAt).format('DD MMM YYYY')
+                            : column.id == 'status'
+                            ? row?.status
+                            : 'N/A'}
+                        </TableCell>
+                      )
+                    })}
+                  </TableRow>
+                )
+              })}
             </TableBody>
           </Table>
         </TableContainer>
