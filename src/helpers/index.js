@@ -52,7 +52,8 @@ import {
   updateDays,
   userGameHistoryReport,
   winningReport,
-  withdrawRequestAdmin
+  withdrawRequestAdmin,
+  deleteWinnerResult
 } from './service'
 
 export {
@@ -109,5 +110,6 @@ export {
   updateDays,
   userGameHistoryReport,
   winningReport,
-  withdrawRequestAdmin
+  withdrawRequestAdmin,
+  deleteWinnerResult
 }

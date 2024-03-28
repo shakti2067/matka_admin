@@ -30,7 +30,8 @@ import {
   createCloseWinner,
   declareCloseWinner,
   getWinnerHistory,
-  getWinnerResultChart
+  getWinnerResultChart,
+  deleteWinnerResult
 } from 'src/helpers'
 import dayjs from 'dayjs'
 import { EmailNewsletter } from 'mdi-material-ui'
@@ -149,6 +150,11 @@ function DeclareResult() {
   const [createWinner, setCreateWinner] = useState([])
   const [selectResultDate, setSelectResultDate] = useState(today)
   const [selectResultHistoryDate, setSelectResultHistoryDate] = useState(today)
+  const [deleteResult, setDeleteResult] = useState({
+    betCategoryId: '',
+    resultDate: '',
+    state: ''
+  })
 
   const [amounts, setAmounts] = useState({
     totalBidAmount: 0,
@@ -177,7 +183,7 @@ function DeclareResult() {
     setSelectedPana(event.target.value)
     let lastDigit = sumOfDigitsAndLastDigit(event.target.value)
 
-    setDigit(sumOfDigitsAndLastDigit(event.target.value))
+    setDigit(lastDigit)
   }
   const handleMarketTimeChange = event => {
     setSelectedMarketTimeValue(event.target.value)
@@ -256,7 +262,7 @@ function DeclareResult() {
       date: dayjs().format('YYYY-MM-DD'),
       betCategoryId: selectedGameValue,
       state: 'OPEN',
-      digit: digit,
+      digit: digit.toString(),
       pana: selectedPana
     }
     createOpenWinner(params)
@@ -281,10 +287,10 @@ function DeclareResult() {
   }
   let declareResult = () => {
     let params = {
-      date: dayjs().format('YYYY-MM-DD'),
+      date: dayjs(selectResultDate).format('YYYY-MM-DD'),
       betCategoryId: selectedGameValue,
       state: 'OPEN',
-      digit: digit,
+      digit: digit.toString(),
       pana: selectedPana
     }
     declareOpenWinner(params)
@@ -313,7 +319,7 @@ function DeclareResult() {
       date: dayjs().format('YYYY-MM-DD'),
       betCategoryId: selectedGameValue,
       state: 'CLOSE',
-      digit: digit,
+      digit: digit.toString(),
       pana: selectedPana
     }
     createCloseWinner(params)
@@ -340,10 +346,10 @@ function DeclareResult() {
   }
   let declareCloseResult = () => {
     let params = {
-      date: dayjs().format('YYYY-MM-DD'),
+      date: dayjs(selectResultDate).format('YYYY-MM-DD'),
       betCategoryId: selectedGameValue,
       state: 'CLOSE',
-      digit: digit,
+      digit: digit.toString(),
       pana: selectedPana
     }
     declareCloseWinner(params)
@@ -386,6 +392,31 @@ function DeclareResult() {
   let handleDateChange = newValue => {
     setSelectResultHistoryDate(newValue)
     getWinnerHistoryFromServer(dayjs(newValue).format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD'))
+  }
+
+  const handleOpenDeleteResultPopup = row => {
+    setDeleteResult({
+      betCategoryId: row?.betCategoryId._id,
+      resultDate: dayjs(row?.resultDate).format('YYYY-MM-DD'),
+      state: 'OPEN' // or any other appropriate value
+    })
+    setPopupOpenDelete(!isPopupOpenDelete)
+  }
+
+  const deleteOpenResult = () => {
+    deleteWinnerResult(deleteResult)
+      .then(data => {
+        if (data.success) {
+          console.log('data', data.message)
+          getWinnerHistoryFromServer(dayjs(today).format('YYYY-MM-DD'))
+          setPopupOpenDelete(!isPopupOpenDelete)
+        } else {
+          console.log('error', error)
+        }
+      })
+      .catch(e => {
+        console.log('e', e)
+      })
   }
 
   return (
@@ -624,14 +655,36 @@ function DeclareResult() {
                     <TableCell>{index + 1}</TableCell>
                     <TableCell>{row?.betCategoryId?.name}</TableCell>
                     <TableCell>{dayjs(row?.resultDate).format('DD MMM YYYY')}</TableCell>
-                    <TableCell>{dayjs(row?.createdAt).format('DD MM YYYY, HH:mm ')}</TableCell>
+                    <TableCell>{dayjs(row?.openPanaResultDate).format('DD MM YYYY')}</TableCell>
 
-                    <TableCell>{dayjs(row?.updatedAt).format('DD MM YYYY, HH:mm ')}</TableCell>
+                    <TableCell>
+                      {row?.closePanaResultDate ? dayjs(row?.closePanaResultDate).format('DD MM YYYY') : '-'}
+                    </TableCell>
                     <TableCell>
                       {row?.openPana}-{row?.openPanaDigit}
+                      <Button
+                        style={{ marginLeft: '10px' }}
+                        variant='contained'
+                        color='error'
+                        onClick={() => handleOpenDeleteResultPopup(row)}
+                        // onClick={togglePopupDelete}
+                      >
+                        Delete
+                      </Button>
                     </TableCell>
                     <TableCell>
                       {row?.closePanaDigit}-{row?.closePana}
+                      {/* {row.closePana ? (
+                        <Button
+                          style={{ marginLeft: '10px' }}
+                          variant='contained'
+                          color='error'
+                          onClick={() => handleOpenDeleteResultPopup(row)}
+                          // onClick={togglePopupDelete}
+                        >
+                          Delete
+                        </Button>
+                      ) : null} */}
                     </TableCell>
                     {/* {columnGameResult.map(column => {
                         const value = row[column.id]
@@ -721,6 +774,7 @@ function DeclareResult() {
                   padding: '5px',
                   marginLeft: '30px'
                 }}
+                onClick={deleteOpenResult}
               >
                 Yes
               </Button>

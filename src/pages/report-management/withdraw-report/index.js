@@ -88,6 +88,18 @@ function index() {
   const [rowsWithdrawPage, setrowsWithdrawPage] = useState(10)
   let [date, setDate] = useState(dayjs())
   let [rows, setRows] = useState([])
+  const [count, setCount] = useState(0)
+  const [rowsBidPage, setRowsBidPage] = useState(10)
+  const [bidPage, setBidPage] = useState(0)
+
+  const handleChangeBidPerPage = newPage => {
+    setBidPage(newPage)
+  }
+  const handleChangeRowsBidPerPage = event => {
+    setRowsBidPage(+event.target.value)
+    setBidPage(0)
+  }
+
   let getWithdrawRequestAdmin = () => {
     withdrawRequestAdmin(dayjs(date).format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD'))
       .then(data => {
@@ -150,7 +162,7 @@ function index() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row, index) => {
+              {rows.slice(bidPage * rowsBidPage, bidPage * rowsBidPage + rowsBidPage).map((row, index) => {
                 return (
                   <TableRow hover role='checkbox' tabIndex={-1} key={index}>
                     {columnWithdraw.map((column, index) => {
@@ -178,6 +190,15 @@ function index() {
             </TableBody>
           </Table>
         </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[10, 25, 100]}
+          component='div'
+          count={count}
+          rowsPerPage={rowsBidPage}
+          page={bidPage}
+          onPageChange={handleChangeBidPerPage}
+          onRowsPerPageChange={handleChangeRowsBidPerPage}
+        />
       </Card>
     </>
   )

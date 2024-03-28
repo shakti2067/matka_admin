@@ -606,3 +606,14 @@ export let userGameHistoryReport = (startDate, endDate, betId, betCategoryId) =>
       return error
     })
 }
+
+export let deleteWinnerResult = parameter => {
+  return apis
+    .post(`/game/deleteWinnerResult`, parameter)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}

@@ -85,9 +85,13 @@ function TransferReport() {
 
     transferReport(date)
       .then(data => {
-        setTransferReportData(data.data)
-        setTotalTransferAmount(data.totalTransferAmount)
-        setCount(data.totalDocument)
+        if (data.success) {
+          setTransferReportData(data.data)
+          setTotalTransferAmount(data.totalTransferAmount)
+          setCount(data.totalDocument)
+        } else {
+          console.log('error')
+        }
       })
       .catch(err => {
         console.log(err)
@@ -103,7 +107,7 @@ function TransferReport() {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 maxDate={dayjs(today)}
-                // value={value}
+                value={dayjs(today)}
                 onChange={newValue => {
                   setSelectDate(newValue ? dayjs(newValue).format('YYYY-MM-DD') : null)
                 }}

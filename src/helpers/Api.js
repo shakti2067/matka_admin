@@ -1,7 +1,7 @@
 import axios from 'axios'
 // export const URL = 'http://alphadevinfotech.com:5000/api/v1/'
 export const URL = 'https://api.kalyandpboss.co.in/api/v1/'
-// export const URL = 'http://192.168.1.7:5000/api/v1/'
+// export const URL = 'http://192.168.1.4:5000/api/v1/'
 
 let authToken = ''
 

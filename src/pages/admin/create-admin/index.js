@@ -128,7 +128,7 @@ const RegisterPage = () => {
         .then(data => {
           if (data.success) {
             alert(data.message)
-            router.push('/admin/login')
+            router.push('/')
           } else {
             alert(data.response.data.message)
           }
@@ -274,9 +274,9 @@ const RegisterPage = () => {
               sx={{ marginBottom: 7, marginTop: 9 }}
               onClick={handleSubmit}
             >
-              Sign up
+              Submit
             </Button>
-            <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+            {/* <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
               <Typography variant='body2' sx={{ marginRight: 2 }}>
                 Already have an account?
               </Typography>
@@ -285,7 +285,7 @@ const RegisterPage = () => {
                   <LinkStyled>Sign in instead</LinkStyled>
                 </Link>
               </Typography>
-            </Box>
+            </Box> */}
           </form>
         </CardContent>
       </Card>

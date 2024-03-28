@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Typography,
   Card,
@@ -18,6 +18,8 @@ import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import InputBox from 'src/components/InputBox'
+import { getBetCategory } from 'src/helpers'
+import dayjs from 'dayjs'
 
 const columnBid = [
   {
@@ -116,9 +118,14 @@ function createWinAmount(name, requestAmount, requestNo, receiptImage, date, sta
 const rowWinAmount = [createWinAmount('India', 'IN', 1324171354, 3287263, 3287263, 3287263, 3287263)]
 
 function index() {
+  let today = new Date()
   const [Bid, setBidPage] = useState()
   const [rowsBidPage, setrowsBidPage] = useState(10)
   const [isBidAmount, setBidAmount] = useState(true)
+  const [bid, setBid] = useState([])
+  const [selectedGameValue, setSelectedGameValue] = useState(0)
+  const [date, setDate] = useState(today)
+
   const toggleBidAmount = () => {
     setBidAmount(!isBidAmount)
   }
@@ -150,6 +157,30 @@ function index() {
   const toggleCard2 = () => {
     setCardVisibility2(!isCardVisible2)
   }
+  const handleGameSelectChange = event => {
+    setSelectedGameValue(event.target.value)
+  }
+
+  let getAllBids = () => {
+    getBetCategory()
+      .then(data => {
+        if (data.success) {
+          setBid(data.data)
+        } else {
+          if (data.message == 'Unauthorized User') {
+            router.push('/admin/login')
+          }
+          console.log(' getBetCategory err', data.message)
+        }
+      })
+      .catch(err => {
+        console.log('  err', err)
+      })
+  }
+
+  useEffect(() => {
+    getAllBids()
+  }, [])
   return (
     <>
       <Card style={{ padding: '20px' }}>
@@ -158,16 +189,25 @@ function index() {
           <FormControl style={{ width: '14rem' }}>
             <Typography>Date</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker />
+              <DatePicker
+                maxDate={dayjs(today)}
+                value={dayjs(date)}
+                onChange={date => {
+                  setDate(date)
+                }}
+              />
             </LocalizationProvider>
           </FormControl>
           <FormControl>
             <Typography>Game Name</Typography>
-            <Select style={{ width: '23rem' }} defaultValue='USA'>
-              <MenuItem value='USA'>USA</MenuItem>
-              <MenuItem value='UK'>UK</MenuItem>
-              <MenuItem value='Australia'>Australia</MenuItem>
-              <MenuItem value='Germany'>Germany</MenuItem>
+            <Select style={{ width: '23rem' }} value={selectedGameValue} onChange={handleGameSelectChange}>
+              <MenuItem value={0}>-- Select game name --</MenuItem>
+              {bid &&
+                bid.map(d => (
+                  <MenuItem key={d._id} value={d._id}>
+                    {d.name}
+                  </MenuItem>
+                ))}
             </Select>
           </FormControl>
           <div style={{ display: 'flex', alignItems: 'center', paddingTop: '23px' }}>
