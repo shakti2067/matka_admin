@@ -11,7 +11,7 @@ import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TablePagination from '@mui/material/TablePagination'
 import Switch from '@mui/material/Switch'
-import { FormControlLabel, FormGroup, Typography } from '@mui/material'
+import { Button, FormControlLabel, FormGroup, Typography } from '@mui/material'
 import moment from 'moment'
 import { useRouter } from 'next/router'
 import { updateUser } from 'src/helpers'
@@ -35,6 +35,7 @@ const UserTable = ({ columns = [], rows = [], refreshPage }) => {
     let params = {
       userId: event.target.value,
       isActive: event.target.checked
+      // isDeleted: !event.target.checked
     }
 
     updateUser(params)
@@ -55,6 +56,27 @@ const UserTable = ({ columns = [], rows = [], refreshPage }) => {
     let params = {
       userId: event.target.value,
       isTransfer: event.target.checked
+    }
+
+    updateUser(params)
+      .then(data => {
+        if (data.success) {
+          console.log('data', data)
+          refreshPage()
+        } else {
+          console.log('error')
+        }
+      })
+      .catch(error => {
+        console.log('error', error)
+      })
+  }
+
+  const handleDeleteUser = event => {
+    let params = {
+      userId: event.target.value,
+      isDeleted: event.target.checked,
+      isActive: !event.target.checked
     }
 
     updateUser(params)
@@ -136,6 +158,8 @@ const UserTable = ({ columns = [], rows = [], refreshPage }) => {
                           <Switch checked={row.isBetting} value={row._id} onClick={handleBettingChange} />
                         ) : column.id === 'isTransfer' ? (
                           <Switch checked={row.isTransfer} value={row._id} onClick={handleTransferChange} />
+                        ) : column.id === 'isDeleted' ? (
+                          <Switch checked={row.isDeleted} value={row._id} onClick={handleDeleteUser} />
                         ) : column.id === 'createdAt' ? (
                           moment(value).format('YYYY-MM-DD')
                         ) : column.format && typeof value === 'number' ? (

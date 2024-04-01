@@ -18,41 +18,67 @@ import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import InputBox from 'src/components/InputBox'
-import { getBetCategory } from 'src/helpers'
+import { bidWinReport, getBetCategory } from 'src/helpers'
 import dayjs from 'dayjs'
 
 const columnBid = [
   {
-    id: 'name',
-    label: '#'
+    id: 'userName',
+    label: 'User Name',
+    minWidth: 120
   },
   {
-    id: 'requestAmount',
-    label: 'Request Amount'
-  },
-  {
-    id: 'requestNo',
-    label: 'Request No.',
+    id: 'bidTXID',
+    label: 'Bid TX ID',
+    minWidth: 160,
     align: 'right'
   },
   {
-    id: 'receiptImage',
-    label: 'Receipt Image',
+    id: 'gameName',
+    label: 'Game Name',
+    minWidth: 170,
     align: 'right'
   },
   {
-    id: 'date',
-    label: 'Date',
+    id: 'gameType',
+    label: 'Game Type',
+    minWidth: 170,
     align: 'right'
   },
   {
-    id: 'status',
-    label: 'Status',
+    id: 'session',
+    label: 'Session',
+    minWidth: 170,
     align: 'right'
   },
   {
-    id: 'action',
-    label: 'Action',
+    id: 'openPana',
+    label: 'Open Paana',
+    minWidth: 170,
+    align: 'right'
+  },
+  {
+    id: 'openDigit',
+    label: 'Open Digit',
+    minWidth: 170,
+    align: 'right'
+  },
+  {
+    id: 'closePana',
+    label: 'Close Paana',
+    minWidth: 170,
+    align: 'right'
+  },
+  {
+    id: 'closeDigit',
+    label: 'Close Digit',
+    minWidth: 170,
+    align: 'right'
+  },
+  {
+    id: 'points',
+    label: 'Points',
+    minWidth: 170,
     align: 'right'
   }
 ]
@@ -71,36 +97,68 @@ const rowBid = [createBid('India', 'IN', 1324171354, 3287263, 3287263, 3287263, 
 
 const columnWinAmount = [
   {
-    id: 'name',
-    label: '#'
+    id: 'userName',
+    label: 'User Name',
+    minWidth: 120
   },
   {
-    id: 'requestAmount',
-    label: 'Request'
-  },
-  {
-    id: 'requestNo',
-    label: 'Request No.',
+    id: 'bidTXID',
+    label: 'Bid TX ID',
+    minWidth: 160,
     align: 'right'
   },
   {
-    id: 'receiptImage',
-    label: 'Receipt Image',
+    id: 'gameName',
+    label: 'Game Name',
+    minWidth: 170,
     align: 'right'
   },
   {
-    id: 'date',
-    label: 'Date',
+    id: 'gameType',
+    label: 'Game Type',
+    minWidth: 170,
     align: 'right'
   },
   {
-    id: 'status',
-    label: 'Status',
+    id: 'session',
+    label: 'Session',
+    minWidth: 170,
     align: 'right'
   },
   {
-    id: 'action',
-    label: 'Action',
+    id: 'openPana',
+    label: 'Open Paana',
+    minWidth: 170,
+    align: 'right'
+  },
+  {
+    id: 'openDigit',
+    label: 'Open Digit',
+    minWidth: 170,
+    align: 'right'
+  },
+  {
+    id: 'closePana',
+    label: 'Close Paana',
+    minWidth: 170,
+    align: 'right'
+  },
+  {
+    id: 'closeDigit',
+    label: 'Close Digit',
+    minWidth: 170,
+    align: 'right'
+  },
+  {
+    id: 'points',
+    label: 'Points',
+    minWidth: 170,
+    align: 'right'
+  },
+  {
+    id: 'win',
+    label: 'Win amount',
+    minWidth: 170,
     align: 'right'
   }
 ]
@@ -119,12 +177,17 @@ const rowWinAmount = [createWinAmount('India', 'IN', 1324171354, 3287263, 328726
 
 function index() {
   let today = new Date()
-  const [Bid, setBidPage] = useState()
+  const [Bid, setBidPage] = useState(0)
   const [rowsBidPage, setrowsBidPage] = useState(10)
   const [isBidAmount, setBidAmount] = useState(true)
   const [bid, setBid] = useState([])
   const [selectedGameValue, setSelectedGameValue] = useState(0)
   const [date, setDate] = useState(today)
+  const [bidWin, setBidWin] = useState([])
+  const [WinAmount, setWinAmount] = useState()
+  const [rowsWinAmount, setrowsWinAmount] = useState(10)
+  const [err, setErr] = useState('')
+  const [isShow, setShow] = useState(false)
 
   const toggleBidAmount = () => {
     setBidAmount(!isBidAmount)
@@ -136,9 +199,6 @@ function index() {
     setrowsBidPage(+event.target.value)
     setBidPage(0)
   }
-
-  const [WinAmount, setWinAmount] = useState()
-  const [rowsWinAmount, setrowsWinAmount] = useState(10)
 
   const handleChangeWinAmount = (event, newPage) => {
     setWinAmount(newPage)
@@ -178,6 +238,38 @@ function index() {
       })
   }
 
+  let validator = () => {
+    if (selectedGameValue == 0) {
+      setErr('Please select game name')
+      return false
+    } else {
+      setErr('')
+      return true
+    }
+  }
+
+  let bidWinReportApi = () => {
+    let params = {
+      date: dayjs(date).format('YYYY-MM-DD'),
+      betCategoryId: selectedGameValue
+    }
+    if (validator()) {
+      console.log('params', params)
+      bidWinReport(params)
+        .then(data => {
+          if (data.success) {
+            setBidWin(data.data)
+            setShow(true)
+          } else {
+            setErr(data.message)
+          }
+        })
+        .catch(e => {
+          setErr(e)
+        })
+    }
+  }
+
   useEffect(() => {
     getAllBids()
   }, [])
@@ -210,72 +302,99 @@ function index() {
                 ))}
             </Select>
           </FormControl>
+
           <div style={{ display: 'flex', alignItems: 'center', paddingTop: '23px' }}>
-            <Button style={{ backgroundColor: '#9155FD', color: 'white', width: '10rem', height: '3rem' }}>
+            <Button
+              style={{ backgroundColor: '#9155FD', color: 'white', width: '10rem', height: '3rem' }}
+              onClick={bidWinReportApi}
+            >
               Submit
             </Button>
           </div>
         </div>
+        {err ? <Typography color='red'>{err}</Typography> : null}
       </Card>
 
-      <Card style={{ padding: '20px', marginTop: '20px' }}>
-        <div style={{ width: '50%' }}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              border: '1px dashed  #d0b6fe',
-              padding: '10px',
-              borderRadius: '5px'
-            }}
-          >
-            <Typography variant='body1' style={{ color: '#9155FD' }}>
-              Total Bid Amount
-            </Typography>
-            <Typography variant='body1'>₹ 200</Typography>
-            <Button onClick={toggleCard} style={{ backgroundColor: '#9155FD', color: 'white', height: '1.5rem' }}>
-              {isCardVisible}View
-            </Button>
+      {isShow ? (
+        <Card style={{ padding: '20px', marginTop: '20px' }}>
+          <div style={{ width: '50%' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                border: '1px dashed  #d0b6fe',
+                padding: '10px',
+                borderRadius: '5px'
+              }}
+            >
+              <Typography variant='body1' style={{ color: '#9155FD' }}>
+                Total Bid Amount
+              </Typography>
+              <Typography variant='body1'>₹ {bidWin[0].totalBid}</Typography>
+              <Button onClick={toggleCard} style={{ backgroundColor: '#9155FD', color: 'white', height: '1.5rem' }}>
+                {isCardVisible}View
+              </Button>
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                border: '1px dashed  #d0b6fe',
+                padding: '10px',
+                borderRadius: '5px',
+                margin: '10px 0'
+              }}
+            >
+              <Typography variant='body1' style={{ color: '#673AB7' }}>
+                Total Win Amount
+              </Typography>
+              <Typography variant='body1'>₹ {bidWin[0].totalWin}</Typography>
+              <Button onClick={toggleCard2} style={{ backgroundColor: '#9155FD', color: 'white', height: '1.5rem' }}>
+                {isCardVisible2}View
+              </Button>
+            </div>
+            {bidWin[0].totalProfit > 0 ? (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '26%',
+                  backgroundColor: '#34c38f',
+                  padding: '10px',
+                  borderRadius: '5px'
+                }}
+              >
+                <Typography variant='body1' style={{ color: 'white', fontWeight: '500' }}>
+                  Total Profit Amount
+                </Typography>
+                <Typography variant='body1' style={{ color: 'white', fontWeight: '500' }}>
+                  ₹ {bidWin[0].totalProfit}
+                </Typography>
+              </div>
+            ) : (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '26%',
+                  backgroundColor: 'red',
+                  padding: '10px',
+                  borderRadius: '5px'
+                }}
+              >
+                <Typography variant='body1' style={{ color: 'white', fontWeight: '500' }}>
+                  Total Loss Amount
+                </Typography>
+                <Typography variant='body1' style={{ color: 'white', fontWeight: '500' }}>
+                  ₹ {bidWin[0].totalProfit}
+                </Typography>
+              </div>
+            )}
           </div>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              border: '1px dashed  #d0b6fe',
-              padding: '10px',
-              borderRadius: '5px',
-              margin: '10px 0'
-            }}
-          >
-            <Typography variant='body1' style={{ color: '#673AB7' }}>
-              Total Win Amount
-            </Typography>
-            <Typography variant='body1'>₹ 200</Typography>
-            <Button onClick={toggleCard2} style={{ backgroundColor: '#9155FD', color: 'white', height: '1.5rem' }}>
-              {isCardVisible2}View
-            </Button>
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '26%',
-              backgroundColor: '#34c38f',
-              padding: '10px',
-              borderRadius: '5px'
-            }}
-          >
-            <Typography variant='body1' style={{ color: 'white', fontWeight: '500' }}>
-              Total Profit Amount
-            </Typography>
-            <Typography variant='body1' style={{ color: 'white', fontWeight: '500' }}>
-              ₹ 200
-            </Typography>
-          </div>
-        </div>
-      </Card>
+        </Card>
+      ) : null}
 
       {isCardVisible && (
         <Card sx={{ width: '100%', overflow: 'hidden', marginTop: '10px' }}>
@@ -298,7 +417,7 @@ function index() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rowBid.slice(Bid * rowsBidPage, Bid * rowsBidPage + rowsBidPage).map(row => {
+                {bidWin.slice(Bid * rowsBidPage, Bid * rowsBidPage + rowsBidPage).map((row, rowIndex) => {
                   return (
                     <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
                       {columnBid.map(column => {
@@ -306,7 +425,23 @@ function index() {
 
                         return (
                           <TableCell key={column.id} align={column.align}>
-                            {column.format && typeof value === 'number' ? column.format(value) : value}
+                            {column.id === 'gameName' ? (
+                              <span>{row.gameName}</span>
+                            ) : column.id === 'userName' ? (
+                              <span>{row.playerName}</span>
+                            ) : column.id === 'session' ? (
+                              <span>{row.session}</span>
+                            ) : column.id === 'bidTXID' ? (
+                              <span>{row.gameId}</span>
+                            ) : column.id === 'gameType' ? (
+                              <span>{row.bet != null ? row.bet : 'test'}</span>
+                            ) : column.id === 'points' ? (
+                              <span>{row.winnerData.winAmount}</span>
+                            ) : column.format && typeof value === 'number' ? (
+                              column.format(value)
+                            ) : (
+                              value
+                            )}
                           </TableCell>
                         )
                       })}
@@ -319,7 +454,7 @@ function index() {
           <TablePagination
             rowsPerPageOptions={[10, 25, 100]}
             component='div'
-            count={rowBid.length}
+            count={bidWin.length}
             rowsPerPage={rowsBidPage}
             page={Bid}
             onPageChange={handleChangeBidPage}
@@ -349,15 +484,33 @@ function index() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rowWinAmount.slice(WinAmount * rowsWinAmount, WinAmount * rowsWinAmount + rowsWinAmount).map(row => {
+                {bidWin.slice(Bid * rowsBidPage, Bid * rowsBidPage + rowsBidPage).map((row, rowIndex) => {
                   return (
                     <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
-                      {columnWinAmount.map(column => {
+                      {columnBid.map(column => {
                         const value = row[column.id]
 
                         return (
                           <TableCell key={column.id} align={column.align}>
-                            {column.format && typeof value === 'number' ? column.format(value) : value}
+                            {column.id === 'gameName' ? (
+                              <span>{row.gameName}</span>
+                            ) : column.id === 'userName' ? (
+                              <span>{row.playerName}</span>
+                            ) : column.id === 'session' ? (
+                              <span>{row.session}</span>
+                            ) : column.id === 'bidTXID' ? (
+                              <span>{row.gameId}</span>
+                            ) : column.id === 'gameType' ? (
+                              <span>{row.bet != null ? row.bet : 'test'}</span>
+                            ) : column.id === 'points' ? (
+                              <span>{row.winnerData.bidAmount}</span>
+                            ) : column.id === 'win' ? (
+                              <span>{row.winnerData.winAmount}</span>
+                            ) : column.format && typeof value === 'number' ? (
+                              column.format(value)
+                            ) : (
+                              value
+                            )}
                           </TableCell>
                         )
                       })}

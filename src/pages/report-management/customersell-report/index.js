@@ -47,7 +47,7 @@ function CustomerSellReportPage() {
   const [customerReport, setCustomerReport] = useState([])
   const [selectedDate, setSelectDate] = useState(dayjs(today))
   const [error, setError] = useState('')
-  console.log('selectedDate', selectedDate)
+  console.log('customerReport', customerReport)
 
   const handleGameSelectChange = event => {
     setSelectedGameValue(event.target.value)
@@ -101,7 +101,6 @@ function CustomerSellReportPage() {
       return true
     }
   }
-  console.log('selectedGameType', selectedMarketTimeValue)
 
   const customerSellReportApi = () => {
     console.log('validator', validator())
@@ -121,6 +120,7 @@ function CustomerSellReportPage() {
       customerSellReport(params)
         .then(data => {
           if (data.success) {
+            console.log('data', data.data)
             setCustomerReport(data.data)
           } else {
             console.log('error', data.message)
@@ -203,12 +203,12 @@ function CustomerSellReportPage() {
           <tbody>
             {transposedData.map((column, columnIndex) => (
               <tr key={columnIndex}>
-                {column.map((value, cellIndex) => (
+                {customerReport.map((value, cellIndex) => (
                   <td
                     style={{ border: '1px solid black', textAlign: 'center', borderCollapse: 'collapse' }}
-                    key={cellIndex}
+                    // key={cellIndex}
                   >
-                    <span style={{ color: 'red' }}>{value}</span>
+                    <span style={{ color: 'red' }}>{value._id}</span>
                   </td>
                 ))}
               </tr>

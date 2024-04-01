@@ -27,6 +27,11 @@ const columns = [
     id: 'isActive',
     label: 'Active',
     minWidth: 170
+  },
+  {
+    id: 'isDeleted',
+    label: 'Delete',
+    minWidth: 170
   }
 ]
 
@@ -43,7 +48,9 @@ export default function UsersPage() {
   }, [])
 
   let getAllUsers = () => {
-    getUser()
+    let isBetting = true
+
+    getUser(isBetting)
       .then(data => {
         setRows(data.data)
       })

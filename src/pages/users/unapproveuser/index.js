@@ -27,6 +27,11 @@ const columns = [
     id: 'isActive',
     label: 'Active',
     minWidth: 170
+  },
+  {
+    id: 'isDeleted',
+    label: 'Deleted',
+    minWidth: 170
   }
 ]
 

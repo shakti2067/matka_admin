@@ -628,3 +628,25 @@ export let customerSellReport = parameter => {
       return error
     })
 }
+
+export let deleteUser = parameter => {
+  return apis
+    .post(`/auth/deleteUser`, parameter)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let bidWinReport = parameter => {
+  return apis
+    .post(`/game/bidWinReport`, parameter)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
