@@ -137,6 +137,7 @@ function DeclareResult() {
   const [gameResult, setGameResult] = useState(0)
   const [rowsGameResult, setRowsGameResult] = useState(10)
   const [isPopupOpenDelete, setPopupOpenDelete] = useState(false)
+  const [isPopupCloseDelete, setIsPopupCloseDelete] = useState(false)
   const [sliderImageId, setSliderImageId] = useState('')
   const [bid, setBid] = useState([])
   const [selectedGameValue, setSelectedGameValue] = useState(0)
@@ -166,6 +167,7 @@ function DeclareResult() {
     setPopupOpenDelete(!isPopupOpenDelete)
     setSliderImageId(event.target.value)
   }
+
   const [error, setError] = useState('')
 
   const handleChangeGameResultPage = (event, newPage) => {
@@ -204,6 +206,7 @@ function DeclareResult() {
   let handleOpen = () => {
     if (selectedGameValue != 0 && selectedMarketTimeValue != 0) {
       setOpen(true)
+      setError('')
     }
   }
 
@@ -304,6 +307,8 @@ function DeclareResult() {
           getWinnerHistoryFromServer(dayjs(new Date()).format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD'))
         } else {
           console.log('error')
+          setSelectedPana(0)
+          setDigit(0)
           getWinnerHistoryFromServer(dayjs(new Date()).format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD'))
           setError(data.message)
         }
@@ -363,6 +368,8 @@ function DeclareResult() {
           getWinnerHistoryFromServer(dayjs(new Date()).format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD'))
         } else {
           console.log('error')
+          setSelectedPana(0)
+          setDigit(0)
           setError(data.message)
           getWinnerHistoryFromServer(dayjs(new Date()).format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD'))
         }
@@ -403,6 +410,15 @@ function DeclareResult() {
     setPopupOpenDelete(!isPopupOpenDelete)
   }
 
+  const handleCloseDeleteResultPopup = row => {
+    setDeleteResult({
+      betCategoryId: row?.betCategoryId._id,
+      resultDate: dayjs(row?.resultDate).format('YYYY-MM-DD'),
+      state: 'CLOSE' // or any other appropriate value
+    })
+    setIsPopupCloseDelete(!isPopupCloseDelete)
+  }
+
   const deleteOpenResult = () => {
     deleteWinnerResult(deleteResult)
       .then(data => {
@@ -410,6 +426,24 @@ function DeclareResult() {
           console.log('data', data.message)
           getWinnerHistoryFromServer(dayjs(today).format('YYYY-MM-DD'))
           setPopupOpenDelete(!isPopupOpenDelete)
+          setError('')
+        } else {
+          console.log('error', error)
+        }
+      })
+      .catch(e => {
+        console.log('e', e)
+      })
+  }
+
+  const deleteCloseResult = () => {
+    deleteWinnerResult(deleteResult)
+      .then(data => {
+        if (data.success) {
+          console.log('data', data.message)
+          getWinnerHistoryFromServer(dayjs(today).format('YYYY-MM-DD'))
+          setIsPopupCloseDelete(!isPopupCloseDelete)
+          setError('')
         } else {
           console.log('error', error)
         }
@@ -663,7 +697,7 @@ function DeclareResult() {
                     <TableCell>
                       {row?.openPana}-{row?.openPanaDigit}
                       <Button
-                        style={{ marginLeft: '10px' }}
+                        style={{ marginLeft: '10px', color: 'white' }}
                         variant='contained'
                         color='error'
                         onClick={() => handleOpenDeleteResultPopup(row)}
@@ -674,17 +708,17 @@ function DeclareResult() {
                     </TableCell>
                     <TableCell>
                       {row?.closePanaDigit}-{row?.closePana}
-                      {/* {row.closePana ? (
+                      {row.closePana ? (
                         <Button
-                          style={{ marginLeft: '10px' }}
+                          style={{ marginLeft: '10px', color: 'white' }}
                           variant='contained'
                           color='error'
-                          onClick={() => handleOpenDeleteResultPopup(row)}
+                          onClick={() => handleCloseDeleteResultPopup(row)}
                           // onClick={togglePopupDelete}
                         >
                           Delete
                         </Button>
-                      ) : null} */}
+                      ) : null}
                     </TableCell>
                     {/* {columnGameResult.map(column => {
                         const value = row[column.id]
@@ -736,7 +770,7 @@ function DeclareResult() {
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component='div'
-          count={rowGameResult.length}
+          count={gameResultHistory.length}
           rowsPerPage={rowsGameResult}
           page={gameResult}
           onPageChange={handleChangeGameResultPage}
@@ -775,6 +809,47 @@ function DeclareResult() {
                   marginLeft: '30px'
                 }}
                 onClick={deleteOpenResult}
+              >
+                Yes
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      {isPopupCloseDelete && (
+        <div
+          style={{
+            borderRadius: '5px',
+            width: '30%',
+            position: 'fixed',
+            top: '10%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            backgroundColor: '#F7F7F7',
+            padding: '20px',
+            boxShadow: '0 0 10px #d3bdff'
+          }}
+        >
+          <div>
+            <h5 style={{ marginTop: '5px' }}>Are you sure you want to delete this?</h5>
+            <div>
+              <Button
+                onClick={() => {
+                  setIsPopupCloseDelete(!isPopupCloseDelete)
+                }}
+                style={{ backgroundColor: '#f46a6a', color: 'white', width: '6rem', padding: '5px' }}
+              >
+                No
+              </Button>
+              <Button
+                style={{
+                  backgroundColor: '#9155FD',
+                  color: 'white',
+                  width: '6rem',
+                  padding: '5px',
+                  marginLeft: '30px'
+                }}
+                onClick={deleteCloseResult}
               >
                 Yes
               </Button>

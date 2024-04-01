@@ -27,7 +27,7 @@ const GameTable = ({ columns = [], rows = [], refreshPage }) => {
     setPage(newPage)
   }
 
-  const handleChangeRowsPerPage = event => {
+  const handleRowsPerPage = event => {
     setRowsPerPage(+event.target.value)
     setPage(0)
   }
@@ -49,7 +49,7 @@ const GameTable = ({ columns = [], rows = [], refreshPage }) => {
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <TableContainer sx={{ maxHeight: 700 }}>
+      <TableContainer sx={{ maxHeight: 740 }}>
         <Table stickyHeader aria-label='sticky table'>
           <TableHead>
             <TableRow>
@@ -61,82 +61,84 @@ const GameTable = ({ columns = [], rows = [], refreshPage }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row, rowIndex) => {
-              return (
-                <TableRow hover role='checkbox' tabIndex={-1} key={rowIndex}>
-                  {columns.map((column, index) => {
-                    const value = row[column.id]
+            {rows &&
+              rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, rowIndex) => {
+                return (
+                  <TableRow hover role='checkbox' tabIndex={-1} key={rowIndex}>
+                    {columns.map((column, index) => {
+                      const value = row[column.id]
 
-                    return (
-                      <TableCell key={index} align={column.align} onClick={() => {}}>
-                        {column.id === 'isActive' ? (
-                          // <Switch checked={value} />
-                          <Switch checked={row.isActive} value={row.isActive} onClick={handleActiveChange} />
-                        ) : column.id === 'no' ? (
-                          <span>{rowIndex + 1}</span>
-                        ) : column.id === 'action' ? (
-                          <div>
-                            <Button
-                              variant='contained'
-                              style={{ marginRight: 5, color: 'white' }}
-                              //   onClick={() => {
-                              //     router.push('/bids/create')
-                              //   }}
-                              onClick={() => {
-                                router.push({
-                                  pathname: '/bids/create',
-                                  query: { gameData: JSON.stringify(row) }
-                                })
-                              }}
-                            >
-                              Edit
-                            </Button>
-                            <Button
-                              variant='contained'
-                              style={{ color: 'white' }}
-                              onClick={() => {
-                                router.push({
-                                  pathname: '/bids/marketoffday',
-                                  query: { id: row?._id }
-                                })
-                              }}
-                            >
-                              market off day
-                            </Button>
-                          </div>
-                        ) : column.id === 'isTransfer' ? (
-                          <Switch checked={value} />
-                        ) : column.id === 'createdAt' ? (
-                          moment(value).format('YYYY-MM-DD')
-                        ) : column.id === 'startTime' ? (
-                          row?.getCat?.startTime || 'N/A'
-                        ) : column.id === 'endTime' ? (
-                          row?.getCat?.endTime || 'N/A'
-                        ) : column.id === 'markerStatus' ? (
-                          <Switch checked={row?.getCat?.isActive} value={row?.getCat?.isActive} />
-                        ) : column.format && typeof value === 'number' ? (
-                          column.format(value)
-                        ) : (
-                          value
-                        )}
-                      </TableCell>
-                    )
-                  })}
-                </TableRow>
-              )
-            })}
+                      return (
+                        <TableCell key={index} align={column.align} onClick={() => {}}>
+                          {column.id === 'isActive' ? (
+                            // <Switch checked={value} />
+                            <Switch checked={row.isActive} value={row.isActive} onClick={handleActiveChange} />
+                          ) : column.id === 'no' ? (
+                            <span>{rowIndex + 1}</span>
+                          ) : column.id === 'action' ? (
+                            <div>
+                              <Button
+                                variant='contained'
+                                style={{ marginRight: 5, color: 'white' }}
+                                //   onClick={() => {
+                                //     router.push('/bids/create')
+                                //   }}
+                                onClick={() => {
+                                  router.push({
+                                    pathname: '/bids/create',
+                                    query: { gameData: JSON.stringify(row) }
+                                  })
+                                }}
+                              >
+                                Edit
+                              </Button>
+                              <Button
+                                variant='contained'
+                                style={{ color: 'white' }}
+                                onClick={() => {
+                                  router.push({
+                                    pathname: '/bids/marketoffday',
+                                    query: { id: row?._id }
+                                  })
+                                }}
+                              >
+                                market off day
+                              </Button>
+                            </div>
+                          ) : column.id === 'isTransfer' ? (
+                            <Switch checked={value} />
+                          ) : column.id === 'createdAt' ? (
+                            moment(value).format('YYYY-MM-DD')
+                          ) : column.id === 'startTime' ? (
+                            row?.getCat?.startTime || 'N/A'
+                          ) : column.id === 'endTime' ? (
+                            row?.getCat?.endTime || 'N/A'
+                          ) : column.id === 'markerStatus' ? (
+                            <Switch checked={row?.getCat?.isActive} value={row?.getCat?.isActive} />
+                          ) : column.format && typeof value === 'number' ? (
+                            column.format(value)
+                          ) : (
+                            value
+                          )}
+                        </TableCell>
+                      )
+                    })}
+                  </TableRow>
+                )
+              })}
           </TableBody>
         </Table>
       </TableContainer>
+
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
-        component='div'
+        page={page}
         count={rows.length}
         rowsPerPage={rowsPerPage}
-        page={page}
+        component='div'
         onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+        onRowsPerPageChange={handleRowsPerPage}
+      ></TablePagination>
     </Paper>
   )
 }

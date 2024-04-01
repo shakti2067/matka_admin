@@ -617,3 +617,14 @@ export let deleteWinnerResult = parameter => {
       return error
     })
 }
+
+export let customerSellReport = parameter => {
+  return apis
+    .post(`/game/customerSellReport`, parameter)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}

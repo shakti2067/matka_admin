@@ -383,6 +383,15 @@ function BidHistoryReport() {
             </TableBody>
           </Table>
         </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[10, 25, 100]}
+          page={bidPage}
+          count={game.length}
+          rowsPerPage={rowsBidPage}
+          component='div'
+          onPageChange={handleChangeBidPerPage}
+          onRowsPerPageChange={handleChangeRowsBidPerPage}
+        />
       </Card>
     </>
   )

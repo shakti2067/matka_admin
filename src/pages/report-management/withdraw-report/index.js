@@ -193,7 +193,7 @@ function index() {
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component='div'
-          count={count}
+          count={rows.length}
           rowsPerPage={rowsBidPage}
           page={bidPage}
           onPageChange={handleChangeBidPerPage}

@@ -39,6 +39,8 @@ const columns = [
 
 export default function BidsPage() {
   let [rows, setRows] = useState([])
+  let [pageNumber, setPageNumber] = useState(1)
+  let [pageSize, setPageSize] = useState(10)
   const router = useRouter()
   useEffect(() => {
     getAllBids()
@@ -49,7 +51,7 @@ export default function BidsPage() {
   }
 
   let getAllBids = () => {
-    getBetCategory()
+    getBetCategory(pageNumber, pageSize)
       .then(data => {
         setRows(data.data)
       })

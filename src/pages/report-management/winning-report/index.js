@@ -124,13 +124,14 @@ function WinningReport() {
 
   const [bidPage, setBidPage] = useState(0)
   const [rowsBidPage, setRowsBidPage] = useState(10)
-  let [bid, setBid] = useState([])
+  const [bid, setBid] = useState([])
   const [selectedGameValue, setSelectedGameValue] = useState(0)
   const [selectedGameType, setSelectedGameType] = useState(0)
   const [gameTypeData, setGameTypeData] = useState([])
   const [selectedMarketTimeValue, setSelectedMarketTimeValue] = useState(0)
   const [date, setDate] = useState(dayjs())
   const [rows, setRows] = useState([])
+
   const handleChangeBidPerPage = (event, newPage) => {
     setBidPage(newPage)
   }
@@ -259,7 +260,7 @@ function WinningReport() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows?.map((row, index) => {
+              {rows?.slice(bidPage * rowsBidPage, bidPage * rowsBidPage + rowsBidPage).map((row, index) => {
                 return (
                   <TableRow hover role='checkbox' tabIndex={-1} key={index}>
                     {columnBid.map((column, index) => {
@@ -275,6 +276,26 @@ function WinningReport() {
                             ? row?.winAmount
                             : column.id == 'points'
                             ? row?.bidAmount
+                            : column.id == 'txId'
+                            ? row?.gameId
+                            : column.id == 'openPaana'
+                            ? row?.openPana
+                              ? row?.openPana
+                              : 'N/A'
+                            : column.id == 'openDigit'
+                            ? row?.openPanaDigit
+                              ? row?.openPanaDigit
+                              : 'N/A'
+                            : column.id == 'closePaana'
+                            ? row?.closePana
+                              ? row?.closePana
+                              : 'N/A'
+                            : column.id == 'closeDigit'
+                            ? row?.closePanaDigit
+                              ? row?.closePanaDigit
+                              : 'N/A'
+                            : column.id == 'txDate'
+                            ? dayjs(row?.createdAt).format('YYYY-MM-DD HH:mm:ss')
                             : 'N/A'}
                         </TableCell>
                       )
@@ -285,6 +306,15 @@ function WinningReport() {
             </TableBody>
           </Table>
         </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[10, 25, 100]}
+          page={bidPage}
+          count={rows.length}
+          rowsPerPage={rowsBidPage}
+          component='div'
+          onPageChange={handleChangeBidPerPage}
+          onRowsPerPageChange={handleChangeRowsBidPerPage}
+        />
       </Card>
     </>
   )

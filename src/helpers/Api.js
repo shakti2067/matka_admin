@@ -1,7 +1,7 @@
 import axios from 'axios'
 // export const URL = 'http://alphadevinfotech.com:5000/api/v1/'
 export const URL = 'https://api.kalyandpboss.co.in/api/v1/'
-// export const URL = 'http://192.168.1.4:5000/api/v1/'
+// export const URL = 'http://127.0.0.1:5000/api/v1/'
 
 let authToken = ''
 
@@ -45,8 +45,24 @@ axiosInstance.interceptors.request.use(
 
     return config
   },
+
   error => {
     console.log(error, 'this is error call')
+    return Promise.reject(error)
+  }
+)
+
+axiosInstance.interceptors.response.use(
+  response => {
+    if (response.data.message == 'Unauthorized User') {
+      window.location.href = '/admin/login'
+    }
+    return response
+  },
+  error => {
+    if (error.response && error.response.data && error.response.data.message === 'Unauthorized User') {
+      console.log('Unauthorized User. Redirecting to login page...')
+    }
     return Promise.reject(error)
   }
 )

@@ -853,8 +853,9 @@ function UserDetails() {
   }
 
   const handleChangeRowsWalletsPage = event => {
-    setWalletsPage(+event.target.value)
-    setRowWalletPage(0)
+    setRowWalletPage(+event.target.value)
+
+    setWalletsPage(0)
   }
   const handleChangeBidPerPage = (event, newPage) => {
     setBidPage(newPage)
@@ -1560,7 +1561,7 @@ function UserDetails() {
             <TablePagination
               rowsPerPageOptions={[10, 25, 100]}
               component='div'
-              count={withdrawHistoryTotalDoc}
+              count={withdrawHistory.length}
               rowsPerPage={rowWalletPage}
               page={walletsPage}
               onPageChange={handleChangeWalletsPage}
@@ -1575,7 +1576,7 @@ function UserDetails() {
                 <InputBox />
               </div>
             </div>
-            <TableContainer sx={{ maxHeight: 950 }}>
+            <TableContainer sx={{ maxHeight: 970 }}>
               <Table stickyHeader aria-label='sticky table'>
                 <TableHead>
                   <TableRow>

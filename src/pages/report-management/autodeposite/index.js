@@ -116,7 +116,7 @@ function index() {
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component='div'
-          count={rowsWithdrawPage.length}
+          count={rowWithdraw.length}
           rowsPerPage={rowsWithdrawPage}
           page={WithdrawPage}
           onPageChange={handleChangeWinAmount}
