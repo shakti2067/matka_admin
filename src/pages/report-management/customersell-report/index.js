@@ -23,19 +23,29 @@ import { customerSellReport, getAllBets, getBetCategory } from 'src/helpers'
 
 const data = [
   { id: 'Digit', age: 'Point' },
-  { id: 2, age: 30 },
-  { id: 4, age: 28 },
-  { id: 5, age: 28 },
-  { id: 6, age: 28 },
-  { id: 7, age: 28 },
-  { id: 8, age: 28 },
-  { id: 9, age: 28 },
-  { id: 10, age: 28 },
-  { id: 11, age: 28 }
+  { id: 0, age: 0 },
+  { id: 1, age: 0 },
+  { id: 2, age: 0 },
+  { id: 3, age: 0 },
+  { id: 4, age: 0 },
+  { id: 5, age: 0 },
+  { id: 6, age: 0 },
+  { id: 7, age: 0 },
+  { id: 8, age: 0 },
+  { id: 9, age: 0 }
 ]
+const singeDigit = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+const chunkArray = (arr, chunkSize) => {
+  const chunks = []
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    chunks.push(arr.slice(i, i + chunkSize))
+  }
+  return chunks
+}
 
 function CustomerSellReportPage() {
-  const transposedData = data.length > 0 ? Object.keys(data[0]).map(colName => data.map(row => row[colName])) : []
+  const transposedData = singeDigit.length > 0 ? Object.keys(data[0]).map(colName => data.map(row => row[colName])) : []
 
   const today = new Date()
 
@@ -47,6 +57,109 @@ function CustomerSellReportPage() {
   const [customerReport, setCustomerReport] = useState([])
   const [selectedDate, setSelectDate] = useState(dayjs(today))
   const [error, setError] = useState('')
+
+  const jodiDigit = [
+    '00',
+    '01',
+    '02',
+    '03',
+    '04',
+    '05',
+    '06',
+    '07',
+    '08',
+    '09',
+    '10',
+    '11',
+    '12',
+    '13',
+    '14',
+    '15',
+    '16',
+    '17',
+    '18',
+    '19',
+    '20',
+    '21',
+    '22',
+    '23',
+    '24',
+    '25',
+    '26',
+    '27',
+    '28',
+    '29',
+    '30',
+    '31',
+    '32',
+    '33',
+    '34',
+    '35',
+    '36',
+    '37',
+    '38',
+    '39',
+    '40',
+    '41',
+    '42',
+    '43',
+    '44',
+    '45',
+    '46',
+    '47',
+    '48',
+    '49',
+    '50',
+    '51',
+    '52',
+    '53',
+    '54',
+    '55',
+    '56',
+    '57',
+    '58',
+    '59',
+    '60',
+    '61',
+    '62',
+    '63',
+    '64',
+    '65',
+    '66',
+    '67',
+    '68',
+    '69',
+    '70',
+    '71',
+    '72',
+    '73',
+    '74',
+    '75',
+    '76',
+    '77',
+    '78',
+    '79',
+    '80',
+    '81',
+    '82',
+    '83',
+    '84',
+    '85',
+    '86',
+    '87',
+    '88',
+    '89',
+    '90',
+    '91',
+    '92',
+    '93',
+    '94',
+    '95',
+    '96',
+    '97',
+    '98',
+    '99'
+  ]
   console.log('customerReport', customerReport)
 
   const handleGameSelectChange = event => {
@@ -132,6 +245,8 @@ function CustomerSellReportPage() {
     }
   }
 
+  const jodiDigitChunks = chunkArray(jodiDigit, 10)
+
   useEffect(() => {
     getAllBids()
     getAllGames()
@@ -196,8 +311,7 @@ function CustomerSellReportPage() {
         </div>
         {error ? <Typography color='red'>{error}</Typography> : null}
       </Card>
-
-      <Card style={{ padding: '20px', marginTop: '20px' }}>
+      {/* <Card style={{ padding: '20px', marginTop: '20px' }}>
         <Typography style={{ textAlign: 'center', marginBottom: '20px' }}>Single Digit</Typography>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <tbody>
@@ -215,9 +329,9 @@ function CustomerSellReportPage() {
             ))}
           </tbody>
         </table>
-      </Card>
+      </Card> */}
       <Card style={{ padding: '20px', marginTop: '20px' }}>
-        <Typography style={{ textAlign: 'center', marginBottom: '20px' }}>Double Pana</Typography>
+        <Typography style={{ textAlign: 'center', marginBottom: '20px' }}>Single digit</Typography>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <tbody>
             {transposedData.map((column, columnIndex) => (
@@ -235,6 +349,30 @@ function CustomerSellReportPage() {
           </tbody>
         </table>
       </Card>
+
+      {/* <Card style={{ padding: '20px', marginTop: '20px' }}>
+        <Typography style={{ textAlign: 'center', marginBottom: '20px' }}>Jodi digit</Typography>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <tbody>
+            {jodiDigitChunks.map((chunk, chunkIndex) => (
+              <tr key={chunkIndex}>
+                <td style={{ border: '1px solid black', textAlign: 'center', borderCollapse: 'collapse' }}>digit</td>
+                <td style={{ border: '1px solid black', textAlign: 'center', borderCollapse: 'collapse' }}>point</td>
+                {chunk.map((value, cellIndex) => (
+                  <React.Fragment key={cellIndex}>
+                    <td style={{ border: '1px solid black', textAlign: 'center', borderCollapse: 'collapse' }}>
+                      {value}
+                    </td>
+                    <td style={{ border: '1px solid black', textAlign: 'center', borderCollapse: 'collapse' }}>
+                      {value}
+                    </td>
+                  </React.Fragment>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Card> */}
     </>
   )
 }

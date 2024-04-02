@@ -20,6 +20,7 @@ import FormControl from '@mui/material/FormControl'
 import InputBox from 'src/components/InputBox'
 import { bidWinReport, getBetCategory } from 'src/helpers'
 import dayjs from 'dayjs'
+import { useRouter } from 'next/router'
 
 const columnBid = [
   {
@@ -177,6 +178,7 @@ const rowWinAmount = [createWinAmount('India', 'IN', 1324171354, 3287263, 328726
 
 function index() {
   let today = new Date()
+  let router = useRouter()
   const [Bid, setBidPage] = useState(0)
   const [rowsBidPage, setrowsBidPage] = useState(10)
   const [isBidAmount, setBidAmount] = useState(true)
@@ -184,10 +186,12 @@ function index() {
   const [selectedGameValue, setSelectedGameValue] = useState(0)
   const [date, setDate] = useState(today)
   const [bidWin, setBidWin] = useState([])
-  const [WinAmount, setWinAmount] = useState()
+  const [WinAmount, setWinAmount] = useState(0)
   const [rowsWinAmount, setrowsWinAmount] = useState(10)
   const [err, setErr] = useState('')
   const [isShow, setShow] = useState(false)
+  const [isCardVisible, setCardVisibility] = useState(false)
+  const [isCardVisible2, setCardVisibility2] = useState(false)
 
   const toggleBidAmount = () => {
     setBidAmount(!isBidAmount)
@@ -208,12 +212,10 @@ function index() {
     setWinAmount(0)
   }
 
-  const [isCardVisible, setCardVisibility] = useState(false)
   const toggleCard = () => {
     setCardVisibility(!isCardVisible)
   }
 
-  const [isCardVisible2, setCardVisibility2] = useState(false)
   const toggleCard2 = () => {
     setCardVisibility2(!isCardVisible2)
   }
@@ -428,7 +430,17 @@ function index() {
                             {column.id === 'gameName' ? (
                               <span>{row.gameName}</span>
                             ) : column.id === 'userName' ? (
-                              <span>{row.playerName}</span>
+                              <span
+                                style={{ color: 'blue', cursor: 'pointer' }}
+                                onClick={() => {
+                                  router.push({
+                                    pathname: '/users/userdetails',
+                                    query: { userId: row.winnerData.playerId }
+                                  })
+                                }}
+                              >
+                                {row.playerName}
+                              </span>
                             ) : column.id === 'session' ? (
                               <span>{row.session}</span>
                             ) : column.id === 'bidTXID' ? (
@@ -436,7 +448,7 @@ function index() {
                             ) : column.id === 'gameType' ? (
                               <span>{row.bet != null ? row.bet : 'test'}</span>
                             ) : column.id === 'points' ? (
-                              <span>{row.winnerData.winAmount}</span>
+                              <span>{row.winnerData.bidAmount}</span>
                             ) : column.format && typeof value === 'number' ? (
                               column.format(value)
                             ) : (
@@ -484,46 +496,58 @@ function index() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {bidWin.slice(Bid * rowsBidPage, Bid * rowsBidPage + rowsBidPage).map((row, rowIndex) => {
-                  return (
-                    <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
-                      {columnBid.map(column => {
-                        const value = row[column.id]
+                {bidWin
+                  .slice(WinAmount * rowsWinAmount, WinAmount * rowsWinAmount + rowsWinAmount)
+                  .map((row, rowIndex) => {
+                    return (
+                      <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
+                        {columnWinAmount.map(column => {
+                          const value = row[column.id]
 
-                        return (
-                          <TableCell key={column.id} align={column.align}>
-                            {column.id === 'gameName' ? (
-                              <span>{row.gameName}</span>
-                            ) : column.id === 'userName' ? (
-                              <span>{row.playerName}</span>
-                            ) : column.id === 'session' ? (
-                              <span>{row.session}</span>
-                            ) : column.id === 'bidTXID' ? (
-                              <span>{row.gameId}</span>
-                            ) : column.id === 'gameType' ? (
-                              <span>{row.bet != null ? row.bet : 'test'}</span>
-                            ) : column.id === 'points' ? (
-                              <span>{row.winnerData.bidAmount}</span>
-                            ) : column.id === 'win' ? (
-                              <span>{row.winnerData.winAmount}</span>
-                            ) : column.format && typeof value === 'number' ? (
-                              column.format(value)
-                            ) : (
-                              value
-                            )}
-                          </TableCell>
-                        )
-                      })}
-                    </TableRow>
-                  )
-                })}
+                          return (
+                            <TableCell key={column.id} align={column.align}>
+                              {column.id === 'gameName' ? (
+                                <span>{row.gameName}</span>
+                              ) : column.id === 'userName' ? (
+                                <span
+                                  style={{ color: 'blue', cursor: 'pointer' }}
+                                  onClick={() => {
+                                    router.push({
+                                      pathname: '/users/userdetails',
+                                      query: { userId: row.winnerData.playerId }
+                                    })
+                                  }}
+                                >
+                                  {row.playerName}
+                                </span>
+                              ) : column.id === 'session' ? (
+                                <span>{row.session}</span>
+                              ) : column.id === 'bidTXID' ? (
+                                <span>{row.gameId}</span>
+                              ) : column.id === 'gameType' ? (
+                                <span>{row.bet != null ? row.bet : 'test'}</span>
+                              ) : column.id === 'points' ? (
+                                <span>{row.winnerData.bidAmount}</span>
+                              ) : column.id === 'win' ? (
+                                <span>{row.winnerData.winAmount}</span>
+                              ) : column.format && typeof value === 'number' ? (
+                                column.format(value)
+                              ) : (
+                                value
+                              )}
+                            </TableCell>
+                          )
+                        })}
+                      </TableRow>
+                    )
+                  })}
               </TableBody>
             </Table>
           </TableContainer>
           <TablePagination
             rowsPerPageOptions={[10, 25, 100]}
             component='div'
-            count={rowWinAmount.length}
+            count={bidWin.length}
             rowsPerPage={rowsWinAmount}
             page={WinAmount}
             onPageChange={handleChangeWinAmount}

@@ -56,7 +56,9 @@ import {
   deleteWinnerResult,
   customerSellReport,
   deleteUser,
-  bidWinReport
+  bidWinReport,
+  bidRevert,
+  getWinnerByUser
 } from './service'
 
 export {
@@ -117,5 +119,7 @@ export {
   deleteWinnerResult,
   customerSellReport,
   deleteUser,
-  bidWinReport
+  bidWinReport,
+  bidRevert,
+  getWinnerByUser
 }

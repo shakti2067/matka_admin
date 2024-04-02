@@ -29,6 +29,7 @@ import {
   getPaymentInfo,
   getUserById,
   getUserDebitOrCreditWalletHistory,
+  getWinnerByUser,
   getWithdrawRequest,
   updateUser,
   userChangePassword,
@@ -36,6 +37,7 @@ import {
   userWalletHistory
 } from 'src/helpers'
 import moment from 'moment'
+import dayjs from 'dayjs'
 
 const columnAddFund = [
   {
@@ -90,7 +92,7 @@ function createAddFundData(name, requestAmount, requestNo, receiptImage, date, s
     action
   }
 }
-const rowAddFund = [createAddFundData('India', 'IN', 1324171354, 3287263, 3287263, 3287263, 3287263)]
+const rowAddFund = []
 
 const columnWithdrawFund = [
   {
@@ -404,6 +406,8 @@ function createWinningHistory(name, gameName, txId, txDate) {
 const rowwinningHistory = [createWinningHistory('1000', 'Dream Kalyan Mantra', 1324171354, '26/02/2024')]
 
 function UserDetails() {
+  let todayDate = new Date()
+
   const [addFundPage, setAddFundPage] = useState(0)
   const [withdrawFundPage, setwithdrawFundPage] = useState(0)
   const [bidPage, setBidPage] = useState(0)
@@ -457,7 +461,8 @@ function UserDetails() {
     remark: ''
   })
 
-  console.log('userDetails', userDetails)
+  const [winnerDate, setWinnerDate] = useState(todayDate)
+  const [winnerData, setWinnerData] = useState([])
 
   const togglePopup = () => {
     setPopupOpen(!isPopupOpen)
@@ -739,6 +744,21 @@ function UserDetails() {
       })
       .catch(error => {
         console.log('error', error)
+      })
+  }
+
+  const getWinnerByUserApi = () => {
+    getWinnerByUser(dayjs(winnerDate).format('YYYY-MM-DD'), userId)
+      .then(data => {
+        if (data.success) {
+          setWinnerData(data.data)
+        } else {
+          console.log('error', data.message)
+          setWinnerData([])
+        }
+      })
+      .catch(e => {
+        console.log(e)
       })
   }
 
@@ -1959,10 +1979,17 @@ function UserDetails() {
                 style={{ marginLeft: '20px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '20px' }}
               >
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker />
+                  <DatePicker
+                    maxDate={dayjs(todayDate)}
+                    value={dayjs(winnerDate)}
+                    onChange={date => {
+                      setWinnerDate(dayjs(date).format('YYYY-MM-DD'))
+                    }}
+                  />
                 </LocalizationProvider>
                 <Button
                   style={{ backgroundColor: '#9155FD', color: 'white', width: '11rem', padding: '5px', height: '3rem' }}
+                  onClick={getWinnerByUserApi}
                 >
                   Submit
                 </Button>
@@ -1980,7 +2007,7 @@ function UserDetails() {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {rowwinningHistory
+                      {winnerData
                         .slice(
                           winningHistoryPage * rowWinningHistoryPage,
                           winningHistoryPage * rowWinningHistoryPage + rowWinningHistoryPage
@@ -1992,7 +2019,15 @@ function UserDetails() {
                                 const value = row[column.id]
                                 return (
                                   <TableCell key={column.id} align={column.align}>
-                                    {column.format && typeof value === 'number' ? column.format(value) : value}
+                                    {column.id == 'name'
+                                      ? row.winAmount
+                                      : column.id == 'gameName'
+                                      ? row.betCategoryId.name
+                                      : column.id == 'txId'
+                                      ? row.gameId
+                                      : column.id == 'txDate'
+                                      ? dayjs(row.createdAt).format('YYYY-MM-DD')
+                                      : value}
                                   </TableCell>
                                 )
                               })}

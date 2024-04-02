@@ -650,3 +650,25 @@ export let bidWinReport = parameter => {
       return error
     })
 }
+
+export let bidRevert = parameter => {
+  return apis
+    .post(`/game/bidRevert`, parameter)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}
+
+export let getWinnerByUser = (date, playerId) => {
+  return apis
+    .get(`/game/getWinnerByUser?date=${date}&playerId=${playerId}`)
+    .then(res => {
+      return res.data
+    })
+    .catch(error => {
+      return error
+    })
+}

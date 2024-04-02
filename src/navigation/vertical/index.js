@@ -98,6 +98,11 @@ const navigation = () => {
       icon: CubeOutline,
       path: '/wallet/addfund'
     },
+    {
+      title: 'Bid Revert',
+      icon: CubeOutline,
+      path: '/wallet/bid-revert'
+    },
 
     {
       sectionTitle: 'Games management'
