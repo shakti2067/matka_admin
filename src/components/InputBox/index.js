@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 
-function InputBox() {
+function InputBox({ searchValue = () => {} }) {
   const [inputValue, setInputValue] = useState('')
+
+  searchValue(inputValue)
 
   const handleClearInput = () => {
     setInputValue('')

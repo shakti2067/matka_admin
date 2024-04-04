@@ -20,6 +20,7 @@ import FormControl from '@mui/material/FormControl'
 import InputBox from 'src/components/InputBox'
 import { getAllBets, getBetCategory, userGameHistory, userGameHistoryReport } from 'src/helpers'
 import dayjs from 'dayjs'
+import { useRouter } from 'next/router'
 
 const columnBid = [
   {
@@ -120,6 +121,7 @@ const rowBid = [
 ]
 
 function BidHistoryReport() {
+  const router = useRouter()
   const [bidPage, setBidPage] = useState(0)
   const [rowsBidPage, setRowsBidPage] = useState(10)
   const [bid, setBid] = useState([])
@@ -128,7 +130,8 @@ function BidHistoryReport() {
   const [gameTypeData, setGameTypeData] = useState([])
   const [game, setGame] = useState([])
   const [date, setDate] = useState(dayjs())
-  console.log('selectedGameType', selectedGameType)
+  const [error, setError] = useState('')
+  const [search, setSearch] = useState('')
 
   const today = new Date()
 
@@ -175,6 +178,21 @@ function BidHistoryReport() {
         console.log(err)
       })
   }
+  const searchValue = d => {
+    setSearch(d)
+  }
+
+  let validator = () => {
+    if (selectedGameValue == 0) {
+      setError('Please select game name')
+      return false
+    } else if (selectedGameType == 0) {
+      setError('Please select game type')
+      return false
+    } else {
+      return true
+    }
+  }
   let userGameHistoryApi = (startDate = dayjs().format('YYYY-MM-DD')) => {
     let endDate = dayjs().format('YYYY-MM-DD')
     let betId
@@ -189,20 +207,24 @@ function BidHistoryReport() {
     } else {
       betCategoryId = selectedGameValue
     }
-
-    userGameHistoryReport(startDate, endDate, betId, betCategoryId)
-      .then(data => {
-        if (data.success) {
-          setGame(data.data)
-        } else {
-          console.log('error')
-          setGame([])
-        }
-      })
-      .catch(e => {
-        console.log('error', e)
-      })
+    if (validator()) {
+      userGameHistoryReport(startDate, endDate, betId, betCategoryId)
+        .then(data => {
+          if (data.success) {
+            setGame(data.data)
+            setError('')
+          } else {
+            console.log('error')
+            setGame([])
+            setError(data.message)
+          }
+        })
+        .catch(e => {
+          console.log('error', e)
+        })
+    }
   }
+
   useEffect(() => {
     getAllBids()
     getAllGames()
@@ -260,11 +282,16 @@ function BidHistoryReport() {
             Submit
           </Button>
         </div>
+        {error ? <Typography color='red'>{error}</Typography> : null}
       </Card>
       <Card sx={{ width: '100%', overflow: 'hidden', marginTop: '20px' }}>
         <Typography variant='h6' style={{ padding: '20px' }}>
           Bid History List
         </Typography>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginLeft: '1430px', marginTop: '10px' }}>
+          <InputBox searchValue={searchValue} />
+        </div>
+
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label='sticky table'>
             <TableHead>
@@ -290,7 +317,19 @@ function BidHistoryReport() {
                           ) : column.id === 'gameName' ? (
                             <span>{row.betCategoryId.name}</span>
                           ) : column.id === 'userName' ? (
-                            <span>{row.playerId.name}</span>
+                            <span
+                              style={{ color: 'blue', cursor: 'pointer' }}
+                              onClick={() => {
+                                // router.push('/users/userdetails')
+                                router.push({
+                                  pathname: '/users/userdetails',
+                                  query: { userId: row.playerId._id }
+                                  // query: { user: '' }
+                                })
+                              }}
+                            >
+                              {row.playerId.name}
+                            </span>
                           ) : column.id === 'session' ? (
                             <span>{row.state}</span>
                           ) : column.id === 'bidTXID' ? (

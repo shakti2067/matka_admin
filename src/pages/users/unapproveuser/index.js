@@ -6,6 +6,7 @@ import TableStickyHeader from 'src/views/tables/TableStickyHeader'
 import moment from 'moment'
 import UserTable from 'src/views/tables/UserTable'
 import { useRouter } from 'next/router'
+import InputBox from 'src/components/InputBox'
 
 const columns = [
   { id: 'no', label: '#', minWidth: 170 },
@@ -37,19 +38,23 @@ const columns = [
 
 export default function UnapprovedUsersPage() {
   let [rows, setRows] = useState([])
-  console.log('rows', rows)
+  let [search, setSearch] = useState('')
 
   let router = useRouter()
 
   const isRefresh = () => {
     getAllUsers()
   }
+
+  const searchValue = d => {
+    setSearch(d)
+  }
   useEffect(() => {
     getAllUsers()
-  }, [])
+  }, [search])
 
   let getAllUsers = () => {
-    getUser(false)
+    getUser(false, search)
       .then(data => {
         if (data.success) {
           setRows(data.data)
@@ -69,6 +74,9 @@ export default function UnapprovedUsersPage() {
           </Grid>
         </Grid>
       </Grid>
+      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginLeft: '1430px', marginTop: '10px' }}>
+        <InputBox searchValue={searchValue} />
+      </div>
       <Grid item xs={12}>
         <Card>
           <UserTable columns={columns} rows={rows} refreshPage={isRefresh} />

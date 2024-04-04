@@ -37,9 +37,9 @@ export function adminLogout() {
     })
 }
 
-export let getUser = isBetting => {
+export let getUser = (isBetting, searchQuery) => {
   return apis
-    .get(`/master/getAllUsers?page=1&limit=1000&isBetting=${isBetting}`)
+    .get(`/master/getAllUsers?page=1&limit=1000&isBetting=${isBetting}&searchQuery=${searchQuery}`)
     .then(res => {
       console.log(res)
       return res.data
