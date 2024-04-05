@@ -13,10 +13,10 @@ function InputBox({ searchValue = () => {} }) {
       <div style={{ position: 'relative' }}>
         <input
           type='text'
-          placeholder='Type something'
+          placeholder='Search'
           style={{
             paddingRight: '30px',
-            border: '2px solid #F0EEEE',
+            border: '2px solid #9155FD',
             borderRadius: '4px',
             padding: '8px',
             width: '100%',
@@ -25,8 +25,8 @@ function InputBox({ searchValue = () => {} }) {
           }}
           value={inputValue}
           onChange={e => setInputValue(e.target.value)}
-          onFocus={e => (e.target.style.borderColor = '#9155FD')}
-          onBlur={e => (e.target.style.borderColor = '#F0EEEE')}
+          // onFocus={e => (e.target.style.borderColor = '#9155FD')}
+          // onBlur={e => (e.target.style.borderColor = '#F0EEEE')}
         />
         <div
           style={{
@@ -36,7 +36,7 @@ function InputBox({ searchValue = () => {} }) {
             transform: 'translateY(-50%)',
             pointerEvents: 'auto',
             cursor: 'pointer',
-            color: 'lightgray'
+            color: 'black'
           }}
           onClick={handleClearInput}
         >

@@ -72,11 +72,11 @@ export default function UnapprovedUsersPage() {
           <Grid item>
             <Typography variant='h5'>Un-Approved Users List</Typography>
           </Grid>
+          <Grid sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
+            <InputBox searchValue={searchValue} />
+          </Grid>
         </Grid>
       </Grid>
-      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginLeft: '1430px', marginTop: '10px' }}>
-        <InputBox searchValue={searchValue} />
-      </div>
       <Grid item xs={12}>
         <Card>
           <UserTable columns={columns} rows={rows} refreshPage={isRefresh} />
